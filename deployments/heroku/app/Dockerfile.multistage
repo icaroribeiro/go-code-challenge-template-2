@@ -1,0 +1,42 @@
+##
+## Build
+##
+# It starts from the golang base image.
+FROM golang:latest as builder
+
+# Add maintainer info.
+LABEL maintainer="Ícaro Ribeiro <icaroribeiro@hotmail.com>"
+
+# Set the working directory inside the container.
+WORKDIR /app
+
+# Copy the source code from the temporary directory to the working directory inside the container.
+COPY .temp .
+
+# Download all dependencies.
+RUN go mod download
+
+# Build the Go app.
+RUN cd cmd/api && CGO_ENABLED=0 GOOS=linux go build -a -o api .
+
+##
+## Deploy
+##
+# Second stage started from the lastest alpine base image.
+FROM alpine:latest
+
+# Set the environment variable that deals with the application deployment in Heroku Platform.
+ENV DEPLOY=YES
+
+# Set the working directory inside the container.
+WORKDIR /app
+
+RUN apk --no-cache add ca-certificates
+
+# Copy the Pre-built binary file from the previous stage.
+COPY --from=builder /app/configs ./configs
+COPY --from=builder /app/docs/api/swagger ./docs/api/swagger
+COPY --from=builder /app/cmd/api/api .
+
+# Command to run the application.
+CMD ["sh", "-c", "./api run"]

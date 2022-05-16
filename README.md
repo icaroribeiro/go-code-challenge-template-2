@@ -1,1 +1,1 @@
-# new-go-code-challenge-template-2
+# new-go-code-challenge-template-2-2
