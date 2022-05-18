@@ -8,11 +8,13 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gorilla/mux"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/generated"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/resolver"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
+	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
 	"github.com/spf13/cobra"
 )
 
@@ -60,6 +62,11 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 
 	healthCheckService := healthcheckservice.New(db)
 
+	graphqlHandler := graphqlhandler.New(healthCheckService)
+
+	routes := make(routehttputilpkg.Routes, 0)
+	routes = append(routes, graphqlrouter.ConfigureRoutes(graphqlHandler)...)
+
 	res := resolver.NewResolver(healthCheckService)
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: res}))
@@ -103,4 +110,25 @@ func setupDBConfig() (map[string]string, error) {
 	}
 
 	return dbConfig, nil
+}
+
+// setupRouter is the function that builds the router by arranging API routes.
+func setupRouter(apiRoutes routehttputilpkg.Routes) *mux.Router {
+	router := mux.NewRouter()
+
+	methodNotAllowedHandler := handlerhttputilpkg.GetMethodNotAllowedHandler()
+	router.MethodNotAllowedHandler = methodNotAllowedHandler
+
+	notFoundHandler := handlerhttputilpkg.GetNotFoundHandler()
+	router.NotFoundHandler = notFoundHandler
+
+	for _, apiRoute := range apiRoutes {
+		route := router.NewRoute()
+		route.Name(apiRoute.Name)
+		route.Methods(apiRoute.Method)
+		route.Path(apiRoute.Path)
+		route.HandlerFunc(apiRoute.HandlerFunc)
+	}
+
+	return router
 }
