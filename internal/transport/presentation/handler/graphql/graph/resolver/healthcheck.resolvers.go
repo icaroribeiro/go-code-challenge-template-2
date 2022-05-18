@@ -6,8 +6,8 @@ package resolver
 import (
 	"context"
 
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/generated"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/generated"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/model"
 )
 
 func (r *queryResolver) GetHealthCheck(ctx context.Context) (*model.HealthCheck, error) {

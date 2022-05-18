@@ -1,7 +1,6 @@
-package graphql_test
+package handler_test
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -16,11 +15,7 @@ type Case struct {
 
 type Cases []Case
 
-type ReturnArgs [][]interface{}
-
 type TestSuite struct {
 	suite.Suite
 	Cases Cases
 }
-
-func GraphqlHandler(w http.ResponseWriter, r *http.Request) {}

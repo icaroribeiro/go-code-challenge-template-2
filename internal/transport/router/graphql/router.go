@@ -1,21 +1,20 @@
-package swagger
+package graphql
 
 import (
 	"net/http"
 
-	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/adapter"
-	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/route"
+	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
+	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
 )
 
-// ConfigureRoutes is the function that arranges the swagger's routes.
-func ConfigureRoutes(swaggerHandler http.HandlerFunc, adapters map[string]adapterhttputilpkg.Adapter) routehttputilpkg.Routes {
+// ConfigureRoutes is the function that arranges the graphql's routes.
+func ConfigureRoutes(graphqlHandler graphqlhandler.IHandler) routehttputilpkg.Routes {
 	return routehttputilpkg.Routes{
 		routehttputilpkg.Route{
-			Name:       "Swagger",
-			Method:     http.MethodGet,
-			PathPrefix: "/swagger",
-			HandlerFunc: adapterhttputilpkg.AdaptFunc(swaggerHandler).
-				With(adapters["loggingMiddleware"]),
+			Name:        "GraphQL",
+			Method:      http.MethodPost,
+			Path:        "/graphql",
+			HandlerFunc: graphqlHandler.GraphQL().ServeHTTP,
 		},
 	}
 }

@@ -1,4 +1,4 @@
-package swagger_test
+package graphql_test
 
 import (
 	"net/http"
@@ -6,13 +6,12 @@ import (
 	"runtime"
 	"testing"
 
-	swaggerrouter "github.com/icaroribeiro/new-go-code-challenge-template/internal/transport/router/swagger"
-	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/adapter"
-	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/route"
-	loggingmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/middleware/logging"
+	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
+	graphqlrouter "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql"
+	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	httpswaggerpkg "github.com/swaggo/http-swagger"
 )
 
 func TestRouterUnit(t *testing.T) {
@@ -22,11 +21,9 @@ func TestRouterUnit(t *testing.T) {
 func (ts *TestSuite) TestConfigureRoutes() {
 	routes := routehttputilpkg.Routes{}
 
-	swaggerHandler := httpswaggerpkg.WrapHandler
+	healthCheckService := new(healthcheckmockservice.Service)
 
-	adapters := map[string]adapterhttputilpkg.Adapter{
-		"loggingMiddleware": loggingmiddlewarepkg.Logging(),
-	}
+	graphqlHandler := graphqlhandler.New(healthCheckService)
 
 	ts.Cases = Cases{
 		{
@@ -34,11 +31,10 @@ func (ts *TestSuite) TestConfigureRoutes() {
 			SetUp: func(t *testing.T) {
 				routes = routehttputilpkg.Routes{
 					routehttputilpkg.Route{
-						Name:       "Swagger",
-						Method:     http.MethodGet,
-						PathPrefix: "/swagger",
-						HandlerFunc: adapterhttputilpkg.AdaptFunc(swaggerHandler).
-							With(adapters["loggingMiddleware"]),
+						Name:        "GraphQL",
+						Method:      http.MethodPost,
+						Path:        "/graphql",
+						HandlerFunc: graphqlHandler.GraphQL().ServeHTTP,
 					},
 				}
 			},
@@ -49,7 +45,7 @@ func (ts *TestSuite) TestConfigureRoutes() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			returnedRoutes := swaggerrouter.ConfigureRoutes(swaggerHandler, adapters)
+			returnedRoutes := graphqlrouter.ConfigureRoutes(graphqlHandler)
 
 			assert.Equal(t, len(routes), len(returnedRoutes))
 

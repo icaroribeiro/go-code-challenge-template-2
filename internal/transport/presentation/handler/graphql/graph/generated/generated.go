@@ -13,7 +13,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/model"
 	"github.com/satori/go.uuid"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -196,15 +196,15 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "internal/transport/graph/schema/healthcheck.graphql", Input: `type HealthCheck {
+	{Name: "internal/transport/presentation/handler/graphql/graph/schema/healthcheck.graphql", Input: `type HealthCheck {
     status: String!
 }
 
 extend type Query {
     getHealthCheck: HealthCheck!
 }`, BuiltIn: false},
-	{Name: "internal/transport/graph/schema/scalars.graphql", Input: `scalar UUID`, BuiltIn: false},
-	{Name: "internal/transport/graph/schema/user.graphql", Input: `type User {
+	{Name: "internal/transport/presentation/handler/graphql/graph/schema/scalars.graphql", Input: `scalar UUID`, BuiltIn: false},
+	{Name: "internal/transport/presentation/handler/graphql/graph/schema/user.graphql", Input: `type User {
     id: UUID!
     username: String!
 }

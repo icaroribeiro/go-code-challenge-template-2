@@ -1,10 +1,10 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - internal/transport/graph/schema/*.graphql
+  - internal/transport/presentation/handler/graphql/graph/schema/*.graphql
 
 # Where should the generated server code go?
 exec:
-  filename: internal/transport/graph/generated/generated.go
+  filename: internal/transport/presentation/handler/graphql/graph/generated/generated.go
   package: generated
 
 # Uncomment to enable federation
@@ -14,13 +14,13 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: internal/transport/graph/model/models_gen.go
+  filename: internal/transport/presentation/handler/graphql/graph/model/models_gen.go
   package: model
 
 # Where should the resolver implementations go?
 resolver:
   layout: follow-schema
-  dir: internal/transport/graph/resolver
+  dir: internal/transport/presentation/handler/graphql/graph/resolver
   package: resolver
 
 # Optional: turn on use ` + "`" + `gqlgen:"fieldName"` + "`" + ` tags in your models
@@ -35,7 +35,7 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model"
+  - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/model"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -45,13 +45,13 @@ autobind:
 models:
   HealthCheck:
     model: 
-      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model.HealthCheck"
+      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/model.HealthCheck"
   UUID:
     model: 
-      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model.UUID"
+      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/model.UUID"
   User:
     model: 
-      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model.User"
+      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/model.User"
   # ID:
   #   model:
   #     - github.com/99designs/gqlgen/graphql.ID

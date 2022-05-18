@@ -5,6 +5,8 @@ go 1.18
 require (
 	github.com/99designs/gqlgen v0.17.5
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/brianvoe/gofakeit/v5 v5.11.2
+	github.com/gorilla/mux v1.8.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.1

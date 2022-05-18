@@ -1,20 +1,24 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/generated"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/resolver"
+	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
+	graphqlrouter "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
+	handlerhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler"
 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
+	serverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/server"
 	"github.com/spf13/cobra"
 )
 
@@ -67,15 +71,22 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 	routes := make(routehttputilpkg.Routes, 0)
 	routes = append(routes, graphqlrouter.ConfigureRoutes(graphqlHandler)...)
 
-	res := resolver.NewResolver(healthCheckService)
+	router := setupRouter(routes)
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: res}))
+	server := serverpkg.New(fmt.Sprintf(":%s", httpPort), router)
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	idleChan := make(chan struct{})
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", httpPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", httpPort), nil))
+	go func() {
+		waitForShutdown(*server)
+		close(idleChan)
+	}()
+
+	if err := server.Start(); err != nil && err != http.ErrServerClosed {
+		log.Panicf("%s", err.Error())
+	}
+
+	<-idleChan
 }
 
 // setupHttpPort is the function that configures the port address used by the server.
@@ -131,4 +142,20 @@ func setupRouter(apiRoutes routehttputilpkg.Routes) *mux.Router {
 	}
 
 	return router
+}
+
+// waitForShutdown is the function that waits for a signal to shutdown the server.
+func waitForShutdown(server serverpkg.Server) {
+	interruptChan := make(chan os.Signal, 1)
+
+	signal.Notify(interruptChan, os.Interrupt, syscall.SIGTERM)
+
+	<-interruptChan
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	if err := server.Stop(ctx); err != nil && err != context.DeadlineExceeded {
+		log.Panicf("%s", err.Error())
+	}
 }

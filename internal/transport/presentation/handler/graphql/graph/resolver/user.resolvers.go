@@ -7,8 +7,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/generated"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/generated"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/model"
 )
 
 func (r *mutationResolver) GetAllUsers(ctx context.Context) ([]*model.User, error) {
