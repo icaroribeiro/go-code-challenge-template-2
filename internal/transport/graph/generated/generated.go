@@ -213,8 +213,8 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema/scalars.graphql", Input: `scalar UUID`, BuiltIn: false},
-	{Name: "graph/schema/user.graphql", Input: `type User {
+	{Name: "internal/transport/graph/schema/scalars.graphql", Input: `scalar UUID`, BuiltIn: false},
+	{Name: "internal/transport/graph/schema/user.graphql", Input: `type User {
     id: UUID!
     username: String!
 }
@@ -226,7 +226,7 @@ extend type Query {
 extend type Mutation {
     getAllUsers: [User!]!
 }`, BuiltIn: false},
-	{Name: "graph/schema/user2.graphql", Input: `type User2 {
+	{Name: "internal/transport/graph/schema/user2.graphql", Input: `type User2 {
     id: String!
     username: String!
 }

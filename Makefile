@@ -11,6 +11,9 @@ format-api:
 	gofmt -w .; \
 	golint ./...
 
+generate-gql:
+	go run -mod=mod github.com/99designs/gqlgen generate --config internal/transport/gqlgen.yml
+
 checkversion-api:
 	go run cmd/api/main.go version
 
