@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
 	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
 	graphqlrouter "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql"
 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
@@ -22,8 +23,9 @@ func (ts *TestSuite) TestConfigureRoutes() {
 	routes := routehttputilpkg.Routes{}
 
 	healthCheckService := new(healthcheckmockservice.Service)
+	userService := new(usermockservice.Service)
 
-	graphqlHandler := graphqlhandler.New(healthCheckService)
+	graphqlHandler := graphqlhandler.New(healthCheckService, userService)
 
 	ts.Cases = Cases{
 		{

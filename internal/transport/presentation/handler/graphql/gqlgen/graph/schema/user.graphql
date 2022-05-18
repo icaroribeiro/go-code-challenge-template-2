@@ -1,0 +1,8 @@
+type User {
+    id: UUID!
+    username: String!
+}
+
+extend type Query {
+    getAllUsers: [User!]!
+}

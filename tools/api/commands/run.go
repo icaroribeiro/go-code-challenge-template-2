@@ -12,6 +12,8 @@ import (
 
 	"github.com/gorilla/mux"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"
+	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
+	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
 	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
 	graphqlrouter "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
@@ -19,7 +21,12 @@ import (
 	handlerhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler"
 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
 	serverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/server"
+	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
+	passwordvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
+	usernamevalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/username"
+	uuidvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
 	"github.com/spf13/cobra"
+	validatorv2 "gopkg.in/validator.v2"
 )
 
 var RunCmd = &cobra.Command{
@@ -64,9 +71,23 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		log.Panicf("Got error when acessing the database instance: %s", err.Error())
 	}
 
-	healthCheckService := healthcheckservice.New(db)
+	userDatastoreRepository := userdatastorerepository.New(db)
 
-	graphqlHandler := graphqlhandler.New(healthCheckService)
+	validationFuncs := map[string]validatorv2.ValidationFunc{
+		"uuid":     uuidvalidator.Validate,
+		"username": usernamevalidator.Validate,
+		"password": passwordvalidator.Validate,
+	}
+
+	validator, err := validatorpkg.New(validationFuncs)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+
+	healthCheckService := healthcheckservice.New(db)
+	userService := userservice.New(userDatastoreRepository, validator)
+
+	graphqlHandler := graphqlhandler.New(healthCheckService, userService)
 
 	routes := make(routehttputilpkg.Routes, 0)
 	routes = append(routes, graphqlrouter.ConfigureRoutes(graphqlHandler)...)

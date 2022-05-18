@@ -3,8 +3,9 @@ package graphql
 import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/generated"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/graph/resolver"
+	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/user"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
 )
 
 type Handler struct {
@@ -12,8 +13,8 @@ type Handler struct {
 }
 
 // New is the factory function that encapsulates the implementation related to graphql handler.
-func New(healthCheckService healthcheckservice.IService) IHandler {
-	res := resolver.NewResolver(healthCheckService)
+func New(healthCheckService healthcheckservice.IService, userService userservice.IService) IHandler {
+	res := resolver.NewResolver(healthCheckService, userService)
 
 	return &Handler{
 		Resolver: res,

@@ -8,12 +8,12 @@ package graphql_test
 // 	"testing"
 
 // 	"github.com/gorilla/mux"
-// 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template/internal/core/ports/application/mockservice/healthcheck"
-// 	healthcheckhandler "github.com/icaroribeiro/new-go-code-challenge-template/internal/transport/presentation/handler/healthcheck"
-// 	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/customerror"
-// 	messagehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/message"
-// 	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/request"
-// 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/route"
+// 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+// 	healthcheckhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/healthcheck"
+// 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+// 	messagehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/message"
+// 	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request"
+// 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
 // 	"github.com/stretchr/testify/assert"
 // 	"github.com/stretchr/testify/suite"
 // )
