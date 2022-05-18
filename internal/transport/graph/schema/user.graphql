@@ -1,0 +1,12 @@
+type User {
+    id: UUID!
+    username: String!
+}
+
+extend type Query {
+    getAllUsers: [User!]!
+}
+
+extend type Mutation {
+    getAllUsers: [User!]!
+}

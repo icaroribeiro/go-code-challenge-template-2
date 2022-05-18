@@ -1,0 +1,12 @@
+type User2 {
+    id: String!
+    username: String!
+}
+
+extend type Query {
+    getAllUser2: [User2!]!
+}
+
+extend type Mutation {
+    getAllUsers2: [User2!]!
+}
