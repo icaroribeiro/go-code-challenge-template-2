@@ -1,7 +1,15 @@
 package resolver
 
-// This file will not be regenerated automatically.
-//
-// It serves as dependency injection for your app, add any dependencies you require here.
+import (
+	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
+)
 
-type Resolver struct{}
+type Resolver struct {
+	HealthCheckService healthcheckservice.IService
+}
+
+func NewResolver(healthCheckService healthcheckservice.IService) *Resolver {
+	return &Resolver{
+		HealthCheckService: healthCheckService,
+	}
+}

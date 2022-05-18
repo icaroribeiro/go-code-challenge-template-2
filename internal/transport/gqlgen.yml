@@ -43,6 +43,9 @@ autobind:
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
 models:
+  HealthCheck:
+    model: 
+      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model.HealthCheck"
   UUID:
     model: 
       - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/graph/model.UUID"

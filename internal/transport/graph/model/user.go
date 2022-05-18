@@ -7,9 +7,8 @@ import (
 
 // User is the representation of user's http model.
 type User struct {
-	ID uuid.UUID `json:"id"`
-	//ID       string `json:"id"`
-	Username string `json:"username"`
+	ID       uuid.UUID `json:"id"`
+	Username string    `json:"username"`
 }
 
 // Users is a slice of User.
@@ -17,7 +16,7 @@ type Users []User
 
 // FromDomain is the function that builds a http model based on the model's data from domain.
 func (u *User) FromDomain(user domainmodel.User) {
-	//u.ID = user.ID
+	u.ID = user.ID
 	u.Username = user.Username
 }
 
