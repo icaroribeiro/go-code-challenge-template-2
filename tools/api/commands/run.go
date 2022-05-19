@@ -3,13 +3,16 @@ package commands
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"
@@ -61,6 +64,23 @@ var (
 
 func execRunCmd(cmd *cobra.Command, args []string) {
 	httpPort := setupHttpPort()
+
+	rsaKeys, err := setupRSAKeys()
+	if err != nil {
+		log.Panic(err.Error())
+	}
+
+	authN := authpkg.New(rsaKeys)
+
+	tokenExpTimeInSec, err := strconv.Atoi(tokenExpTimeInSecStr)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+
+	timeBeforeTokenExpTimeInSec, err := strconv.Atoi(timeBeforeTokenExpTimeInSecStr)
+	if err != nil {
+		log.Panic(err.Error())
+	}
 
 	dbConfig, err := setupDBConfig()
 	if err != nil {
@@ -137,6 +157,34 @@ func setupHttpPort() string {
 	}
 
 	return httpPort
+}
+
+// setupRSAKeys is the function that configures the RSA keys.
+func setupRSAKeys() (authpkg.RSAKeys, error) {
+	publicKey, err := ioutil.ReadFile(publicKeyPath)
+	if err != nil {
+		return authpkg.RSAKeys{}, fmt.Errorf("failed to read the RSA public key file: %s", err.Error())
+	}
+
+	rsaPublicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKey)
+	if err != nil {
+		return authpkg.RSAKeys{}, fmt.Errorf("failed to parse the RSA public key: %s", err.Error())
+	}
+
+	privateKey, err := ioutil.ReadFile(privateKeyPath)
+	if err != nil {
+		return authpkg.RSAKeys{}, fmt.Errorf("failed to read the RSA private key file: %s", err.Error())
+	}
+
+	rsaPrivateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKey)
+	if err != nil {
+		return authpkg.RSAKeys{}, fmt.Errorf("failed to parse the RSA private key: %s", err.Error())
+	}
+
+	return authpkg.RSAKeys{
+		PublicKey:  rsaPublicKey,
+		PrivateKey: rsaPrivateKey,
+	}, nil
 }
 
 // setupDBConfig is the function that configures a map of parameters used to connect to the database.
