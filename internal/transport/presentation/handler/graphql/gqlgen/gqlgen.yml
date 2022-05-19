@@ -52,6 +52,9 @@ models:
   User:
     model: 
       - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model.User"
+  Credentials:
+    model:
+      - "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security.Credentials"
   # ID:
   #   model:
   #     - github.com/99designs/gqlgen/graphql.ID

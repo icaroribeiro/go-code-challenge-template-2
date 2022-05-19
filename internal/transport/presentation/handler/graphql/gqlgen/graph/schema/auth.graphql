@@ -1,0 +1,7 @@
+type AuthPayload {
+  token: String!
+}
+
+extend type Mutation {
+    signUp(credentials: Credentials!): AuthPayload!
+}

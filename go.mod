@@ -12,6 +12,7 @@ require (
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.1
 	github.com/vektah/gqlparser/v2 v2.4.2
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	gopkg.in/validator.v2 v2.0.1
 	gorm.io/driver/postgres v1.3.5
 	gorm.io/gorm v1.23.5
@@ -37,7 +38,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )
