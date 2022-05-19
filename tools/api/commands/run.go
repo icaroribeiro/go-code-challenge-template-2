@@ -11,15 +11,21 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
+	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
+	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
 	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
 	graphqlrouter "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
+	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
 	handlerhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler"
 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
+
+	dbtrxmiddleware "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/dbtrx"
 	serverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/server"
 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
 	passwordvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
@@ -39,6 +45,11 @@ var (
 	deploy = envpkg.GetEnvWithDefaultValue("DEPLOY", "NO")
 
 	httpPort = envpkg.GetEnvWithDefaultValue("HTTP_PORT", "8080")
+
+	publicKeyPath                  = envpkg.GetEnvWithDefaultValue("RSA_PUBLIC_KEY_PATH", "./configs/auth/rsa_keys/rsa.public")
+	privateKeyPath                 = envpkg.GetEnvWithDefaultValue("RSA_PRIVATE_KEY_PATH", "./configs/auth/rsa_keys/rsa.private")
+	tokenExpTimeInSecStr           = envpkg.GetEnvWithDefaultValue("TOKEN_EXP_TIME_IN_SEC", "120")
+	timeBeforeTokenExpTimeInSecStr = envpkg.GetEnvWithDefaultValue("TIME_BEFORE_TOKEN_EXP_TIME_IN_SEC", "30")
 
 	dbDriver   = envpkg.GetEnvWithDefaultValue("DB_DRIVER", "postgres")
 	dbUser     = envpkg.GetEnvWithDefaultValue("DB_USER", "postgres")
@@ -71,6 +82,8 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		log.Panicf("Got error when acessing the database instance: %s", err.Error())
 	}
 
+	authDatastoreRepository := authdatastorerepository.New(db)
+	loginDatastoreRepository := logindatastorerepository.New(db)
 	userDatastoreRepository := userdatastorerepository.New(db)
 
 	validationFuncs := map[string]validatorv2.ValidationFunc{
@@ -85,12 +98,17 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 	}
 
 	healthCheckService := healthcheckservice.New(db)
+	authService := authservice.New()
 	userService := userservice.New(userDatastoreRepository, validator)
 
 	graphqlHandler := graphqlhandler.New(healthCheckService, userService)
 
+	adapters := map[string]adapterhttputilpkg.Adapter{
+		"dbTrxMiddleware": dbtrxmiddleware.DBTrx(db),
+	}
+
 	routes := make(routehttputilpkg.Routes, 0)
-	routes = append(routes, graphqlrouter.ConfigureRoutes(graphqlHandler)...)
+	routes = append(routes, graphqlrouter.ConfigureRoutes(graphqlHandler, adapters)...)
 
 	router := setupRouter(routes)
 

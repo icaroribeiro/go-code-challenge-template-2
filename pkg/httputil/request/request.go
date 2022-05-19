@@ -4,4 +4,5 @@ package request
 type RequestData struct {
 	Method string
 	Target string
+	Body   interface{}
 }

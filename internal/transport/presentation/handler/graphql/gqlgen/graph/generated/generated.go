@@ -155,6 +155,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCredentials,
+		ec.unmarshalInputPasswords,
 	)
 	first := true
 
@@ -233,6 +234,11 @@ extend type Mutation {
 extend type Query {
     getHealthCheck: HealthCheck!
 }`, BuiltIn: false},
+	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/passwords.graphql", Input: `input Passwords {
+	currentPassword: String!
+	newPassword: String!
+}
+`, BuiltIn: false},
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/scalars.graphql", Input: `scalar UUID`, BuiltIn: false},
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/user.graphql", Input: `type User {
     id: UUID!
@@ -2574,6 +2580,37 @@ func (ec *executionContext) unmarshalInputCredentials(ctx context.Context, obj i
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			it.Password, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPasswords(ctx context.Context, obj interface{}) (security.Passwords, error) {
+	var it security.Passwords
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "currentPassword":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentPassword"))
+			it.CurrentPassword, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "newPassword":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("newPassword"))
+			it.NewPassword, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

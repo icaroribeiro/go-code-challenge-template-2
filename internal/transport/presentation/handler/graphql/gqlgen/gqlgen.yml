@@ -55,6 +55,9 @@ models:
   Credentials:
     model:
       - "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security.Credentials"
+  Passwords:
+    model:
+      - "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security.Passwords"
   # ID:
   #   model:
   #     - github.com/99designs/gqlgen/graphql.ID

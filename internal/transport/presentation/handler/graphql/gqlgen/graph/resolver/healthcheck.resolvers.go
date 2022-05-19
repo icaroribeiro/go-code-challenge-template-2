@@ -18,6 +18,7 @@ func (r *queryResolver) GetHealthCheck(ctx context.Context) (*model.HealthCheck,
 	}
 
 	healthcheck.Status = "everything is up and running"
+
 	return &healthcheck, nil
 }
 
