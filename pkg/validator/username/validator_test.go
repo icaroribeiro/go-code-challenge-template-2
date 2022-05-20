@@ -23,13 +23,19 @@ func (ts *TestSuite) TestValidate() {
 		},
 		{
 			Context:   "ItShouldSucceedIfTheStringContainsAValidUsername",
-			Inf:       "foobar",
+			Inf:       "foobar123",
 			Param:     "",
 			WantError: false,
 		},
 		{
 			Context:   "ItShouldFailIfANewValueIsNotInitializedToTheConcreteValue",
 			Inf:       nil,
+			Param:     "",
+			WantError: true,
+		},
+		{
+			Context:   "ItShouldFailIfTheStringDoesNotContainOnlyLettersAndNumbers",
+			Inf:       "foo.bar123",
 			Param:     "",
 			WantError: true,
 		},

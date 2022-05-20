@@ -11,15 +11,13 @@ import (
 )
 
 func (r *queryResolver) GetHealthCheck(ctx context.Context) (*model.HealthCheck, error) {
-	healthcheck := model.HealthCheck{}
-
 	if err := r.HealthCheckService.GetStatus(); err != nil {
 		return nil, err
 	}
 
-	healthcheck.Status = "everything is up and running"
-
-	return &healthcheck, nil
+	return &model.HealthCheck{
+		Status: "everything is up and running",
+	}, nil
 }
 
 // Query returns generated.QueryResolver implementation.

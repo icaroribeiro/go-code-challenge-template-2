@@ -1,0 +1,3 @@
+type InfoPayload {
+  message: String!
+}

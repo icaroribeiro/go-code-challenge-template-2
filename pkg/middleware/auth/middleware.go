@@ -13,8 +13,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// A private key for context that only this package can access.
-// This is important to prevent collisions between different context uses.
 var authDetailsCtxKey = &contextKey{"auth_details"}
 
 type contextKey struct {
@@ -127,4 +125,10 @@ func AuthRenewal(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec i
 			next.ServeHTTP(w, r)
 		}
 	}
+}
+
+// ForContext is the function that finds the auth_details from the context.
+func ForContext(ctx context.Context) domainmodel.Auth {
+	raw, _ := ctx.Value(authDetailsCtxKey).(domainmodel.Auth)
+	return raw
 }

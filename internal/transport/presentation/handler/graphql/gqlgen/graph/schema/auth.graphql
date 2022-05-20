@@ -4,4 +4,6 @@ type AuthPayload {
 
 extend type Mutation {
     signUp(input: Credentials!): AuthPayload!
+    signIn(input: Credentials!): AuthPayload!
+    singOut: InfoPayload!
 }

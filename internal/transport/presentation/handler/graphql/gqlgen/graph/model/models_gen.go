@@ -5,3 +5,7 @@ package model
 type AuthPayload struct {
 	Token string `json:"token"`
 }
+
+type InfoPayload struct {
+	Message string `json:"message"`
+}
