@@ -6,6 +6,7 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model"
@@ -16,6 +17,7 @@ import (
 )
 
 func (r *mutationResolver) SignUp(ctx context.Context, credentials security.Credentials) (*model.AuthPayload, error) {
+	log.Println("SignUp")
 	dbTrx := &gorm.DB{}
 
 	if dbTrx = dbtrxmiddleware.ForContext(ctx); dbTrx == nil {

@@ -24,11 +24,35 @@ func New(healthCheckService healthcheckservice.IService,
 }
 
 func (h *Handler) GraphQL() *handler.Server {
-	return handler.NewDefaultServer(
+	srv := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{
 				Resolvers: h.Resolver,
 			},
 		),
 	)
+
+	// srv.AroundResponses(func(ctx context.Context, next graphql.ResponseHandler) *graphql.Response {
+	// 	res := next(ctx)
+
+	// 	dbTrx := &gorm.DB{}
+	// 	if dbTrx = dbtrxmiddleware.ForContext(ctx); dbTrx == nil {
+	// 		log.Panic("Failed to retrieve database transaction from context")
+	// 	}
+
+	// 	if len(res.Errors) > 0 {
+	// 		log.Printf("rolling back database transaction due to response with error(s)")
+	// 		if err := dbTrx.Rollback().Error; err != nil {
+	// 			log.Panicf("database transaction rollback failed: %s", err.Error())
+	// 		}
+	// 	} else {
+	// 		if err := dbTrx.Commit().Error; err != nil {
+	// 			log.Panicf("database transaction commit failed: %s", err.Error())
+	// 		}
+	// 	}
+
+	// 	return res
+	// })
+
+	return srv
 }

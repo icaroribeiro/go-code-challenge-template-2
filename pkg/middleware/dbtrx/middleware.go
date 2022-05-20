@@ -2,14 +2,14 @@ package dbtrx
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/99designs/gqlgen/graphql"
 	"gorm.io/gorm"
 )
 
-// A private key for context that only this package can access.
-// This is important to prevent collisions between different context uses.
 var dbTrxCtxKey = &contextKey{"db_trx"}
 
 type contextKey struct {
@@ -20,6 +20,9 @@ type contextKey struct {
 func DBTrx(db *gorm.DB) func(http.HandlerFunc) http.HandlerFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
+			opContext := graphql.GetOperationContext(r.Context())
+			fmt.Println(opContext)
+
 			if db == nil {
 				next.ServeHTTP(w, r)
 				return
@@ -38,11 +41,20 @@ func DBTrx(db *gorm.DB) func(http.HandlerFunc) http.HandlerFunc {
 
 			next.ServeHTTP(w, r)
 
+			log.Println("A")
+			var nextResp graphql.ResponseHandler
+			log.Println("B")
+			res := nextResp(r.Context())
+			log.Println("C")
+			log.Println(res.Errors)
+
 			// If graphQL not return error message {
-			if err := dbTrx.Commit().Error; err != nil {
-				errorMsg := "database transaction commit failed"
-				log.Panicf("%s: %s", errorMsg, err.Error())
-			}
+			// if err := dbTrx.Commit().Error; err != nil {
+			// 	errorMsg := "database transaction commit failed"
+			// 	log.Panicf("%s: %s", errorMsg, err.Error())
+			// }
+
+			// log.Println("Commit!")
 			// } else {
 			// 	log.Printf("rolling back database transaction due to status code: %d", wrapped.statusCode)
 			// 	dbTrx.Rollback()
