@@ -1,8 +1,8 @@
 package auth
 
 import (
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template/internal/core/domain/model"
-	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/security"
+	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 	"gorm.io/gorm"
 )
 

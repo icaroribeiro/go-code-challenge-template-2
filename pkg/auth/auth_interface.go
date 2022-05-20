@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template/internal/core/domain/model"
+	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
 )
 
 // IAuth interface is the auth's contract.

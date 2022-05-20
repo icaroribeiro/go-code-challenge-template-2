@@ -55,7 +55,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		SignUp func(childComplexity int, credentials security.Credentials) int
+		SignUp func(childComplexity int, input security.Credentials) int
 	}
 
 	Query struct {
@@ -70,7 +70,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	SignUp(ctx context.Context, credentials security.Credentials) (*model.AuthPayload, error)
+	SignUp(ctx context.Context, input security.Credentials) (*model.AuthPayload, error)
 }
 type QueryResolver interface {
 	GetHealthCheck(ctx context.Context) (*model.HealthCheck, error)
@@ -116,7 +116,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SignUp(childComplexity, args["credentials"].(security.Credentials)), true
+		return e.complexity.Mutation.SignUp(childComplexity, args["input"].(security.Credentials)), true
 
 	case "Query.getAllUsers":
 		if e.complexity.Query.GetAllUsers == nil {
@@ -221,7 +221,7 @@ var sources = []*ast.Source{
 }
 
 extend type Mutation {
-    signUp(credentials: Credentials!): AuthPayload!
+    signUp(input: Credentials!): AuthPayload!
 }`, BuiltIn: false},
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/credentials.graphql", Input: `input Credentials {
     username: String!
@@ -259,14 +259,14 @@ func (ec *executionContext) field_Mutation_signUp_args(ctx context.Context, rawA
 	var err error
 	args := map[string]interface{}{}
 	var arg0 security.Credentials
-	if tmp, ok := rawArgs["credentials"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("credentials"))
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCredentials2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐCredentials(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["credentials"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -425,7 +425,7 @@ func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SignUp(rctx, fc.Args["credentials"].(security.Credentials))
+		return ec.resolvers.Mutation().SignUp(rctx, fc.Args["input"].(security.Credentials))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

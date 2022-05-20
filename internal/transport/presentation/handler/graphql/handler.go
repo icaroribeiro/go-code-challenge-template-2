@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"github.com/99designs/gqlgen/graphql/handler"
+	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
@@ -13,8 +14,9 @@ type Handler struct {
 }
 
 // New is the factory function that encapsulates the implementation related to graphql handler.
-func New(healthCheckService healthcheckservice.IService, userService userservice.IService) IHandler {
-	res := resolver.NewResolver(healthCheckService, userService)
+func New(healthCheckService healthcheckservice.IService,
+	authService authservice.IService, userService userservice.IService) IHandler {
+	res := resolver.NewResolver(healthCheckService, authService, userService)
 
 	return &Handler{
 		Resolver: res,

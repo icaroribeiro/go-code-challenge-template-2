@@ -9,6 +9,7 @@ import (
 
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model"
+
 	dbtrxmiddleware "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/dbtrx"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 	"gorm.io/gorm"

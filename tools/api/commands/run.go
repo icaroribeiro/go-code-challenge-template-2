@@ -22,13 +22,15 @@ import (
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
 	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
 	graphqlrouter "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql"
+	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
 	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
 	handlerhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler"
 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
-
+	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
 	dbtrxmiddleware "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/dbtrx"
+	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 	serverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/server"
 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
 	passwordvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
@@ -117,14 +119,19 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		log.Panic(err.Error())
 	}
 
+	security := securitypkg.New()
+
 	healthCheckService := healthcheckservice.New(db)
-	authService := authservice.New()
+	authService := authservice.New(authDatastoreRepository, loginDatastoreRepository, userDatastoreRepository,
+		authN, security, validator, tokenExpTimeInSec)
 	userService := userservice.New(userDatastoreRepository, validator)
 
-	graphqlHandler := graphqlhandler.New(healthCheckService, userService)
+	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService)
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"dbTrxMiddleware": dbtrxmiddleware.DBTrx(db),
+		"authMiddleware":        authmiddlewarepkg.Auth(db, authN),
+		"authRenewalMiddleware": authmiddlewarepkg.AuthRenewal(db, authN, timeBeforeTokenExpTimeInSec),
+		"dbTrxMiddleware":       dbtrxmiddleware.DBTrx(db),
 	}
 
 	routes := make(routehttputilpkg.Routes, 0)

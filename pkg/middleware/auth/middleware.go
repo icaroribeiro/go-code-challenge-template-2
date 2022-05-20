@@ -1,125 +1,130 @@
 package auth
 
-// import (
-// 	"context"
-// 	"net/http"
-// 	"strings"
+import (
+	"context"
+	"net/http"
+	"strings"
 
-// 	"github.com/dgrijalva/jwt-go"
-// 	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
-// 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-// 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-// 	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request"
-// 	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
-// 	"gorm.io/gorm"
-// )
+	"github.com/dgrijalva/jwt-go"
+	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
+	"gorm.io/gorm"
+)
 
-// func extractTokenString(w http.ResponseWriter, r *http.Request) (string, error) {
-// 	hdrAuth := r.Header.Get("Authorization")
-// 	if len(hdrAuth) == 0 {
-// 		errorMessage := "the auth header must be informed along with the token"
-// 		return "", customerror.BadRequest.New(errorMessage)
-// 	}
+// A private key for context that only this package can access.
+// This is important to prevent collisions between different context uses.
+var authDetailsCtxKey = &contextKey{"auth_details"}
 
-// 	bearerToken := strings.Split(hdrAuth, " ")
-// 	if len(bearerToken) != 2 {
-// 		errorMessage := "the token must be associated with the auth header"
-// 		return "", customerror.BadRequest.New(errorMessage)
-// 	}
+type contextKey struct {
+	name string
+}
 
-// 	return bearerToken[1], nil
-// }
+func extractTokenString(w http.ResponseWriter, r *http.Request) (string, error) {
+	hdrAuth := r.Header.Get("Authorization")
+	if len(hdrAuth) == 0 {
+		errorMessage := "the auth header must be informed along with the token"
+		return "", customerror.BadRequest.New(errorMessage)
+	}
 
-// func buildAuth(db *gorm.DB, authN authpkg.IAuth, token *jwt.Token) (domainmodel.Auth, error) {
-// 	auth, err := authN.FetchAuthFromToken(token)
-// 	if err != nil {
-// 		return domainmodel.Auth{}, err
-// 	}
+	bearerToken := strings.Split(hdrAuth, " ")
+	if len(bearerToken) != 2 {
+		errorMessage := "the token must be associated with the auth header"
+		return "", customerror.BadRequest.New(errorMessage)
+	}
 
-// 	// Before proceeding is necessary to check if the user who is performing operations is logged
-// 	// based on the authentication details inserted within in the token.
-// 	authAux := domainmodel.Auth{}
+	return bearerToken[1], nil
+}
 
-// 	result := db.Find(&authAux, "id=?", auth.ID)
-// 	if result.Error != nil {
-// 		return domainmodel.Auth{}, result.Error
-// 	}
+func buildAuth(db *gorm.DB, authN authpkg.IAuth, token *jwt.Token) (domainmodel.Auth, error) {
+	auth, err := authN.FetchAuthFromToken(token)
+	if err != nil {
+		return domainmodel.Auth{}, err
+	}
 
-// 	if authAux.IsEmpty() {
-// 		errorMessage := "you are not logged in, then perform a login to get a token before proceeding"
-// 		return domainmodel.Auth{}, customerror.BadRequest.New(errorMessage)
-// 	}
+	// Before proceeding is necessary to check if the user who is performing operations is logged
+	// based on the authentication details inserted within in the token.
+	authAux := domainmodel.Auth{}
 
-// 	if auth.UserID.String() != authAux.UserID.String() {
-// 		errorMessage := "the token's auth_id and user_id are not associated"
-// 		return domainmodel.Auth{}, customerror.BadRequest.New(errorMessage)
-// 	}
+	result := db.Find(&authAux, "id=?", auth.ID)
+	if result.Error != nil {
+		return domainmodel.Auth{}, result.Error
+	}
 
-// 	return auth, nil
-// }
+	if authAux.IsEmpty() {
+		errorMessage := "you are not logged in, then perform a login to get a token before proceeding"
+		return domainmodel.Auth{}, customerror.BadRequest.New(errorMessage)
+	}
 
-// func setupAuthDetailsInRequest(w http.ResponseWriter, r *http.Request, auth domainmodel.Auth) *http.Request {
-// 	// It is necessary to set auth details that can be used for performing authenticated operations.
-// 	ctx := r.Context()
-// 	var authDetailsKey requesthttputilpkg.ContextKeyType = "auth_details"
-// 	ctx = context.WithValue(ctx, authDetailsKey, auth)
-// 	return r.WithContext(ctx)
-// }
+	if auth.UserID.String() != authAux.UserID.String() {
+		errorMessage := "the token's auth_id and user_id are not associated"
+		return domainmodel.Auth{}, customerror.BadRequest.New(errorMessage)
+	}
 
-// // Auth is the function that wraps a http.Handler to evaluate the authentication of API based on a JWT token.
-// func Auth(db *gorm.DB, authN authpkg.IAuth) func(http.HandlerFunc) http.HandlerFunc {
-// 	return func(next http.HandlerFunc) http.HandlerFunc {
-// 		return func(w http.ResponseWriter, r *http.Request) {
-// 			tokenString, err := extractTokenString(w, r)
-// 			if err != nil {
-// 				responsehttputilpkg.RespondErrorWithJson(w, err)
-// 				return
-// 			}
+	return auth, nil
+}
 
-// 			token, err := authN.DecodeToken(tokenString)
-// 			if err != nil {
-// 				responsehttputilpkg.RespondErrorWithJson(w, customerror.Unauthorized.New(err.Error()))
-// 				return
-// 			}
+func setupAuthDetailsInRequest(w http.ResponseWriter, r *http.Request, auth domainmodel.Auth) *http.Request {
+	// It is necessary to set auth details that can be used for performing authenticated operations.
+	ctx := context.WithValue(r.Context(), authDetailsCtxKey, auth)
+	return r.WithContext(ctx)
+}
 
-// 			auth, err := buildAuth(db, authN, token)
-// 			if err != nil {
-// 				responsehttputilpkg.RespondErrorWithJson(w, err)
-// 				return
-// 			}
+// Auth is the function that wraps a http.Handler to evaluate the authentication of API based on a JWT token.
+func Auth(db *gorm.DB, authN authpkg.IAuth) func(http.HandlerFunc) http.HandlerFunc {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			tokenString, err := extractTokenString(w, r)
+			if err != nil {
+				responsehttputilpkg.RespondErrorWithJson(w, err)
+				return
+			}
 
-// 			r = setupAuthDetailsInRequest(w, r, auth)
+			token, err := authN.DecodeToken(tokenString)
+			if err != nil {
+				responsehttputilpkg.RespondErrorWithJson(w, customerror.Unauthorized.New(err.Error()))
+				return
+			}
 
-// 			next.ServeHTTP(w, r)
-// 		}
-// 	}
-// }
+			auth, err := buildAuth(db, authN, token)
+			if err != nil {
+				responsehttputilpkg.RespondErrorWithJson(w, err)
+				return
+			}
 
-// // AuthRenewal is the function that wraps a http.Handler to evaluate the authentication renewal of API based on a JWT token.
-// func AuthRenewal(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) func(http.HandlerFunc) http.HandlerFunc {
-// 	return func(next http.HandlerFunc) http.HandlerFunc {
-// 		return func(w http.ResponseWriter, r *http.Request) {
-// 			tokenString, err := extractTokenString(w, r)
-// 			if err != nil {
-// 				responsehttputilpkg.RespondErrorWithJson(w, err)
-// 				return
-// 			}
+			r = setupAuthDetailsInRequest(w, r, auth)
 
-// 			token, err := authN.ValidateTokenRenewal(tokenString, timeBeforeTokenExpTimeInSec)
-// 			if err != nil {
-// 				responsehttputilpkg.RespondErrorWithJson(w, customerror.Unauthorized.New(err.Error()))
-// 				return
-// 			}
+			next.ServeHTTP(w, r)
+		}
+	}
+}
 
-// 			auth, err := buildAuth(db, authN, token)
-// 			if err != nil {
-// 				responsehttputilpkg.RespondErrorWithJson(w, err)
-// 				return
-// 			}
+// AuthRenewal is the function that wraps a http.Handler to evaluate the authentication renewal of API based on a JWT token.
+func AuthRenewal(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) func(http.HandlerFunc) http.HandlerFunc {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			tokenString, err := extractTokenString(w, r)
+			if err != nil {
+				responsehttputilpkg.RespondErrorWithJson(w, err)
+				return
+			}
 
-// 			r = setupAuthDetailsInRequest(w, r, auth)
+			token, err := authN.ValidateTokenRenewal(tokenString, timeBeforeTokenExpTimeInSec)
+			if err != nil {
+				responsehttputilpkg.RespondErrorWithJson(w, customerror.Unauthorized.New(err.Error()))
+				return
+			}
 
-// 			next.ServeHTTP(w, r)
-// 		}
-// 	}
-// }
+			auth, err := buildAuth(db, authN, token)
+			if err != nil {
+				responsehttputilpkg.RespondErrorWithJson(w, err)
+				return
+			}
+
+			r = setupAuthDetailsInRequest(w, r, auth)
+
+			next.ServeHTTP(w, r)
+		}
+	}
+}

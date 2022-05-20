@@ -3,5 +3,5 @@ type AuthPayload {
 }
 
 extend type Mutation {
-    signUp(credentials: Credentials!): AuthPayload!
+    signUp(input: Credentials!): AuthPayload!
 }
