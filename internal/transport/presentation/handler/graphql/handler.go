@@ -9,32 +9,40 @@ import (
 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/user"
+	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
+	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	dbtrxmiddleware "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/dbtrx"
 	"gorm.io/gorm"
 )
 
 type Handler struct {
 	Resolver *resolver.Resolver
+	AuthN    authpkg.IAuth
 }
 
 // New is the factory function that encapsulates the implementation related to graphql handler.
 func New(healthCheckService healthcheckservice.IService,
-	authService authservice.IService, userService userservice.IService) IHandler {
+	authService authservice.IService,
+	userService userservice.IService,
+	authN authpkg.IAuth) IHandler {
 	res := resolver.NewResolver(healthCheckService, authService, userService)
 
 	return &Handler{
 		Resolver: res,
+		AuthN:    authN,
 	}
 }
 
 func (h *Handler) GraphQL() *handler.Server {
+	c := generated.Config{Resolvers: h.Resolver}
+
+	c.Directives.IsAuthenticated = authdirectivepkg.IsAuthenticated(h.AuthN)
+
 	srv := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
-			generated.Config{
-				Resolvers: h.Resolver,
-			},
+			c,
 		),
 	)
 

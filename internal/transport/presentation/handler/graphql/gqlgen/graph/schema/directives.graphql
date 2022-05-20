@@ -1,0 +1,2 @@
+directive @isAuthenticated on FIELD_DEFINITION
+directive @canTokenAlreadyBeRenewed on FIELD_DEFINITION

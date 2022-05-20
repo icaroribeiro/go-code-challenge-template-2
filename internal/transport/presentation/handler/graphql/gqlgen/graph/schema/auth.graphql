@@ -1,9 +1,7 @@
-type AuthPayload {
-  token: String!
-}
-
 extend type Mutation {
     signUp(input: Credentials!): AuthPayload!
     signIn(input: Credentials!): AuthPayload!
-    singOut: InfoPayload!
+    refreshToken: AuthPayload! @canTokenAlreadyBeRenewed
+    changePassword(input: Passwords!): InfoPayload! @isAuthenticated
+    signOut: InfoPayload! @isAuthenticated
 }

@@ -11,6 +11,8 @@ format-api:
 	gofmt -w .; \
 	golint ./...
 
+# The '-mod=mod' instruction tells the go command to update go.mod and go.sum 
+# if anything is missing or inconsistent related to dependency management in GoLang.
 generate-gql:
 	go run -mod=mod github.com/99designs/gqlgen generate --config internal/transport/presentation/handler/graphql/gqlgen/gqlgen.yml
 

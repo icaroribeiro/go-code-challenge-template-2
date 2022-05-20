@@ -79,10 +79,10 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		log.Panic(err.Error())
 	}
 
-	timeBeforeTokenExpTimeInSec, err := strconv.Atoi(timeBeforeTokenExpTimeInSecStr)
-	if err != nil {
-		log.Panic(err.Error())
-	}
+	// timeBeforeTokenExpTimeInSec, err := strconv.Atoi(timeBeforeTokenExpTimeInSecStr)
+	// if err != nil {
+	// 	log.Panic(err.Error())
+	// }
 
 	dbConfig, err := setupDBConfig()
 	if err != nil {
@@ -126,12 +126,11 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		authN, security, validator, tokenExpTimeInSec)
 	userService := userservice.New(userDatastoreRepository, validator)
 
-	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService)
+	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, authN)
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"authMiddleware":        authmiddlewarepkg.Auth(db, authN),
-		"authRenewalMiddleware": authmiddlewarepkg.AuthRenewal(db, authN, timeBeforeTokenExpTimeInSec),
-		"dbTrxMiddleware":       dbtrxmiddleware.DBTrx(db),
+		"authMiddleware":  authmiddlewarepkg.Auth(db, authN),
+		"dbTrxMiddleware": dbtrxmiddleware.DBTrx(db),
 	}
 
 	routes := make(routehttputilpkg.Routes, 0)
