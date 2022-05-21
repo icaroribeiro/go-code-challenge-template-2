@@ -77,6 +77,36 @@ func IsAuthenticated(authN authpkg.IAuth) func(ctx context.Context, obj interfac
 	}
 }
 
+// CanTokenAlreadyBeRenewed is the function that...
+func CanTokenAlreadyBeRenewed(authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+		tokenString := ""
+
+		if tokenString = authmiddlewarepkg.ForContext(ctx); tokenString == "" {
+			return nil, customerror.New("failed to get auth_details key from the context of the request")
+		}
+
+		token, err := authN.ValidateTokenRenewal(tokenString, timeBeforeTokenExpTimeInSec)
+		if err != nil {
+			return nil, err
+		}
+
+		dbTrx := &gorm.DB{}
+
+		if dbTrx = dbtrxmiddlewarepkg.ForContext(ctx); dbTrx == nil {
+			return nil, err
+		}
+
+		auth, err := buildAuth(dbTrx, authN, token)
+		if err != nil {
+			return nil, err
+		}
+
+		ctx = context.WithValue(ctx, authDetailsCtxKey, auth)
+		return next(ctx)
+	}
+}
+
 // ForContext is the function that finds the auth_details from the context.
 func ForContext(ctx context.Context) domainmodel.Auth {
 	raw, _ := ctx.Value(authDetailsCtxKey).(domainmodel.Auth)

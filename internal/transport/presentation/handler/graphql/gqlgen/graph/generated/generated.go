@@ -43,7 +43,8 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	IsAuthenticated func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	CanTokenAlreadyBeRenewed func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	IsAuthenticated          func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -277,7 +278,7 @@ var sources = []*ast.Source{
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/auth.graphql", Input: `extend type Mutation {
     signUp(input: Credentials!): AuthPayload!
     signIn(input: Credentials!): AuthPayload!
-    refreshToken: AuthPayload! @isAuthenticated
+    refreshToken: AuthPayload! @canTokenAlreadyBeRenewed
     changePassword(input: Passwords!): InfoPayload! @isAuthenticated
     signOut: InfoPayload! @isAuthenticated
 }`, BuiltIn: false},
@@ -288,7 +289,8 @@ var sources = []*ast.Source{
     username: String!
     password: String!
 }`, BuiltIn: false},
-	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/directives.graphql", Input: `directive @isAuthenticated on FIELD_DEFINITION`, BuiltIn: false},
+	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/directives.graphql", Input: `directive @isAuthenticated on FIELD_DEFINITION
+directive @canTokenAlreadyBeRenewed on FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/healthcheck.graphql", Input: `type HealthCheck {
     status: String!
 }
@@ -311,7 +313,7 @@ extend type Query {
 }
 
 extend type Query {
-    getAllUsers: [User!]!
+    getAllUsers: [User!]! @isAuthenticated
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -686,10 +688,10 @@ func (ec *executionContext) _Mutation_refreshToken(ctx context.Context, field gr
 			return ec.resolvers.Mutation().RefreshToken(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+			if ec.directives.CanTokenAlreadyBeRenewed == nil {
+				return nil, errors.New("directive canTokenAlreadyBeRenewed is not implemented")
 			}
-			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+			return ec.directives.CanTokenAlreadyBeRenewed(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)
@@ -944,8 +946,28 @@ func (ec *executionContext) _Query_getAllUsers(ctx context.Context, field graphq
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetAllUsers(rctx)
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().GetAllUsers(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*model.User); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model.User`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)

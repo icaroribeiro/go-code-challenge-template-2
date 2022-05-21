@@ -79,10 +79,10 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		log.Panic(err.Error())
 	}
 
-	// timeBeforeTokenExpTimeInSec, err := strconv.Atoi(timeBeforeTokenExpTimeInSecStr)
-	// if err != nil {
-	// 	log.Panic(err.Error())
-	// }
+	timeBeforeTokenExpTimeInSec, err := strconv.Atoi(timeBeforeTokenExpTimeInSecStr)
+	if err != nil {
+		log.Panic(err.Error())
+	}
 
 	dbConfig, err := setupDBConfig()
 	if err != nil {
@@ -126,7 +126,7 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		authN, security, validator, tokenExpTimeInSec)
 	userService := userservice.New(userDatastoreRepository, validator)
 
-	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, authN)
+	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, authN, timeBeforeTokenExpTimeInSec)
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
 		"authMiddleware":  authmiddlewarepkg.Auth(db, authN),

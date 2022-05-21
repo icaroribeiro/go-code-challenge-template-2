@@ -18,20 +18,23 @@ import (
 )
 
 type Handler struct {
-	Resolver *resolver.Resolver
-	AuthN    authpkg.IAuth
+	Resolver                    *resolver.Resolver
+	AuthN                       authpkg.IAuth
+	TimeBeforeTokenExpTimeInSec int
 }
 
 // New is the factory function that encapsulates the implementation related to graphql handler.
 func New(healthCheckService healthcheckservice.IService,
 	authService authservice.IService,
 	userService userservice.IService,
-	authN authpkg.IAuth) IHandler {
+	authN authpkg.IAuth,
+	timeBeforeTokenExpTimeInSec int) IHandler {
 	res := resolver.NewResolver(healthCheckService, authService, userService)
 
 	return &Handler{
-		Resolver: res,
-		AuthN:    authN,
+		Resolver:                    res,
+		AuthN:                       authN,
+		TimeBeforeTokenExpTimeInSec: timeBeforeTokenExpTimeInSec,
 	}
 }
 
@@ -39,6 +42,7 @@ func (h *Handler) GraphQL() *handler.Server {
 	c := generated.Config{Resolvers: h.Resolver}
 
 	c.Directives.IsAuthenticated = authdirectivepkg.IsAuthenticated(h.AuthN)
+	c.Directives.CanTokenAlreadyBeRenewed = authdirectivepkg.CanTokenAlreadyBeRenewed(h.AuthN, h.TimeBeforeTokenExpTimeInSec)
 
 	srv := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
