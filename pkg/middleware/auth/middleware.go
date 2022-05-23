@@ -16,6 +16,17 @@ type contextKey struct {
 	name string
 }
 
+// NewContext is the function that returns a new Context that carries token_string value.
+func NewContext(ctx context.Context, tokenString string) context.Context {
+	return context.WithValue(ctx, tokenStringCtxKey, tokenString)
+}
+
+// FromContext is the function that returns the token_string value stored in context, if any.
+func FromContext(ctx context.Context) (string, bool) {
+	raw, ok := ctx.Value(tokenStringCtxKey).(string)
+	return raw, ok
+}
+
 func extractTokenString(w http.ResponseWriter, r *http.Request) (string, error) {
 	hdrAuth := r.Header.Get("Authorization")
 	if len(hdrAuth) == 0 {
@@ -42,16 +53,10 @@ func Auth(db *gorm.DB, authN authpkg.IAuth) func(http.HandlerFunc) http.HandlerF
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), tokenStringCtxKey, tokenString)
+			ctx := NewContext(r.Context(), tokenString)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)
 		}
 	}
-}
-
-// ForContext is the function that finds the token from the context.
-func ForContext(ctx context.Context) string {
-	raw, _ := ctx.Value(tokenStringCtxKey).(string)
-	return raw
 }

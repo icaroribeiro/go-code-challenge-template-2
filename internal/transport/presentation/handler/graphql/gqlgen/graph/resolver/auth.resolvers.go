@@ -6,21 +6,18 @@ package resolver
 import (
 	"context"
 
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
 	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	dbtrxmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/dbtrx"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
-	"gorm.io/gorm"
 )
 
 func (r *mutationResolver) SignUp(ctx context.Context, input security.Credentials) (*model.AuthPayload, error) {
-	dbTrx := &gorm.DB{}
-
-	if dbTrx = dbtrxmiddlewarepkg.ForContext(ctx); dbTrx == nil {
-		return &model.AuthPayload{}, customerror.New("failed to get db_trx key from the context of the request")
+	dbTrx, ok := dbtrxdirectivepkg.FromContext(ctx)
+	if !ok || dbTrx == nil {
+		return &model.AuthPayload{}, customerror.New("failed to get db_trx_state value from the request context")
 	}
 
 	token, err := r.AuthService.WithDBTrx(dbTrx).Register(input)
@@ -32,10 +29,9 @@ func (r *mutationResolver) SignUp(ctx context.Context, input security.Credential
 }
 
 func (r *mutationResolver) SignIn(ctx context.Context, input security.Credentials) (*model.AuthPayload, error) {
-	dbTrx := &gorm.DB{}
-
-	if dbTrx = dbtrxmiddlewarepkg.ForContext(ctx); dbTrx == nil {
-		return &model.AuthPayload{}, customerror.New("failed to get db_trx key from the context of the request")
+	dbTrx, ok := dbtrxdirectivepkg.FromContext(ctx)
+	if !ok || dbTrx == nil {
+		return &model.AuthPayload{}, customerror.New("failed to get db_trx_state value from the request context")
 	}
 
 	token, err := r.AuthService.WithDBTrx(dbTrx).LogIn(input)
@@ -47,10 +43,9 @@ func (r *mutationResolver) SignIn(ctx context.Context, input security.Credential
 }
 
 func (r *mutationResolver) RefreshToken(ctx context.Context) (*model.AuthPayload, error) {
-	auth := domainmodel.Auth{}
-
-	if auth = authdirectivepkg.ForContext(ctx); auth.IsEmpty() {
-		return &model.AuthPayload{}, customerror.New("failed to get auth_details key from the context of the request")
+	auth, ok := authdirectivepkg.FromContext(ctx)
+	if !ok || auth.IsEmpty() {
+		return &model.AuthPayload{}, customerror.New("failed to get the auth_details value from the request context")
 	}
 
 	token, err := r.AuthService.WithDBTrx(nil).RenewToken(auth)
@@ -62,10 +57,9 @@ func (r *mutationResolver) RefreshToken(ctx context.Context) (*model.AuthPayload
 }
 
 func (r *mutationResolver) ChangePassword(ctx context.Context, input security.Passwords) (*model.InfoPayload, error) {
-	auth := domainmodel.Auth{}
-
-	if auth = authdirectivepkg.ForContext(ctx); auth.IsEmpty() {
-		return &model.InfoPayload{}, customerror.New("failed to get auth_details key from the context of the request")
+	auth, ok := authdirectivepkg.FromContext(ctx)
+	if !ok || auth.IsEmpty() {
+		return &model.InfoPayload{}, customerror.New("failed to get the auth_details value from the request context")
 	}
 
 	err := r.AuthService.WithDBTrx(nil).ModifyPassword(auth.UserID.String(), input)
@@ -79,10 +73,9 @@ func (r *mutationResolver) ChangePassword(ctx context.Context, input security.Pa
 }
 
 func (r *mutationResolver) SignOut(ctx context.Context) (*model.InfoPayload, error) {
-	auth := domainmodel.Auth{}
-
-	if auth = authdirectivepkg.ForContext(ctx); auth.IsEmpty() {
-		return &model.InfoPayload{}, customerror.New("failed to get auth_details key from the context of the request")
+	auth, ok := authdirectivepkg.FromContext(ctx)
+	if !ok || auth.IsEmpty() {
+		return &model.InfoPayload{}, customerror.New("failed to get the auth_details value from the request context")
 	}
 
 	err := r.AuthService.WithDBTrx(nil).LogOut(auth.ID.String())

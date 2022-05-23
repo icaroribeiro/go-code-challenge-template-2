@@ -9,7 +9,6 @@ import (
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	dbtrxmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/dbtrx"
 	"gorm.io/gorm"
 )
 
@@ -17,6 +16,17 @@ var authDetailsCtxKey = &contextKey{"auth_details"}
 
 type contextKey struct {
 	name string
+}
+
+// NewContext is the function that returns a new Context that carries auth_details value.
+func NewContext(ctx context.Context, auth domainmodel.Auth) context.Context {
+	return context.WithValue(ctx, authDetailsCtxKey, auth)
+}
+
+// FromContext is the function that returns the auth_details value stored in context, if any.
+func FromContext(ctx context.Context) (domainmodel.Auth, bool) {
+	raw, ok := ctx.Value(authDetailsCtxKey).(domainmodel.Auth)
+	return raw, ok
 }
 
 func buildAuth(db *gorm.DB, authN authpkg.IAuth, token *jwt.Token) (domainmodel.Auth, error) {
@@ -48,12 +58,11 @@ func buildAuth(db *gorm.DB, authN authpkg.IAuth, token *jwt.Token) (domainmodel.
 }
 
 // IsAuthenticated is the function that...
-func IsAuthenticated(authN authpkg.IAuth) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+func IsAuthenticated(db *gorm.DB, authN authpkg.IAuth) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		tokenString := ""
-
-		if tokenString = authmiddlewarepkg.ForContext(ctx); tokenString == "" {
-			return nil, customerror.New("failed to get auth_details key from the context of the request")
+		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
+		if !ok || tokenString == "" {
+			return nil, customerror.New("failed to get the auth_details value from the request context")
 		}
 
 		token, err := authN.DecodeToken(tokenString)
@@ -61,29 +70,23 @@ func IsAuthenticated(authN authpkg.IAuth) func(ctx context.Context, obj interfac
 			return nil, err
 		}
 
-		dbTrx := &gorm.DB{}
-
-		if dbTrx = dbtrxmiddlewarepkg.ForContext(ctx); dbTrx == nil {
-			return nil, err
-		}
-
-		auth, err := buildAuth(dbTrx, authN, token)
+		auth, err := buildAuth(db, authN, token)
 		if err != nil {
 			return nil, err
 		}
 
-		ctx = context.WithValue(ctx, authDetailsCtxKey, auth)
+		ctx = NewContext(ctx, auth)
+
 		return next(ctx)
 	}
 }
 
 // CanTokenAlreadyBeRenewed is the function that...
-func CanTokenAlreadyBeRenewed(authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+func CanTokenAlreadyBeRenewed(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		tokenString := ""
-
-		if tokenString = authmiddlewarepkg.ForContext(ctx); tokenString == "" {
-			return nil, customerror.New("failed to get auth_details key from the context of the request")
+		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
+		if !ok || tokenString == "" {
+			return nil, customerror.New("failed to get the auth_details value from the request context")
 		}
 
 		token, err := authN.ValidateTokenRenewal(tokenString, timeBeforeTokenExpTimeInSec)
@@ -91,13 +94,7 @@ func CanTokenAlreadyBeRenewed(authN authpkg.IAuth, timeBeforeTokenExpTimeInSec i
 			return nil, err
 		}
 
-		dbTrx := &gorm.DB{}
-
-		if dbTrx = dbtrxmiddlewarepkg.ForContext(ctx); dbTrx == nil {
-			return nil, err
-		}
-
-		auth, err := buildAuth(dbTrx, authN, token)
+		auth, err := buildAuth(db, authN, token)
 		if err != nil {
 			return nil, err
 		}
@@ -105,10 +102,4 @@ func CanTokenAlreadyBeRenewed(authN authpkg.IAuth, timeBeforeTokenExpTimeInSec i
 		ctx = context.WithValue(ctx, authDetailsCtxKey, auth)
 		return next(ctx)
 	}
-}
-
-// ForContext is the function that finds the auth_details from the context.
-func ForContext(ctx context.Context) domainmodel.Auth {
-	raw, _ := ctx.Value(authDetailsCtxKey).(domainmodel.Auth)
-	return raw
 }

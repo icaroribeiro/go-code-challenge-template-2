@@ -29,7 +29,6 @@ import (
 	handlerhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler"
 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	dbtrxmiddleware "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/dbtrx"
 	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 	serverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/server"
 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
@@ -126,11 +125,11 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		authN, security, validator, tokenExpTimeInSec)
 	userService := userservice.New(userDatastoreRepository, validator)
 
-	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, authN, timeBeforeTokenExpTimeInSec)
+	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, db, authN, timeBeforeTokenExpTimeInSec)
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"authMiddleware":  authmiddlewarepkg.Auth(db, authN),
-		"dbTrxMiddleware": dbtrxmiddleware.DBTrx(db),
+		"authMiddleware": authmiddlewarepkg.Auth(db, authN),
+		// "dbTrxMiddleware": dbtrxmiddleware.DBTrx(db),
 	}
 
 	routes := make(routehttputilpkg.Routes, 0)

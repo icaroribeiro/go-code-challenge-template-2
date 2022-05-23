@@ -17,7 +17,7 @@ func ConfigureRoutes(graphqlHandler graphqlhandler.IHandler, adapters map[string
 			Path:   "/graphql",
 			HandlerFunc: adapterhttputilpkg.AdaptFunc(graphqlHandler.GraphQL().ServeHTTP).With(
 				adapters["authMiddleware"],
-				adapters["dbTrxMiddleware"],
+				//adapters["dbTrxMiddleware"],
 			),
 		},
 	}

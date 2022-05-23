@@ -1,6 +1,6 @@
 extend type Mutation {
-    signUp(input: Credentials!): AuthPayload!
-    signIn(input: Credentials!): AuthPayload!
+    signUp(input: Credentials!): AuthPayload! @useDBTrx
+    signIn(input: Credentials!): AuthPayload! @useDBTrx
     refreshToken: AuthPayload! @canTokenAlreadyBeRenewed
     changePassword(input: Passwords!): InfoPayload! @isAuthenticated
     signOut: InfoPayload! @isAuthenticated

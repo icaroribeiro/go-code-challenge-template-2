@@ -45,6 +45,7 @@ type ResolverRoot interface {
 type DirectiveRoot struct {
 	CanTokenAlreadyBeRenewed func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 	IsAuthenticated          func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	UseDBTrx                 func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -276,8 +277,8 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/auth.graphql", Input: `extend type Mutation {
-    signUp(input: Credentials!): AuthPayload!
-    signIn(input: Credentials!): AuthPayload!
+    signUp(input: Credentials!): AuthPayload! @useDBTrx
+    signIn(input: Credentials!): AuthPayload! @useDBTrx
     refreshToken: AuthPayload! @canTokenAlreadyBeRenewed
     changePassword(input: Passwords!): InfoPayload! @isAuthenticated
     signOut: InfoPayload! @isAuthenticated
@@ -289,7 +290,8 @@ var sources = []*ast.Source{
     username: String!
     password: String!
 }`, BuiltIn: false},
-	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/directives.graphql", Input: `directive @isAuthenticated on FIELD_DEFINITION
+	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/directives.graphql", Input: `directive @useDBTrx on FIELD_DEFINITION
+directive @isAuthenticated on FIELD_DEFINITION
 directive @canTokenAlreadyBeRenewed on FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/healthcheck.graphql", Input: `type HealthCheck {
     status: String!
@@ -565,8 +567,28 @@ func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SignUp(rctx, fc.Args["input"].(security.Credentials))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().SignUp(rctx, fc.Args["input"].(security.Credentials))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.UseDBTrx == nil {
+				return nil, errors.New("directive useDBTrx is not implemented")
+			}
+			return ec.directives.UseDBTrx(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.AuthPayload); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model.AuthPayload`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -624,8 +646,28 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SignIn(rctx, fc.Args["input"].(security.Credentials))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().SignIn(rctx, fc.Args["input"].(security.Credentials))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.UseDBTrx == nil {
+				return nil, errors.New("directive useDBTrx is not implemented")
+			}
+			return ec.directives.UseDBTrx(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.AuthPayload); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model.AuthPayload`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
