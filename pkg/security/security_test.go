@@ -62,10 +62,10 @@ func (ts *TestSuite) TestHashPassword() {
 			bytes, err := security.HashPassword(password, cost)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				hashedPassword := string(bytes)
 				err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 				assert.Equal(t, errorType, customerror.GetType(err))
@@ -89,7 +89,7 @@ func (ts *TestSuite) TestVerifyPasswords() {
 				password = fake.Word()
 				cost = bcrypt.DefaultCost
 				bytes, err := bcrypt.GenerateFromPassword([]byte(password), cost)
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				hashedPassword = string(bytes)
 			},
 			WantError: false,
@@ -101,7 +101,7 @@ func (ts *TestSuite) TestVerifyPasswords() {
 				otherPassword := fake.Word()
 				cost = bcrypt.DefaultCost
 				bytes, err := bcrypt.GenerateFromPassword([]byte(otherPassword), cost)
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				hashedPassword = string(bytes)
 
 				errorType = customerror.Unauthorized
@@ -129,7 +129,7 @@ func (ts *TestSuite) TestVerifyPasswords() {
 			err := security.VerifyPasswords(hashedPassword, password)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 				assert.Equal(t, errorType, customerror.GetType(err))

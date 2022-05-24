@@ -56,7 +56,7 @@ func DBTrxMiddleware(db *gorm.DB) func(ctx context.Context, obj interface{}, nex
 		res, err := next(ctx)
 
 		if err == nil {
-			if err := dbTrx.Commit().Error; err != nil {
+			if err = dbTrx.Commit().Error; err != nil {
 				log.Printf("failed to commit database transaction: %s", err.Error())
 			}
 		} else {

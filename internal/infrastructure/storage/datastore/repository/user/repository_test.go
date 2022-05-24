@@ -109,7 +109,7 @@ func (ts *TestSuite) TestCreate() {
 			returnedUser, err := userDatastoreRepository.Create(user)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, newUser.Username, returnedUser.Username)
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
@@ -170,7 +170,7 @@ func (ts *TestSuite) TestGetAll() {
 			returnedUsers, err := userDatastoreRepository.GetAll()
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, user.ID, returnedUsers[0].ID)
 				assert.Equal(t, user.Username, returnedUsers[0].Username)
 			} else {

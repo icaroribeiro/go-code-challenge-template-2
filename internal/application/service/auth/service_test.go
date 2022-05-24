@@ -375,7 +375,7 @@ func (ts *TestSuite) TestRegister() {
 			returnedToken, err := authService.Register(credentials)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, token, returnedToken)
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
@@ -708,7 +708,7 @@ func (ts *TestSuite) TestLogIn() {
 			returnedToken, err := authService.LogIn(credentials)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, token, returnedToken)
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
@@ -801,7 +801,7 @@ func (ts *TestSuite) TestRenewToken() {
 			returnedToken, err := authService.RenewToken(auth)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, token, returnedToken)
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
@@ -1117,7 +1117,7 @@ func (ts *TestSuite) TestModifyPassword() {
 			err := authService.ModifyPassword(id, passwords)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 				assert.Equal(t, errorType, customerror.GetType(err))
@@ -1142,7 +1142,7 @@ func (ts *TestSuite) TestLogOut() {
 				id = uuid.NewV4().String()
 
 				authID, err := uuid.FromString(id)
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				userID := uuid.NewV4()
 
 				args := map[string]interface{}{
@@ -1212,7 +1212,7 @@ func (ts *TestSuite) TestLogOut() {
 			err := authService.LogOut(id)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 				assert.Equal(t, errorType, customerror.GetType(err))

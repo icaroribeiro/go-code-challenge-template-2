@@ -11,10 +11,11 @@ import (
 )
 
 type Case struct {
-	Context   string
-	SetUp     func(t *testing.T)
-	WantError bool
-	TearDown  func(t *testing.T)
+	Context     string
+	SetUp       func(t *testing.T)
+	WantError   bool
+	ShouldPanic bool
+	TearDown    func(t *testing.T)
 }
 
 type Cases []Case

@@ -116,12 +116,12 @@ func (ts *TestSuite) TestCreate() {
 			returnedLogin, err := loginDatastoreRepository.Create(login)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, newLogin.UserID, returnedLogin.UserID)
 				assert.Equal(t, newLogin.Username, returnedLogin.Username)
 				security := securitypkg.New()
 				err := security.VerifyPasswords(returnedLogin.Password, newLogin.Password)
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 				assert.Equal(t, errorType, customerror.GetType(err))
@@ -213,7 +213,7 @@ func (ts *TestSuite) TestGetByUsername() {
 			returnedLogin, err := loginDatastoreRepository.GetByUsername(username)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, login.ID, returnedLogin.ID)
 				assert.Equal(t, login.UserID, returnedLogin.UserID)
 				assert.Equal(t, login.Username, returnedLogin.Username)
@@ -309,7 +309,7 @@ func (ts *TestSuite) TestGetByUserID() {
 			returnedLogin, err := loginDatastoreRepository.GetByUserID(userID.String())
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, login.ID, returnedLogin.ID)
 				assert.Equal(t, login.UserID, returnedLogin.UserID)
 				assert.Equal(t, login.Username, returnedLogin.Username)
@@ -491,7 +491,7 @@ func (ts *TestSuite) TestUpdate() {
 			returnedLogin, err := loginDatastoreRepository.Update(id.String(), login)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, updatedLogin.ID, returnedLogin.ID)
 				assert.Equal(t, updatedLogin.UserID, returnedLogin.UserID)
 				assert.Equal(t, updatedLogin.Username, returnedLogin.Username)
@@ -654,7 +654,7 @@ func (ts *TestSuite) TestDelete() {
 			returnedLogin, err := loginDatastoreRepository.Delete(id.String())
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, login.ID, returnedLogin.ID)
 				assert.Equal(t, login.UserID, returnedLogin.UserID)
 				assert.Equal(t, login.Username, returnedLogin.Username)

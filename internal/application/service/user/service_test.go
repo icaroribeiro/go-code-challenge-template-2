@@ -65,7 +65,7 @@ func (ts *TestSuite) TestGetAll() {
 			returnedUsers, err := userService.GetAll()
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, user.ID, returnedUsers[0].ID)
 				assert.Equal(t, user.Username, returnedUsers[0].Username)
 			} else {

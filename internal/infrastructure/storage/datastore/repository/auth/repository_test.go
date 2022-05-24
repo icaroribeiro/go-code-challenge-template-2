@@ -194,7 +194,7 @@ func (ts *TestSuite) TestCreate() {
 			returnedAuth, err := authDatastoreRepository.Create(auth)
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, newAuth.UserID, returnedAuth.UserID)
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
@@ -267,7 +267,7 @@ func (ts *TestSuite) TestGetByUserID() {
 			returnedAuth, err := authDatastoreRepository.GetByUserID(userID.String())
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, auth.ID, returnedAuth.ID)
 				assert.Equal(t, auth.UserID, returnedAuth.UserID)
 			} else {
@@ -428,7 +428,7 @@ func (ts *TestSuite) TestDelete() {
 			returnedAuth, err := authDatastoreRepository.Delete(id.String())
 
 			if !tc.WantError {
-				assert.Nil(t, err, fmt.Sprintf("Unexpected error %v.", err))
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, auth.ID, returnedAuth.ID)
 				assert.Equal(t, auth.UserID, returnedAuth.UserID)
 			} else {
