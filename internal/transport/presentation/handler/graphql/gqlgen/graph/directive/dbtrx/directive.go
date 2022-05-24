@@ -10,20 +10,9 @@ import (
 )
 
 var dbTrxCtxKey = &contextKey{"db_trx"}
-var dbTrxStateCtxKey = &contextKey{"db_trx_state"}
 
 type contextKey struct {
 	name string
-}
-
-type DBTrxState struct {
-	DBTrx      *gorm.DB
-	NeedCommit bool
-}
-
-// IsEmpty is the function that checks if dbTrxState's model is empty.
-func (d DBTrxState) IsEmpty() bool {
-	return d == DBTrxState{}
 }
 
 // NewContext is the function that returns a new Context that carries db_trx_state value.
@@ -33,30 +22,50 @@ func NewContext(ctx context.Context, dbTrx *gorm.DB) context.Context {
 
 // FromContext is the function that returns the db_trx_state value stored in context, if any.
 func FromContext(ctx context.Context) (*gorm.DB, bool) {
-	log.Println(ctx)
 	raw, ok := ctx.Value(dbTrxCtxKey).(*gorm.DB)
-	log.Println(ok)
 	return raw, ok
 }
 
-// UseDBTrx is the function that...
-func UseDBTrx(db *gorm.DB) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+// DBTrxMiddleware the function that acts as a HTTP middleware to enable using a database transaction during an API incoming request.
+func DBTrxMiddleware(db *gorm.DB) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		if db == nil {
-			return nil, customerror.New("Database is nil")
+			return next(ctx)
 		}
 
 		dbTrx := db.Begin()
-		// It is necessary to set a struct with database transaction hat can be used for performing operations with transaction.
-		// dbTrxState := DBTrxState{
-		// 	DBTrx:      dbTrx,
-		// 	NeedCommit: false,
-		// }
 
+		defer func() {
+			if r := recover(); r != nil {
+				var err error
+				switch r := r.(type) {
+				case error:
+					err = r
+				default:
+					err = customerror.Newf("%v", r)
+				}
+				log.Printf("Transaction is being rolled back: %s \n", err.Error())
+				dbTrx.Rollback()
+				return
+			}
+		}()
+
+		// It is necessary to set database transaction that can be used for performing operations with transaction.
 		ctx = NewContext(ctx, dbTrx)
 
-		log.Println("UseDBTrx")
+		res, err := next(ctx)
 
-		return next(ctx)
+		if err == nil {
+			if err := dbTrx.Commit().Error; err != nil {
+				log.Printf("failed to commit database transaction: %s", err.Error())
+			}
+		} else {
+			log.Printf("database transaction is being rolled back: %s", err.Error())
+			if err := dbTrx.Rollback().Error; err != nil {
+				log.Printf("failed to rollback database transaction: %s", err.Error())
+			}
+		}
+
+		return res, err
 	}
 }

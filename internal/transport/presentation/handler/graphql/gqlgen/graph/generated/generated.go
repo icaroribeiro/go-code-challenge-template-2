@@ -43,9 +43,9 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	CanTokenAlreadyBeRenewed func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	IsAuthenticated          func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
-	UseDBTrx                 func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	UseAuthMiddleware        func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	UseAuthRenewalMiddleware func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	UseDBTrxMiddleware       func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -277,11 +277,11 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/auth.graphql", Input: `extend type Mutation {
-    signUp(input: Credentials!): AuthPayload! @useDBTrx
-    signIn(input: Credentials!): AuthPayload! @useDBTrx
-    refreshToken: AuthPayload! @canTokenAlreadyBeRenewed
-    changePassword(input: Passwords!): InfoPayload! @isAuthenticated
-    signOut: InfoPayload! @isAuthenticated
+    signUp(input: Credentials!): AuthPayload! @useDBTrxMiddleware
+    signIn(input: Credentials!): AuthPayload! @useDBTrxMiddleware
+    refreshToken: AuthPayload! @useAuthRenewalMiddleware
+    changePassword(input: Passwords!): InfoPayload! @useAuthMiddleware
+    signOut: InfoPayload! @useAuthMiddleware
 }`, BuiltIn: false},
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/authpayload.graphql", Input: `type AuthPayload {
   token: String!
@@ -290,9 +290,10 @@ var sources = []*ast.Source{
     username: String!
     password: String!
 }`, BuiltIn: false},
-	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/directives.graphql", Input: `directive @useDBTrx on FIELD_DEFINITION
-directive @isAuthenticated on FIELD_DEFINITION
-directive @canTokenAlreadyBeRenewed on FIELD_DEFINITION`, BuiltIn: false},
+	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/directives.graphql", Input: `directive @useDBTrxMiddleware on FIELD_DEFINITION
+
+directive @useAuthMiddleware on FIELD_DEFINITION
+directive @useAuthRenewalMiddleware on FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "internal/transport/presentation/handler/graphql/gqlgen/graph/schema/healthcheck.graphql", Input: `type HealthCheck {
     status: String!
 }
@@ -315,7 +316,7 @@ extend type Query {
 }
 
 extend type Query {
-    getAllUsers: [User!]! @isAuthenticated
+    getAllUsers: [User!]! @useAuthMiddleware
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -572,10 +573,10 @@ func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.
 			return ec.resolvers.Mutation().SignUp(rctx, fc.Args["input"].(security.Credentials))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.UseDBTrx == nil {
-				return nil, errors.New("directive useDBTrx is not implemented")
+			if ec.directives.UseDBTrxMiddleware == nil {
+				return nil, errors.New("directive useDBTrxMiddleware is not implemented")
 			}
-			return ec.directives.UseDBTrx(ctx, nil, directive0)
+			return ec.directives.UseDBTrxMiddleware(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)
@@ -651,10 +652,10 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 			return ec.resolvers.Mutation().SignIn(rctx, fc.Args["input"].(security.Credentials))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.UseDBTrx == nil {
-				return nil, errors.New("directive useDBTrx is not implemented")
+			if ec.directives.UseDBTrxMiddleware == nil {
+				return nil, errors.New("directive useDBTrxMiddleware is not implemented")
 			}
-			return ec.directives.UseDBTrx(ctx, nil, directive0)
+			return ec.directives.UseDBTrxMiddleware(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)
@@ -730,10 +731,10 @@ func (ec *executionContext) _Mutation_refreshToken(ctx context.Context, field gr
 			return ec.resolvers.Mutation().RefreshToken(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.CanTokenAlreadyBeRenewed == nil {
-				return nil, errors.New("directive canTokenAlreadyBeRenewed is not implemented")
+			if ec.directives.UseAuthRenewalMiddleware == nil {
+				return nil, errors.New("directive useAuthRenewalMiddleware is not implemented")
 			}
-			return ec.directives.CanTokenAlreadyBeRenewed(ctx, nil, directive0)
+			return ec.directives.UseAuthRenewalMiddleware(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)
@@ -798,10 +799,10 @@ func (ec *executionContext) _Mutation_changePassword(ctx context.Context, field 
 			return ec.resolvers.Mutation().ChangePassword(rctx, fc.Args["input"].(security.Passwords))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+			if ec.directives.UseAuthMiddleware == nil {
+				return nil, errors.New("directive useAuthMiddleware is not implemented")
 			}
-			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+			return ec.directives.UseAuthMiddleware(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)
@@ -877,10 +878,10 @@ func (ec *executionContext) _Mutation_signOut(ctx context.Context, field graphql
 			return ec.resolvers.Mutation().SignOut(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+			if ec.directives.UseAuthMiddleware == nil {
+				return nil, errors.New("directive useAuthMiddleware is not implemented")
 			}
-			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+			return ec.directives.UseAuthMiddleware(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)
@@ -993,10 +994,10 @@ func (ec *executionContext) _Query_getAllUsers(ctx context.Context, field graphq
 			return ec.resolvers.Query().GetAllUsers(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+			if ec.directives.UseAuthMiddleware == nil {
+				return nil, errors.New("directive useAuthMiddleware is not implemented")
 			}
-			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+			return ec.directives.UseAuthMiddleware(ctx, nil, directive0)
 		}
 
 		tmp, err := directive1(rctx)

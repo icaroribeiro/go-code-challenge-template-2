@@ -57,8 +57,8 @@ func buildAuth(db *gorm.DB, authN authpkg.IAuth, token *jwt.Token) (domainmodel.
 	return auth, nil
 }
 
-// IsAuthenticated is the function that...
-func IsAuthenticated(db *gorm.DB, authN authpkg.IAuth) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+// AuthMiddleware is the function that acts as a HTTP middleware to evaluate the authentication of API based on a JWT token.
+func AuthMiddleware(db *gorm.DB, authN authpkg.IAuth) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
 		if !ok || tokenString == "" {
@@ -81,8 +81,8 @@ func IsAuthenticated(db *gorm.DB, authN authpkg.IAuth) func(ctx context.Context,
 	}
 }
 
-// CanTokenAlreadyBeRenewed is the function that...
-func CanTokenAlreadyBeRenewed(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+// AuthRenewalMiddleware is the function that acts as a HTTP middleware to evaluate the authentication renewal of API based on a JWT token.
+func AuthRenewalMiddleware(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
 		if !ok || tokenString == "" {

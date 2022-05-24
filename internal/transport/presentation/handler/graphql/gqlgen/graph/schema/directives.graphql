@@ -1,3 +1,4 @@
-directive @useDBTrx on FIELD_DEFINITION
-directive @isAuthenticated on FIELD_DEFINITION
-directive @canTokenAlreadyBeRenewed on FIELD_DEFINITION
+directive @useDBTrxMiddleware on FIELD_DEFINITION
+
+directive @useAuthMiddleware on FIELD_DEFINITION
+directive @useAuthRenewalMiddleware on FIELD_DEFINITION

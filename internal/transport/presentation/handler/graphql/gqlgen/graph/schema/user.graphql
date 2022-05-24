@@ -4,5 +4,5 @@ type User {
 }
 
 extend type Query {
-    getAllUsers: [User!]! @isAuthenticated
+    getAllUsers: [User!]! @useAuthMiddleware
 }
