@@ -23,7 +23,7 @@ type Handler struct {
 // New is the factory function that encapsulates the implementation related to graphql handler.
 func New(healthCheckService healthcheckservice.IService, authService authservice.IService, userService userservice.IService,
 	db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) IHandler {
-	res := resolver.NewResolver(healthCheckService, authService, userService)
+	res := resolver.New(healthCheckService, authService, userService)
 
 	return &Handler{
 		Resolver:                    res,

@@ -1,4 +1,4 @@
-package resolver_test
+package request_test
 
 import (
 	"testing"
@@ -14,8 +14,6 @@ type Case struct {
 }
 
 type Cases []Case
-
-type ReturnArgs [][]interface{}
 
 type TestSuite struct {
 	suite.Suite

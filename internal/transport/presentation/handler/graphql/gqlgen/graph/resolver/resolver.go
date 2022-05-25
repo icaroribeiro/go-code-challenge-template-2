@@ -12,7 +12,7 @@ type Resolver struct {
 	UserService        userservice.IService
 }
 
-func NewResolver(healthCheckService healthcheckservice.IService,
+func New(healthCheckService healthcheckservice.IService,
 	authService authservice.IService, userService userservice.IService) *Resolver {
 	return &Resolver{
 		HealthCheckService: healthCheckService,

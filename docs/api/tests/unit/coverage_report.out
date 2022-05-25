@@ -30,7 +30,7 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/pres
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:27:		FromContext			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:32:		buildAuth			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:61:		AuthMiddleware			100.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:85:		AuthRenewalMiddleware		0.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:85:		AuthRenewalMiddleware		100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx/directive.go:19:		NewContext			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx/directive.go:24:		FromContext			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx/directive.go:30:		DBTrxMiddleware			100.0%
@@ -70,12 +70,13 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter/ad
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter/adapter.go:23:									With				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler/handler.go:6:									GetNotFoundHandler		100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler/handler.go:13:									GetMethodNotAllowedHandler	100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request/request.go:13:									SetRequestHeaders		100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response/response.go:13:									RespondWithJson			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response/response.go:28:									RespondErrorWithJson		100.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:20:									NewContext			0.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:25:									FromContext			0.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:30:									extractTokenString		0.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:47:									Auth				0.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:18:									NewContext			100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:23:									FromContext			100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:28:									extractTokenString		100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:45:									Auth				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security/security.go:11:										New				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security/security.go:16:										HashPassword			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security/security.go:25:										VerifyPasswords			100.0%
@@ -88,4 +89,4 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid/vali
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:14:										New				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:31:										Validate			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:36:										ValidateWithTags		100.0%
-total:																				(statements)			81.3%
+total:																				(statements)			88.1%

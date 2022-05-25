@@ -63,7 +63,7 @@ func (ts *TestSuite) TestFromContext() {
 
 	ts.Cases = Cases{
 		{
-			Context: "ItShouldSucceedInGettingAssociatedValueWithAContext",
+			Context: "ItShouldSucceedInGettingAnAssociatedValueFromAContext",
 			SetUp: func(t *testing.T) {
 				authDetailsCtxValue = domainfactorymodel.NewAuth(nil)
 				ctx = authdirectivepkg.NewContext(ctx, authDetailsCtxValue)
@@ -105,6 +105,8 @@ func (ts *TestSuite) TestAuthMiddleware() {
 		{
 			Context: "ItShouldSucceedInWrappingAFunctionWithAuthenticationMiddleware",
 			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
 				tokenString = fake.Word()
 				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
 
@@ -136,24 +138,24 @@ func (ts *TestSuite) TestAuthMiddleware() {
 					WillReturnRows(rows)
 			},
 			WantError: false,
-			TearDown: func(t *testing.T) {
-				ctx = context.Background()
-			},
 		},
 		{
 			Context: "ItShouldFailIfTheAuthenticationTokenIsNotSetInTheContext",
 			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
 				returnArgs = ReturnArgs{
 					{nil, nil},
 					{domainmodel.Auth{}, nil},
 				}
 			},
 			WantError: true,
-			TearDown:  func(t *testing.T) {},
 		},
 		{
 			Context: "ItShouldFailIfTheTokenIsNotDecoded",
 			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
 				tokenString = fake.Word()
 				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
 
@@ -163,13 +165,12 @@ func (ts *TestSuite) TestAuthMiddleware() {
 				}
 			},
 			WantError: true,
-			TearDown: func(t *testing.T) {
-				ctx = context.Background()
-			},
 		},
 		{
 			Context: "ItShouldFailIfTheAuthIsNotFetchedFromTheToken",
 			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
 				tokenString = fake.Word()
 				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
 
@@ -181,13 +182,12 @@ func (ts *TestSuite) TestAuthMiddleware() {
 				}
 			},
 			WantError: true,
-			TearDown: func(t *testing.T) {
-				ctx = context.Background()
-			},
 		},
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenTryingToFindTheAuthInTheDatabase",
 			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
 				tokenString = fake.Word()
 				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
 
@@ -211,13 +211,12 @@ func (ts *TestSuite) TestAuthMiddleware() {
 					WillReturnError(customerror.New("failed"))
 			},
 			WantError: true,
-			TearDown: func(t *testing.T) {
-				ctx = context.Background()
-			},
 		},
 		{
 			Context: "ItShouldFailIfTheAuthIsNotFoundInTheDatabase",
 			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
 				tokenString = fake.Word()
 				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
 
@@ -241,13 +240,12 @@ func (ts *TestSuite) TestAuthMiddleware() {
 					WillReturnRows(&sqlmock.Rows{})
 			},
 			WantError: true,
-			TearDown: func(t *testing.T) {
-				ctx = context.Background()
-			},
 		},
 		{
 			Context: "ItShouldFailIfTheUserIDFromTokenDoesNotMatchWithTheUserIDFromAuthRecordFromTheDatabase",
 			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
 				tokenString = fake.Word()
 				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
 
@@ -277,9 +275,6 @@ func (ts *TestSuite) TestAuthMiddleware() {
 					WillReturnRows(rows)
 			},
 			WantError: true,
-			TearDown: func(t *testing.T) {
-				ctx = context.Background()
-			},
 		},
 	}
 
@@ -303,10 +298,222 @@ func (ts *TestSuite) TestAuthMiddleware() {
 
 			err = mock.ExpectationsWereMet()
 			assert.Nil(ts.T(), err, fmt.Sprintf("There were unfulfilled expectations: %v.", err))
-
-			tc.TearDown(t)
 		})
 	}
 }
 
-// func (ts *TestSuite) TestAuthRenewalMiddleware() {}
+func (ts *TestSuite) TestAuthRenewalMiddleware() {
+	driver := "postgres"
+	db, mock := NewMockDB(driver)
+
+	tokenString := ""
+
+	ctx := context.Background()
+
+	token := &jwt.Token{}
+	timeBeforeTokenExpTimeInSec := 0
+
+	next := func(ctx context.Context) (interface{}, error) { return nil, nil }
+
+	returnArgs := ReturnArgs{}
+
+	ts.Cases = Cases{
+		{
+			Context: "ItShouldSucceedInWrappingAFunctionWithAuthRenewalMiddleware",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
+				tokenString = fake.Word()
+				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
+
+				token = &jwt.Token{}
+
+				id := uuid.NewV4()
+				userID := uuid.NewV4()
+
+				args := map[string]interface{}{
+					"id":     id,
+					"userID": userID,
+				}
+
+				returnArgs = ReturnArgs{
+					{token, nil},
+					{domainfactorymodel.NewAuth(args), nil},
+				}
+
+				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
+
+				authDatastore := datastorefactorymodel.NewAuth(args)
+
+				rows := sqlmock.
+					NewRows([]string{"id", "user_id", "created_at"}).
+					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
+
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(id).
+					WillReturnRows(rows)
+			},
+			WantError: false,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthorizationTokenIsNotSetInTheContext",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
+				returnArgs = ReturnArgs{
+					{nil, nil},
+					{domainmodel.Auth{}, nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheTokenIsNotValidForRenewal",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
+				tokenString = fake.Word()
+				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
+
+				returnArgs = ReturnArgs{
+					{nil, customerror.New("failed")},
+					{domainmodel.Auth{}, nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthIsNotFetchedFromTheToken",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
+				tokenString = fake.Word()
+				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
+
+				token = &jwt.Token{}
+
+				returnArgs = ReturnArgs{
+					{token, nil},
+					{domainmodel.Auth{}, customerror.New("failed")},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfAnErrorOccursWhenTryingToFindTheAuthInTheDatabase",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
+				tokenString = fake.Word()
+				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
+
+				token = &jwt.Token{}
+
+				id := uuid.NewV4()
+
+				args := map[string]interface{}{
+					"id": id,
+				}
+
+				returnArgs = ReturnArgs{
+					{token, nil},
+					{domainfactorymodel.NewAuth(args), nil},
+				}
+
+				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
+
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(id).
+					WillReturnError(customerror.New("failed"))
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthIsNotFoundInTheDatabase",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
+				tokenString = fake.Word()
+				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
+
+				token = &jwt.Token{}
+
+				id := uuid.NewV4()
+
+				args := map[string]interface{}{
+					"id": id,
+				}
+
+				returnArgs = ReturnArgs{
+					{token, nil},
+					{domainfactorymodel.NewAuth(args), nil},
+				}
+
+				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
+
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(id).
+					WillReturnRows(&sqlmock.Rows{})
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheUserIDFromTokenDoesNotMatchWithTheUserIDFromAuthRecordFromTheDatabase",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+
+				tokenString = fake.Word()
+				ctx = authmiddlewarepkg.NewContext(ctx, tokenString)
+
+				token = &jwt.Token{}
+
+				id := uuid.NewV4()
+
+				args := map[string]interface{}{
+					"id": id,
+				}
+
+				returnArgs = ReturnArgs{
+					{token, nil},
+					{domainfactorymodel.NewAuth(args), nil},
+				}
+
+				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
+
+				authDatastore := datastorefactorymodel.NewAuth(args)
+
+				rows := sqlmock.
+					NewRows([]string{"id", "user_id", "created_at"}).
+					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
+
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(id).
+					WillReturnRows(rows)
+			},
+			WantError: true,
+		},
+	}
+
+	for _, tc := range ts.Cases {
+		ts.T().Run(tc.Context, func(t *testing.T) {
+			tc.SetUp(t)
+
+			authN := new(mockauthpkg.Auth)
+			authN.On("ValidateTokenRenewal", tokenString, timeBeforeTokenExpTimeInSec).Return(returnArgs[0]...)
+			authN.On("FetchAuthFromToken", token).Return(returnArgs[1]...)
+
+			authRenewalMiddleware := authdirectivepkg.AuthRenewalMiddleware(db, authN, timeBeforeTokenExpTimeInSec)
+
+			_, err := authRenewalMiddleware(ctx, nil, next)
+
+			if !tc.WantError {
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
+			} else {
+				assert.NotNil(t, err, "Predicted error lost.")
+			}
+
+			err = mock.ExpectationsWereMet()
+			assert.Nil(ts.T(), err, fmt.Sprintf("There were unfulfilled expectations: %v.", err))
+		})
+	}
+}

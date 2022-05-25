@@ -128,8 +128,7 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, db, authN, timeBeforeTokenExpTimeInSec)
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"authMiddleware": authmiddlewarepkg.Auth(db, authN),
-		// "dbTrxMiddleware": dbtrxmiddleware.DBTrx(db),
+		"authMiddleware": authmiddlewarepkg.Auth(),
 	}
 
 	routes := make(routehttputilpkg.Routes, 0)
