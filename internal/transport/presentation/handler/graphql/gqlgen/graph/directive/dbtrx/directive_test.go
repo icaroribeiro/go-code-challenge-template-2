@@ -17,7 +17,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestMiddlewareUnit(t *testing.T) {
+func TestDirectiveUnit(t *testing.T) {
 	suite.Run(t, new(TestSuite))
 }
 

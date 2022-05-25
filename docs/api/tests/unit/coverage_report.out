@@ -26,10 +26,10 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user/repository.go:28:				Create				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user/repository.go:44:				GetAll				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user/repository.go:55:				WithDBTrx			100.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:22:		NewContext			0.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:27:		FromContext			0.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:32:		buildAuth			0.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:61:		AuthMiddleware			0.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:22:		NewContext			100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:27:		FromContext			100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:32:		buildAuth			100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:61:		AuthMiddleware			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth/directive.go:85:		AuthRenewalMiddleware		0.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx/directive.go:19:		NewContext			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx/directive.go:24:		FromContext			100.0%
@@ -88,4 +88,4 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid/vali
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:14:										New				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:31:										Validate			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:36:										ValidateWithTags		100.0%
-total:																				(statements)			75.4%
+total:																				(statements)			81.3%
