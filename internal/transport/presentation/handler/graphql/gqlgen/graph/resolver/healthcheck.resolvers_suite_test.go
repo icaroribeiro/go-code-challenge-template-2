@@ -1,5 +1,5 @@
 package resolver_test
 
-type HealthCheck struct {
+type GetHealthCheck struct {
 	Status string
 }
