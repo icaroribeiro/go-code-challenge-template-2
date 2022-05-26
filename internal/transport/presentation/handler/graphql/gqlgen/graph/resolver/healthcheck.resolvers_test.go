@@ -10,6 +10,8 @@ import (
 	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -18,6 +20,8 @@ func TestHealthCheckResolverUnit(t *testing.T) {
 }
 
 func (ts *TestSuite) TestGetHealthCheck() {
+	status := "everything is up and running"
+
 	returnArgs := ReturnArgs{}
 
 	ts.Cases = Cases{
@@ -30,15 +34,16 @@ func (ts *TestSuite) TestGetHealthCheck() {
 			},
 			WantError: false,
 		},
-		// {
-		// 	Context: "ItShouldFailIfItAnErrorOccursWhenGettingTheStatus",
-		// 	SetUp: func(t *testing.T) {
-		// 		returnArgs = ReturnArgs{
-		// 			{customerror.New("failed")},
-		// 		}
-		// 	},
-		// 	WantError: true,
-		// },
+		{
+			Context: "ItShouldFailIfItAnErrorOccursWhenGettingTheStatus",
+			SetUp: func(t *testing.T) {
+				returnArgs = ReturnArgs{
+					{customerror.New("failed")},
+				}
+			},
+			WantError:   true,
+			ShouldPanic: true,
+		},
 	}
 
 	for _, tc := range ts.Cases {
@@ -62,29 +67,24 @@ func (ts *TestSuite) TestGetHealthCheck() {
 
 			cl := client.New(srv)
 
-			var resp struct {
-				GetHealthCheck struct {
-					Status string
+			query := getHealthCheckQuery
+
+			resp := GetHealthCheckResponse{}
+
+			if !tc.WantError {
+				cl.MustPost(query, &resp)
+				assert.Equal(t, resp.GetHealthCheck.Status, status)
+			} else {
+				if tc.ShouldPanic {
+					mustPostFuncShouldPanic(t, cl.MustPost, query, resp)
 				}
 			}
-
-			q := `query {
-					getHealthCheck { 
-						status
-					}
-				}`
-
-			cl.MustPost(q, &resp)
-
-			// if !tc.WantError {
-			// 	// assert.Equal(t, resprec.Code, tc.StatusCode)
-			// 	// returnedMessage := messagehttputilpkg.Message{}
-			// 	// err := json.NewDecoder(resprec.Body).Decode(&returnedMessage)
-			// 	// assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v", err))
-			// 	// assert.Equal(t, returnedMessage.Text, message.Text)
-			// } else {
-			// 	//assert.Equal(t, resprec.Code, tc.StatusCode)
-			// }
 		})
 	}
+}
+
+func mustPostFuncShouldPanic(t *testing.T, f MustPostFunc, query string, resp interface{}) {
+	defer func() { recover() }()
+	f(query, &resp)
+	t.Errorf("It should have panicked.")
 }

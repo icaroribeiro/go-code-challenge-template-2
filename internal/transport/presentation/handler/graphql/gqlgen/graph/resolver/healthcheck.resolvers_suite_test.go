@@ -1,5 +1,13 @@
 package resolver_test
 
-type GetHealthCheck struct {
-	Status string
+var getHealthCheckQuery = `query {
+	getHealthCheck { 
+		status
+	}
+}`
+
+type GetHealthCheckResponse struct {
+	GetHealthCheck struct {
+		Status string
+	}
 }
