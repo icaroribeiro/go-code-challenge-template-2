@@ -1,6 +1,7 @@
 package resolver_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
@@ -15,7 +16,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func TestHealthCheckResolverUnit(t *testing.T) {
+func TestHealthCheckResolversUnit(t *testing.T) {
 	suite.Run(t, new(TestSuite))
 }
 
@@ -41,8 +42,7 @@ func (ts *TestSuite) TestGetHealthCheck() {
 					{customerror.New("failed")},
 				}
 			},
-			WantError:   true,
-			ShouldPanic: true,
+			WantError: true,
 		},
 	}
 
@@ -71,20 +71,14 @@ func (ts *TestSuite) TestGetHealthCheck() {
 
 			resp := GetHealthCheckResponse{}
 
+			err := cl.Post(query, &resp)
+
 			if !tc.WantError {
-				cl.MustPost(query, &resp)
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, resp.GetHealthCheck.Status, status)
 			} else {
-				if tc.ShouldPanic {
-					mustPostFuncShouldPanic(t, cl.MustPost, query, resp)
-				}
+				assert.NotNil(t, err, "Predicted error lost.")
 			}
 		})
 	}
-}
-
-func mustPostFuncShouldPanic(t *testing.T, f MustPostFunc, query string, resp interface{}) {
-	defer func() { recover() }()
-	f(query, &resp)
-	t.Errorf("It should have panicked.")
 }

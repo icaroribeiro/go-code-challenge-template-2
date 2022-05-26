@@ -62,7 +62,7 @@ func AuthMiddleware(db *gorm.DB, authN authpkg.IAuth) func(ctx context.Context, 
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
 		if !ok || tokenString == "" {
-			return nil, customerror.New("failed to get the auth_details value from the request context")
+			return nil, customerror.New("failed to get the token_string value from the request context")
 		}
 
 		token, err := authN.DecodeToken(tokenString)
@@ -86,7 +86,7 @@ func AuthRenewalMiddleware(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpT
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
 		if !ok || tokenString == "" {
-			return nil, customerror.New("failed to get the auth_details value from the request context")
+			return nil, customerror.New("failed to get the token_string value from the request context")
 		}
 
 		token, err := authN.ValidateTokenRenewal(tokenString, timeBeforeTokenExpTimeInSec)

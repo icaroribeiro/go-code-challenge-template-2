@@ -304,7 +304,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 			} else {
 				if tc.ShouldPanic {
-					shouldPanic(t, next, ctx)
+					ShouldPanic(t, next, ctx)
 				} else {
 					assert.NotNil(t, err, "Predicted error lost.")
 				}
@@ -316,7 +316,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 	}
 }
 
-func shouldPanic(t *testing.T, f graphql.Resolver, ctx context.Context) {
+func ShouldPanic(t *testing.T, f graphql.Resolver, ctx context.Context) {
 	defer func() { recover() }()
 	f(ctx)
 	t.Errorf("It should have panicked.")

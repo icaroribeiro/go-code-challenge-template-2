@@ -91,9 +91,9 @@ func (ts *TestSuite) TestAuthMiddleware() {
 	driver := "postgres"
 	db, mock := NewMockDB(driver)
 
-	tokenString := ""
-
 	ctx := context.Background()
+
+	tokenString := ""
 
 	token := &jwt.Token{}
 
@@ -306,9 +306,9 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 	driver := "postgres"
 	db, mock := NewMockDB(driver)
 
-	tokenString := ""
-
 	ctx := context.Background()
+
+	tokenString := ""
 
 	token := &jwt.Token{}
 	timeBeforeTokenExpTimeInSec := 0
