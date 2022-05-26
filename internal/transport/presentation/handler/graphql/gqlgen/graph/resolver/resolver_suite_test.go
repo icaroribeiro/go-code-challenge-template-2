@@ -76,11 +76,3 @@ func NewMockDB(driver string) (*gorm.DB, sqlmock.Sqlmock) {
 
 	return db, mock
 }
-
-// type MustPostFunc func(query string, response interface{}, options ...client.Option)
-
-// func MustPostFuncShouldPanic(t *testing.T, f MustPostFunc, query string, resp interface{}) {
-// 	defer func() { recover() }()
-// 	f(query, &resp)
-// 	t.Errorf("It should have panicked.")
-// }
