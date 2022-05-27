@@ -11,6 +11,7 @@ import (
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
 	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
+	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/auth"
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
@@ -24,7 +25,7 @@ func TestUserResolversUnit(t *testing.T) {
 }
 
 func (ts *TestSuite) TestGetAllUsers() {
-	user := domainmodel.User{}
+	user := domainmodelfactory.NewUser(nil)
 
 	dbTrx := &gorm.DB{}
 	dbTrx = nil
@@ -35,8 +36,6 @@ func (ts *TestSuite) TestGetAllUsers() {
 		{
 			Context: "ItShouldSucceedInGettingAllUsers",
 			SetUp: func(t *testing.T) {
-				user = domainmodelfactory.NewUser(nil)
-
 				returnArgs = ReturnArgs{
 					{domainmodel.Users{user}, nil},
 				}
@@ -65,15 +64,18 @@ func (ts *TestSuite) TestGetAllUsers() {
 			userService.On("WithDBTrx", dbTrx).Return(userService)
 			userService.On("GetAll").Return(returnArgs[0]...)
 
-			resolver := resolverpkg.New(healthCheckService, authService, userService)
+			res := resolverpkg.New(healthCheckService, authService, userService)
 
-			c := generated.Config{Resolvers: resolver}
+			cfg := generated.Config{Resolvers: res}
 
-			c.Directives.UseAuthMiddleware = MockSchemaDirective()
+			authDirective := new(authmockdirective.Directive)
+			authDirective.On("AuthMiddleware").Return(MockSchemaDirective())
+
+			cfg.Directives.UseAuthMiddleware = authDirective.AuthMiddleware()
 
 			srv := handler.NewDefaultServer(
 				generated.NewExecutableSchema(
-					c,
+					cfg,
 				),
 			)
 

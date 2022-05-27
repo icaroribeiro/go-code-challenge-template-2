@@ -9,40 +9,34 @@ import (
 	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-	"gorm.io/gorm"
 )
 
 type Handler struct {
-	Resolver                    *resolver.Resolver
-	DB                          *gorm.DB
-	AuthN                       authpkg.IAuth
-	TimeBeforeTokenExpTimeInSec int
+	Cfg            generated.Config
+	Resolver       *resolver.Resolver
+	DBTrxDirective dbtrxdirectivepkg.IDirective
+	AuthDirective  authdirectivepkg.IDirective
 }
 
 // New is the factory function that encapsulates the implementation related to graphql handler.
 func New(healthCheckService healthcheckservice.IService, authService authservice.IService, userService userservice.IService,
-	db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) IHandler {
+	dbTrxDirective dbtrxdirectivepkg.IDirective, authDirective authdirectivepkg.IDirective) IHandler {
 	res := resolver.New(healthCheckService, authService, userService)
 
+	cfg := generated.Config{Resolvers: res}
+	cfg.Directives.UseDBTrxMiddleware = dbTrxDirective.DBTrxMiddleware()
+	cfg.Directives.UseAuthMiddleware = authDirective.AuthMiddleware()
+	cfg.Directives.UseAuthRenewalMiddleware = authDirective.AuthRenewalMiddleware()
+
 	return &Handler{
-		Resolver:                    res,
-		DB:                          db,
-		AuthN:                       authN,
-		TimeBeforeTokenExpTimeInSec: timeBeforeTokenExpTimeInSec,
+		Cfg: cfg,
 	}
 }
 
 func (h *Handler) GraphQL() *handler.Server {
-	c := generated.Config{Resolvers: h.Resolver}
-
-	c.Directives.UseDBTrxMiddleware = dbtrxdirectivepkg.DBTrxMiddleware(h.DB)
-	c.Directives.UseAuthMiddleware = authdirectivepkg.AuthMiddleware(h.DB, h.AuthN)
-	c.Directives.UseAuthRenewalMiddleware = authdirectivepkg.AuthRenewalMiddleware(h.DB, h.AuthN, h.TimeBeforeTokenExpTimeInSec)
-
 	srv := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
-			c,
+			h.Cfg,
 		),
 	)
 

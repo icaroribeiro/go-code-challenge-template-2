@@ -59,13 +59,13 @@ func (ts *TestSuite) TestGetHealthCheck() {
 			authService := new(authmockservice.Service)
 			userService := new(usermockservice.Service)
 
-			resolver := resolverpkg.New(healthCheckService, authService, userService)
+			res := resolverpkg.New(healthCheckService, authService, userService)
 
-			c := generated.Config{Resolvers: resolver}
+			cfg := generated.Config{Resolvers: res}
 
 			srv := handler.NewDefaultServer(
 				generated.NewExecutableSchema(
-					c,
+					cfg,
 				),
 			)
 

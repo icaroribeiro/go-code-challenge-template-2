@@ -21,6 +21,8 @@ import (
 	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
 	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
+	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	graphqlrouter "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql"
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
@@ -125,7 +127,10 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		authN, security, validator, tokenExpTimeInSec)
 	userService := userservice.New(userDatastoreRepository, validator)
 
-	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, db, authN, timeBeforeTokenExpTimeInSec)
+	dbTrxDirective := dbtrxdirectivepkg.New(db)
+	authDirective := authdirectivepkg.New(db, authN, timeBeforeTokenExpTimeInSec)
+
+	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
 		"authMiddleware": authmiddlewarepkg.Auth(),

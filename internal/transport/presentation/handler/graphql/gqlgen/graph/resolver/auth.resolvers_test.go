@@ -13,6 +13,8 @@ import (
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
 	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
+	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/auth"
+	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/dbtrx"
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
@@ -118,15 +120,18 @@ func (ts *TestSuite) TestSignUp() {
 			authService.On("Register", credentials).Return(returnArgs[0]...)
 			userService := new(usermockservice.Service)
 
-			resolver := resolverpkg.New(healthCheckService, authService, userService)
+			res := resolverpkg.New(healthCheckService, authService, userService)
 
-			c := generated.Config{Resolvers: resolver}
+			cfg := generated.Config{Resolvers: res}
 
-			c.Directives.UseDBTrxMiddleware = MockSchemaDirective()
+			dbTrxDirective := new(dbtrxmockdirective.Directive)
+			dbTrxDirective.On("DBTrxMiddleware").Return(MockSchemaDirective())
+
+			cfg.Directives.UseDBTrxMiddleware = dbTrxDirective.DBTrxMiddleware()
 
 			srv := handler.NewDefaultServer(
 				generated.NewExecutableSchema(
-					c,
+					cfg,
 				),
 			)
 
@@ -238,15 +243,18 @@ func (ts *TestSuite) TestSignIn() {
 			authService.On("LogIn", credentials).Return(returnArgs[0]...)
 			userService := new(usermockservice.Service)
 
-			resolver := resolverpkg.New(healthCheckService, authService, userService)
+			res := resolverpkg.New(healthCheckService, authService, userService)
 
-			c := generated.Config{Resolvers: resolver}
+			cfg := generated.Config{Resolvers: res}
 
-			c.Directives.UseDBTrxMiddleware = MockSchemaDirective()
+			dbTrxDirective := new(dbtrxmockdirective.Directive)
+			dbTrxDirective.On("DBTrxMiddleware").Return(MockSchemaDirective())
+
+			cfg.Directives.UseDBTrxMiddleware = dbTrxDirective.DBTrxMiddleware()
 
 			srv := handler.NewDefaultServer(
 				generated.NewExecutableSchema(
-					c,
+					cfg,
 				),
 			)
 
@@ -339,15 +347,18 @@ func (ts *TestSuite) TestRefreshToken() {
 			authService.On("RenewToken", auth).Return(returnArgs[0]...)
 			userService := new(usermockservice.Service)
 
-			resolver := resolverpkg.New(healthCheckService, authService, userService)
+			res := resolverpkg.New(healthCheckService, authService, userService)
 
-			c := generated.Config{Resolvers: resolver}
+			cfg := generated.Config{Resolvers: res}
 
-			c.Directives.UseAuthRenewalMiddleware = MockSchemaDirective()
+			authDirective := new(authmockdirective.Directive)
+			authDirective.On("AuthRenewalMiddleware").Return(MockSchemaDirective())
+
+			cfg.Directives.UseAuthRenewalMiddleware = authDirective.AuthRenewalMiddleware()
 
 			srv := handler.NewDefaultServer(
 				generated.NewExecutableSchema(
-					c,
+					cfg,
 				),
 			)
 
@@ -369,20 +380,16 @@ func (ts *TestSuite) TestRefreshToken() {
 }
 
 func (ts *TestSuite) TestChangePassword() {
-	passwords := securitypkgfactory.NewPasswords(nil)
-
-	opt := client.Var("input", passwords)
-
 	dbTrx := &gorm.DB{}
 	dbTrx = nil
 
-	message := ""
+	passwords := securitypkgfactory.NewPasswords(nil)
 
 	auth := domainmodelfactory.NewAuth(nil)
 
-	authDetails := domainmodel.Auth{}
+	opts := []client.Option{}
 
-	ctx := context.Background()
+	message := ""
 
 	returnArgs := ReturnArgs{}
 
@@ -390,7 +397,10 @@ func (ts *TestSuite) TestChangePassword() {
 		{
 			Context: "ItShouldSucceedInResettingThePassword",
 			SetUp: func(t *testing.T) {
-				authDetails = auth
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", passwords))
+				ctx := context.Background()
+				opts = append(opts, AddAuthDetailsToCtx(ctx, auth))
 
 				message = "the password has been updated successfully"
 
@@ -403,7 +413,22 @@ func (ts *TestSuite) TestChangePassword() {
 		{
 			Context: "ItShouldFailIfItIsNotPossibleToGetTheAuthFromTheRequestContext",
 			SetUp: func(t *testing.T) {
-				authDetails = domainmodel.Auth{}
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", passwords))
+
+				returnArgs = ReturnArgs{
+					{nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfItTheAuthFromTheRequestContextIsEmpty",
+			SetUp: func(t *testing.T) {
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", passwords))
+				ctx := context.Background()
+				opts = append(opts, AddAuthDetailsToCtx(ctx, domainmodel.Auth{}))
 
 				returnArgs = ReturnArgs{
 					{nil},
@@ -414,7 +439,10 @@ func (ts *TestSuite) TestChangePassword() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenResettingThePassword",
 			SetUp: func(t *testing.T) {
-				authDetails = auth
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", passwords))
+				ctx := context.Background()
+				opts = append(opts, AddAuthDetailsToCtx(ctx, auth))
 
 				returnArgs = ReturnArgs{
 					{customerror.New("failed")},
@@ -434,15 +462,18 @@ func (ts *TestSuite) TestChangePassword() {
 			authService.On("ModifyPassword", auth.UserID.String(), passwords).Return(returnArgs[0]...)
 			userService := new(usermockservice.Service)
 
-			resolver := resolverpkg.New(healthCheckService, authService, userService)
+			res := resolverpkg.New(healthCheckService, authService, userService)
 
-			c := generated.Config{Resolvers: resolver}
+			cfg := generated.Config{Resolvers: res}
 
-			c.Directives.UseAuthMiddleware = MockSchemaDirective()
+			authDirective := new(authmockdirective.Directive)
+			authDirective.On("AuthMiddleware").Return(MockSchemaDirective())
+
+			cfg.Directives.UseAuthMiddleware = authDirective.AuthMiddleware()
 
 			srv := handler.NewDefaultServer(
 				generated.NewExecutableSchema(
-					c,
+					cfg,
 				),
 			)
 
@@ -450,7 +481,7 @@ func (ts *TestSuite) TestChangePassword() {
 			resp := ChangePasswordMutationResponse{}
 
 			cl := client.New(srv)
-			err := cl.Post(mutation, &resp, opt, AddAuthDetailsToCtx(ctx, authDetails))
+			err := cl.Post(mutation, &resp, opts...)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
@@ -537,15 +568,18 @@ func (ts *TestSuite) TestSignOut() {
 			authService.On("LogOut", auth.ID.String()).Return(returnArgs[0]...)
 			userService := new(usermockservice.Service)
 
-			resolver := resolverpkg.New(healthCheckService, authService, userService)
+			res := resolverpkg.New(healthCheckService, authService, userService)
 
-			c := generated.Config{Resolvers: resolver}
+			cfg := generated.Config{Resolvers: res}
 
-			c.Directives.UseAuthMiddleware = MockSchemaDirective()
+			authDirective := new(authmockdirective.Directive)
+			authDirective.On("AuthMiddleware").Return(MockSchemaDirective())
+
+			cfg.Directives.UseAuthMiddleware = authDirective.AuthMiddleware()
 
 			srv := handler.NewDefaultServer(
 				generated.NewExecutableSchema(
-					c,
+					cfg,
 				),
 			)
 

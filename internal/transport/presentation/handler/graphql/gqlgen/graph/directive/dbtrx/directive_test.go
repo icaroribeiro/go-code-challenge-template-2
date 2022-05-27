@@ -296,9 +296,9 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			dbtrxMiddleware := dbtrxdirectivepkg.DBTrxMiddleware(dbAux)
+			dbTrxDirective := dbtrxdirectivepkg.New(dbAux)
 
-			_, err := dbtrxMiddleware(ctx, nil, next)
+			_, err := dbTrxDirective.DBTrxMiddleware()(ctx, nil, next)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))

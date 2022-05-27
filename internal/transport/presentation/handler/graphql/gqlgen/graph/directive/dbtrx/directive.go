@@ -9,33 +9,31 @@ import (
 	"gorm.io/gorm"
 )
 
+type Directive struct {
+	DB *gorm.DB
+}
+
+// New is the factory function that encapsulate the implementation related to dbtrx directive.
+func New(db *gorm.DB) IDirective {
+	return &Directive{
+		DB: db,
+	}
+}
+
 var dbTrxCtxKey = &contextKey{"db_trx"}
 
 type contextKey struct {
 	name string
 }
 
-// NewContext is the function that returns a new Context that carries db_trx_state value.
-func NewContext(ctx context.Context, dbTrx *gorm.DB) context.Context {
-	return context.WithValue(ctx, dbTrxCtxKey, dbTrx)
-}
-
-// FromContext is the function that returns the db_trx_state value stored in context, if any.
-func FromContext(ctx context.Context) (*gorm.DB, bool) {
-	raw, ok := ctx.Value(dbTrxCtxKey).(*gorm.DB)
-	return raw, ok
-}
-
 // DBTrxMiddleware the function that acts as a HTTP middleware to enable using a database transaction during an API incoming request.
-func DBTrxMiddleware(db *gorm.DB) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+func (d *Directive) DBTrxMiddleware() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		if db == nil {
+		if d.DB == nil {
 			return next(ctx)
 		}
 
-		log.Printf("%v", &db)
-		dbTrx := db.Begin()
-		log.Printf("%v", &dbTrx)
+		dbTrx := d.DB.Begin()
 
 		defer func() {
 			if r := recover(); r != nil {
@@ -70,4 +68,15 @@ func DBTrxMiddleware(db *gorm.DB) func(ctx context.Context, obj interface{}, nex
 
 		return res, err
 	}
+}
+
+// NewContext is the function that returns a new Context that carries db_trx_state value.
+func NewContext(ctx context.Context, dbTrx *gorm.DB) context.Context {
+	return context.WithValue(ctx, dbTrxCtxKey, dbTrx)
+}
+
+// FromContext is the function that returns the db_trx_state value stored in context, if any.
+func FromContext(ctx context.Context) (*gorm.DB, bool) {
+	raw, ok := ctx.Value(dbTrxCtxKey).(*gorm.DB)
+	return raw, ok
 }

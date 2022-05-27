@@ -286,9 +286,9 @@ func (ts *TestSuite) TestAuthMiddleware() {
 			authN.On("DecodeToken", tokenString).Return(returnArgs[0]...)
 			authN.On("FetchAuthFromToken", token).Return(returnArgs[1]...)
 
-			authMiddleware := authdirectivepkg.AuthMiddleware(db, authN)
+			authDirective := authdirectivepkg.New(db, authN, 0)
 
-			_, err := authMiddleware(ctx, nil, next)
+			_, err := authDirective.AuthMiddleware()(ctx, nil, next)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
@@ -502,9 +502,9 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 			authN.On("ValidateTokenRenewal", tokenString, timeBeforeTokenExpTimeInSec).Return(returnArgs[0]...)
 			authN.On("FetchAuthFromToken", token).Return(returnArgs[1]...)
 
-			authRenewalMiddleware := authdirectivepkg.AuthRenewalMiddleware(db, authN, timeBeforeTokenExpTimeInSec)
+			authDirective := authdirectivepkg.New(db, authN, timeBeforeTokenExpTimeInSec)
 
-			_, err := authRenewalMiddleware(ctx, nil, next)
+			_, err := authDirective.AuthRenewalMiddleware()(ctx, nil, next)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))

@@ -12,21 +12,25 @@ import (
 	"gorm.io/gorm"
 )
 
+type Directive struct {
+	DB                          *gorm.DB
+	AuthN                       authpkg.IAuth
+	TimeBeforeTokenExpTimeInSec int
+}
+
+// New is the factory function that encapsulate the implementation related to auth directive.
+func New(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) IDirective {
+	return &Directive{
+		DB:                          db,
+		AuthN:                       authN,
+		TimeBeforeTokenExpTimeInSec: timeBeforeTokenExpTimeInSec,
+	}
+}
+
 var authDetailsCtxKey = &contextKey{"auth_details"}
 
 type contextKey struct {
 	name string
-}
-
-// NewContext is the function that returns a new Context that carries auth_details value.
-func NewContext(ctx context.Context, auth domainmodel.Auth) context.Context {
-	return context.WithValue(ctx, authDetailsCtxKey, auth)
-}
-
-// FromContext is the function that returns the auth_details value stored in context, if any.
-func FromContext(ctx context.Context) (domainmodel.Auth, bool) {
-	raw, ok := ctx.Value(authDetailsCtxKey).(domainmodel.Auth)
-	return raw, ok
 }
 
 func buildAuth(db *gorm.DB, authN authpkg.IAuth, token *jwt.Token) (domainmodel.Auth, error) {
@@ -58,19 +62,19 @@ func buildAuth(db *gorm.DB, authN authpkg.IAuth, token *jwt.Token) (domainmodel.
 }
 
 // AuthMiddleware is the function that acts as a HTTP middleware to evaluate the authentication of API based on a JWT token.
-func AuthMiddleware(db *gorm.DB, authN authpkg.IAuth) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+func (d *Directive) AuthMiddleware() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
 		if !ok || tokenString == "" {
 			return nil, customerror.New("failed to get the token_string value from the request context")
 		}
 
-		token, err := authN.DecodeToken(tokenString)
+		token, err := d.AuthN.DecodeToken(tokenString)
 		if err != nil {
 			return nil, err
 		}
 
-		auth, err := buildAuth(db, authN, token)
+		auth, err := buildAuth(d.DB, d.AuthN, token)
 		if err != nil {
 			return nil, err
 		}
@@ -82,19 +86,19 @@ func AuthMiddleware(db *gorm.DB, authN authpkg.IAuth) func(ctx context.Context, 
 }
 
 // AuthRenewalMiddleware is the function that acts as a HTTP middleware to evaluate the authentication renewal of API based on a JWT token.
-func AuthRenewalMiddleware(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpTimeInSec int) func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+func (d *Directive) AuthRenewalMiddleware() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
 		if !ok || tokenString == "" {
 			return nil, customerror.New("failed to get the token_string value from the request context")
 		}
 
-		token, err := authN.ValidateTokenRenewal(tokenString, timeBeforeTokenExpTimeInSec)
+		token, err := d.AuthN.ValidateTokenRenewal(tokenString, d.TimeBeforeTokenExpTimeInSec)
 		if err != nil {
 			return nil, err
 		}
 
-		auth, err := buildAuth(db, authN, token)
+		auth, err := buildAuth(d.DB, d.AuthN, token)
 		if err != nil {
 			return nil, err
 		}
@@ -102,4 +106,15 @@ func AuthRenewalMiddleware(db *gorm.DB, authN authpkg.IAuth, timeBeforeTokenExpT
 		ctx = context.WithValue(ctx, authDetailsCtxKey, auth)
 		return next(ctx)
 	}
+}
+
+// NewContext is the function that returns a new Context that carries auth_details value.
+func NewContext(ctx context.Context, auth domainmodel.Auth) context.Context {
+	return context.WithValue(ctx, authDetailsCtxKey, auth)
+}
+
+// FromContext is the function that returns the auth_details value stored in context, if any.
+func FromContext(ctx context.Context) (domainmodel.Auth, bool) {
+	raw, ok := ctx.Value(authDetailsCtxKey).(domainmodel.Auth)
+	return raw, ok
 }
