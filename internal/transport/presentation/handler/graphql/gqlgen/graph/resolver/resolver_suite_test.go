@@ -6,9 +6,11 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/DATA-DOG/go-sqlmock"
+	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
 	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
-	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -30,14 +32,27 @@ type TestSuite struct {
 	Cases Cases
 }
 
-func addTokenStringCtxValue(ctx context.Context, tokenString string) client.Option {
+func MockSchemaDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+		return next(ctx)
+	}
+}
+
+// func addTokenStringCtxValue(ctx context.Context, tokenString string) client.Option {
+// 	return func(bd *client.Request) {
+// 		ctx := authmiddlewarepkg.NewContext(ctx, tokenString)
+// 		bd.HTTP = bd.HTTP.WithContext(ctx)
+// 	}
+// }
+
+func addAuthDetailsToCtx(ctx context.Context, auth domainmodel.Auth) client.Option {
 	return func(bd *client.Request) {
-		ctx := authmiddlewarepkg.NewContext(ctx, tokenString)
+		ctx := authdirectivepkg.NewContext(ctx, auth)
 		bd.HTTP = bd.HTTP.WithContext(ctx)
 	}
 }
 
-func addDBTrxCtxValue(ctx context.Context, dbTrx *gorm.DB) client.Option {
+func addDBTrxToCtx(ctx context.Context, dbTrx *gorm.DB) client.Option {
 	return func(bd *client.Request) {
 		ctx := dbtrxdirectivepkg.NewContext(ctx, dbTrx)
 		bd.HTTP = bd.HTTP.WithContext(ctx)
