@@ -21,7 +21,7 @@ func TestHealthCheckResolversUnit(t *testing.T) {
 }
 
 func (ts *TestSuite) TestGetHealthCheck() {
-	status := "everything is up and running"
+	status := ""
 
 	returnArgs := ReturnArgs{}
 
@@ -29,6 +29,8 @@ func (ts *TestSuite) TestGetHealthCheck() {
 		{
 			Context: "ItShouldSucceedInGettingStatus",
 			SetUp: func(t *testing.T) {
+				status = "everything is up and running"
+
 				returnArgs = ReturnArgs{
 					{nil},
 				}
@@ -38,6 +40,8 @@ func (ts *TestSuite) TestGetHealthCheck() {
 		{
 			Context: "ItShouldFailIfItAnErrorOccursWhenGettingTheStatus",
 			SetUp: func(t *testing.T) {
+				status = ""
+
 				returnArgs = ReturnArgs{
 					{customerror.New("failed")},
 				}

@@ -27,18 +27,16 @@ func TestAuthResolversUnit(t *testing.T) {
 }
 
 func (ts *TestSuite) TestSignUp() {
-	credentials := securitypkgfactory.NewCredentials(nil)
-
-	opt := client.Var("input", credentials)
-
 	driver := "postgres"
 	db, _ := NewMockDB(driver)
 
 	dbTrx := &gorm.DB{}
 
-	tokenString := ""
+	credentials := securitypkgfactory.NewCredentials(nil)
 
-	ctx := context.Background()
+	opts := []client.Option{}
+
+	tokenString := ""
 
 	returnArgs := ReturnArgs{}
 
@@ -47,6 +45,11 @@ func (ts *TestSuite) TestSignUp() {
 			Context: "ItShouldSucceedInSigningUp",
 			SetUp: func(t *testing.T) {
 				dbTrx = db
+
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", credentials))
+				ctx := context.Background()
+				opts = append(opts, AddDBTrxToCtx(ctx, dbTrx))
 
 				tokenString = fake.Word()
 
@@ -57,9 +60,28 @@ func (ts *TestSuite) TestSignUp() {
 			WantError: false,
 		},
 		{
+			Context: "ItShouldFailIfItIsNotPossibleToGetTheDatabaseTransactionFromTheRequestContext",
+			SetUp: func(t *testing.T) {
+				dbTrx = nil
+
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", credentials))
+
+				returnArgs = ReturnArgs{
+					{"", nil},
+				}
+			},
+			WantError: true,
+		},
+		{
 			Context: "ItShouldFailIfTheDatabaseTransactionFromTheRequestContextIsNull",
 			SetUp: func(t *testing.T) {
 				dbTrx = nil
+
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", credentials))
+				ctx := context.Background()
+				opts = append(opts, AddDBTrxToCtx(ctx, dbTrx))
 
 				returnArgs = ReturnArgs{
 					{"", nil},
@@ -71,6 +93,11 @@ func (ts *TestSuite) TestSignUp() {
 			Context: "ItShouldFailIfAnErrorOccursWhenRegisteringTheCredentials",
 			SetUp: func(t *testing.T) {
 				dbTrx = db
+
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", credentials))
+				ctx := context.Background()
+				opts = append(opts, AddDBTrxToCtx(ctx, dbTrx))
 
 				returnArgs = ReturnArgs{
 					{"", customerror.New("failed")},
@@ -107,7 +134,7 @@ func (ts *TestSuite) TestSignUp() {
 			resp := SignUpMutationResponse{}
 
 			cl := client.New(srv)
-			err := cl.Post(mutation, &resp, opt, AddDBTrxToCtx(ctx, dbTrx))
+			err := cl.Post(mutation, &resp, opts...)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
