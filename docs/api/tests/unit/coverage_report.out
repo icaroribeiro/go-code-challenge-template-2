@@ -46,8 +46,8 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/pres
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/healthcheck.resolvers.go:24:	Query				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/resolver.go:15:			New				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/user.resolvers.go:12:		GetAllUsers			100.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/handler.go:22:						New				0.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/handler.go:36:						GraphQL				0.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/handler.go:19:						New				100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/handler.go:33:						GraphQL				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql/router.go:12:							ConfigureRoutes			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth/auth.go:23:											New				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth/auth.go:33:											CreateToken			100.0%
@@ -72,7 +72,8 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter/ad
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter/adapter.go:23:									With				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler/handler.go:6:									GetNotFoundHandler		100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/handler/handler.go:13:									GetMethodNotAllowedHandler	100.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request/request.go:13:									SetRequestHeaders		100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request/request.go:18:									SetRequestHeaders		100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request/request.go:27:									PrepareRequestBody		100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response/response.go:13:									RespondWithJson			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response/response.go:28:									RespondErrorWithJson		100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth/middleware.go:18:									NewContext			100.0%
@@ -91,4 +92,4 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid/vali
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:14:										New				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:31:										Validate			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:36:										ValidateWithTags		100.0%
-total:																				(statements)			98.4%
+total:																				(statements)			100.0%

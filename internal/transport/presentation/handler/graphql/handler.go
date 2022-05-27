@@ -12,10 +12,7 @@ import (
 )
 
 type Handler struct {
-	Cfg            generated.Config
-	Resolver       *resolver.Resolver
-	DBTrxDirective dbtrxdirectivepkg.IDirective
-	AuthDirective  authdirectivepkg.IDirective
+	Cfg generated.Config
 }
 
 // New is the factory function that encapsulates the implementation related to graphql handler.
