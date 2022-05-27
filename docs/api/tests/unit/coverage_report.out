@@ -35,8 +35,8 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/pres
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx/directive.go:24:		FromContext			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx/directive.go:30:		DBTrxMiddleware			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/auth.resolvers.go:17:		SignUp				100.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/auth.resolvers.go:31:		SignIn				0.0%
-github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/auth.resolvers.go:45:		RefreshToken			0.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/auth.resolvers.go:31:		SignIn				100.0%
+github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/auth.resolvers.go:45:		RefreshToken			85.7%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/auth.resolvers.go:59:		ChangePassword			0.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/auth.resolvers.go:75:		SignOut				0.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver/auth.resolvers.go:92:		Mutation			100.0%
@@ -89,4 +89,4 @@ github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid/vali
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:14:										New				100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:31:										Validate			100.0%
 github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/validator.go:36:										ValidateWithTags		100.0%
-total:																				(statements)			92.5%
+total:																				(statements)			95.2%

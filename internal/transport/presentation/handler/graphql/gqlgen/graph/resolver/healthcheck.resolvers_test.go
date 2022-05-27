@@ -65,12 +65,10 @@ func (ts *TestSuite) TestGetHealthCheck() {
 				),
 			)
 
-			cl := client.New(srv)
-
 			query := getHealthCheckQuery
-
 			resp := GetHealthCheckQueryResponse{}
 
+			cl := client.New(srv)
 			err := cl.Post(query, &resp)
 
 			if !tc.WantError {

@@ -129,12 +129,10 @@ func (ts *TestSuite) TestGetAllUsers() {
 				),
 			)
 
-			cl := client.New(srv)
-
 			query := getAllUsersQuery
-
 			resp := GetAllUsersQueryResponse{}
 
+			cl := client.New(srv)
 			err := cl.Post(query, &resp, addTokenStringCtxValue(ctx, tokenString))
 
 			if !tc.WantError {

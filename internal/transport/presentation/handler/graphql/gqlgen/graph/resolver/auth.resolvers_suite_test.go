@@ -12,6 +12,12 @@ var signInMutation = `mutation($input: Credentials!) {
 		}
 	}`
 
+var refreshTokenMutation = `mutation {
+		refreshToken {
+			token
+		}
+	}`
+
 type SignUpMutationResponse struct {
 	SignUp struct {
 		Token string
@@ -20,6 +26,12 @@ type SignUpMutationResponse struct {
 
 type SignInMutationResponse struct {
 	SignIn struct {
+		Token string
+	}
+}
+
+type RefreshTokenMutationResponse struct {
+	RefreshToken struct {
 		Token string
 	}
 }
