@@ -148,18 +148,16 @@ func (ts *TestSuite) TestSignUp() {
 }
 
 func (ts *TestSuite) TestSignIn() {
-	credentials := securitypkgfactory.NewCredentials(nil)
-
-	opt := client.Var("input", credentials)
-
 	driver := "postgres"
 	db, _ := NewMockDB(driver)
 
 	dbTrx := &gorm.DB{}
 
-	tokenString := ""
+	credentials := securitypkgfactory.NewCredentials(nil)
 
-	ctx := context.Background()
+	opts := []client.Option{}
+
+	tokenString := ""
 
 	returnArgs := ReturnArgs{}
 
@@ -168,6 +166,11 @@ func (ts *TestSuite) TestSignIn() {
 			Context: "ItShouldSucceedInSigningIn",
 			SetUp: func(t *testing.T) {
 				dbTrx = db
+
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", credentials))
+				ctx := context.Background()
+				opts = append(opts, AddDBTrxToCtx(ctx, dbTrx))
 
 				tokenString = fake.Word()
 
@@ -178,9 +181,28 @@ func (ts *TestSuite) TestSignIn() {
 			WantError: false,
 		},
 		{
+			Context: "ItShouldFailIfItIsNotPossibleToGetTheDatabaseTransactionFromTheRequestContext",
+			SetUp: func(t *testing.T) {
+				dbTrx = nil
+
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", credentials))
+
+				returnArgs = ReturnArgs{
+					{"", nil},
+				}
+			},
+			WantError: true,
+		},
+		{
 			Context: "ItShouldFailIfTheDatabaseTransactionFromTheRequestContextIsNull",
 			SetUp: func(t *testing.T) {
 				dbTrx = nil
+
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", credentials))
+				ctx := context.Background()
+				opts = append(opts, AddDBTrxToCtx(ctx, dbTrx))
 
 				returnArgs = ReturnArgs{
 					{"", nil},
@@ -192,6 +214,11 @@ func (ts *TestSuite) TestSignIn() {
 			Context: "ItShouldFailIfAnErrorOccursWhenLoggingIn",
 			SetUp: func(t *testing.T) {
 				dbTrx = db
+
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", credentials))
+				ctx := context.Background()
+				opts = append(opts, AddDBTrxToCtx(ctx, dbTrx))
 
 				returnArgs = ReturnArgs{
 					{"", customerror.New("failed")},
@@ -227,7 +254,7 @@ func (ts *TestSuite) TestSignIn() {
 			resp := SignInMutationResponse{}
 
 			cl := client.New(srv)
-			err := cl.Post(mutation, &resp, opt, AddDBTrxToCtx(ctx, dbTrx))
+			err := cl.Post(mutation, &resp, opts...)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
@@ -241,16 +268,14 @@ func (ts *TestSuite) TestSignIn() {
 }
 
 func (ts *TestSuite) TestRefreshToken() {
-	ctx := context.Background()
+	dbTrx := &gorm.DB{}
+	dbTrx = nil
 
 	tokenString := fake.Word()
 
 	auth := domainmodelfactory.NewAuth(nil)
 
-	authDetails := domainmodel.Auth{}
-
-	dbTrx := &gorm.DB{}
-	dbTrx = nil
+	opt := func(bd *client.Request) {}
 
 	returnArgs := ReturnArgs{}
 
@@ -258,7 +283,8 @@ func (ts *TestSuite) TestRefreshToken() {
 		{
 			Context: "ItShouldSucceedInRefreshingTheToken",
 			SetUp: func(t *testing.T) {
-				authDetails = auth
+				ctx := context.Background()
+				opt = AddAuthDetailsToCtx(ctx, auth)
 
 				returnArgs = ReturnArgs{
 					{tokenString, nil},
@@ -269,7 +295,19 @@ func (ts *TestSuite) TestRefreshToken() {
 		{
 			Context: "ItShouldFailIfItIsNotPossibleToGetTheAuthFromTheRequestContext",
 			SetUp: func(t *testing.T) {
-				authDetails = domainmodel.Auth{}
+				opt = func(bd *client.Request) {}
+
+				returnArgs = ReturnArgs{
+					{"", nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthFromTheRequestContextIsEmpty",
+			SetUp: func(t *testing.T) {
+				ctx := context.Background()
+				opt = AddAuthDetailsToCtx(ctx, domainmodel.Auth{})
 
 				returnArgs = ReturnArgs{
 					{"", nil},
@@ -280,7 +318,8 @@ func (ts *TestSuite) TestRefreshToken() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenRefreshingTheToken",
 			SetUp: func(t *testing.T) {
-				authDetails = auth
+				ctx := context.Background()
+				opt = AddAuthDetailsToCtx(ctx, auth)
 
 				returnArgs = ReturnArgs{
 					{"", customerror.New("failed")},
@@ -297,7 +336,7 @@ func (ts *TestSuite) TestRefreshToken() {
 			healthCheckService := new(healthcheckmockservice.Service)
 			authService := new(authmockservice.Service)
 			authService.On("WithDBTrx", dbTrx).Return(authService)
-			authService.On("RenewToken", authDetails).Return(returnArgs[0]...)
+			authService.On("RenewToken", auth).Return(returnArgs[0]...)
 			userService := new(usermockservice.Service)
 
 			resolver := resolverpkg.New(healthCheckService, authService, userService)
@@ -316,7 +355,7 @@ func (ts *TestSuite) TestRefreshToken() {
 			resp := RefreshTokenMutationResponse{}
 
 			cl := client.New(srv)
-			err := cl.Post(mutation, &resp, AddAuthDetailsToCtx(ctx, authDetails))
+			err := cl.Post(mutation, &resp, opt)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
