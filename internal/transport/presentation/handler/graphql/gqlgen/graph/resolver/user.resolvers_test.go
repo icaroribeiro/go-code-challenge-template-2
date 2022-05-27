@@ -69,7 +69,7 @@ func (ts *TestSuite) TestGetAllUsers() {
 			cfg := generated.Config{Resolvers: res}
 
 			authDirective := new(authmockdirective.Directive)
-			authDirective.On("AuthMiddleware").Return(MockSchemaDirective())
+			authDirective.On("AuthMiddleware").Return(MockDirective())
 
 			cfg.Directives.UseAuthMiddleware = authDirective.AuthMiddleware()
 

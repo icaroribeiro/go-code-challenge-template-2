@@ -125,7 +125,7 @@ func (ts *TestSuite) TestSignUp() {
 			cfg := generated.Config{Resolvers: res}
 
 			dbTrxDirective := new(dbtrxmockdirective.Directive)
-			dbTrxDirective.On("DBTrxMiddleware").Return(MockSchemaDirective())
+			dbTrxDirective.On("DBTrxMiddleware").Return(MockDirective())
 
 			cfg.Directives.UseDBTrxMiddleware = dbTrxDirective.DBTrxMiddleware()
 
@@ -248,7 +248,7 @@ func (ts *TestSuite) TestSignIn() {
 			cfg := generated.Config{Resolvers: res}
 
 			dbTrxDirective := new(dbtrxmockdirective.Directive)
-			dbTrxDirective.On("DBTrxMiddleware").Return(MockSchemaDirective())
+			dbTrxDirective.On("DBTrxMiddleware").Return(MockDirective())
 
 			cfg.Directives.UseDBTrxMiddleware = dbTrxDirective.DBTrxMiddleware()
 
@@ -352,7 +352,7 @@ func (ts *TestSuite) TestRefreshToken() {
 			cfg := generated.Config{Resolvers: res}
 
 			authDirective := new(authmockdirective.Directive)
-			authDirective.On("AuthRenewalMiddleware").Return(MockSchemaDirective())
+			authDirective.On("AuthRenewalMiddleware").Return(MockDirective())
 
 			cfg.Directives.UseAuthRenewalMiddleware = authDirective.AuthRenewalMiddleware()
 
@@ -467,7 +467,7 @@ func (ts *TestSuite) TestChangePassword() {
 			cfg := generated.Config{Resolvers: res}
 
 			authDirective := new(authmockdirective.Directive)
-			authDirective.On("AuthMiddleware").Return(MockSchemaDirective())
+			authDirective.On("AuthMiddleware").Return(MockDirective())
 
 			cfg.Directives.UseAuthMiddleware = authDirective.AuthMiddleware()
 
@@ -573,7 +573,7 @@ func (ts *TestSuite) TestSignOut() {
 			cfg := generated.Config{Resolvers: res}
 
 			authDirective := new(authmockdirective.Directive)
-			authDirective.On("AuthMiddleware").Return(MockSchemaDirective())
+			authDirective.On("AuthMiddleware").Return(MockDirective())
 
 			cfg.Directives.UseAuthMiddleware = authDirective.AuthMiddleware()
 

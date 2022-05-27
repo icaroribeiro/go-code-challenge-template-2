@@ -1,18 +1,16 @@
 package healthcheck_test
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http/httptest"
 	"testing"
 
-	"github.com/gorilla/mux"
-	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template/internal/application/service/healthcheck"
-	healthcheckhandler "github.com/icaroribeiro/new-go-code-challenge-template/internal/transport/presentation/handler/healthcheck"
-	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/message"
-	messagehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/message"
-	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/request"
-	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/route"
+	"github.com/99designs/gqlgen/client"
+	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"
+	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
+	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
+	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
+	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/auth"
+	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/dbtrx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -59,41 +57,31 @@ func (ts *TestSuite) TestGetStatus() {
 			tc.SetUp(t)
 
 			healthCheckService := healthcheckservice.New(db)
-			healthCheckHandler := healthcheckhandler.New(healthCheckService)
+			authService := new(authmockservice.Service)
+			userService := new(usermockservice.Service)
 
-			route := routehttputilpkg.Route{
-				Name:        "GetStatus",
-				Method:      "GET",
-				Path:        "/status",
-				HandlerFunc: healthCheckHandler.GetStatus,
-			}
+			dbTrxDirective := new(dbtrxmockdirective.Directive)
+			dbTrxDirective.On("DBTrxMiddleware").Return(MockDirective())
 
-			requestData := requesthttputilpkg.RequestData{
-				Method: route.Method,
-				Target: route.Path,
-			}
+			authDirective := new(authmockdirective.Directive)
+			authDirective.On("AuthMiddleware").Return(MockDirective())
+			authDirective.On("AuthRenewalMiddleware").Return(MockDirective())
 
-			req := httptest.NewRequest(requestData.Method, requestData.Target, nil)
+			graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 
-			resprec := httptest.NewRecorder()
+			srv := graphqlHandler.GraphQL()
 
-			router := mux.NewRouter()
+			query := getHealthCheckQuery
+			resp := GetHealthCheckQueryResponse{}
 
-			router.Name(route.Name).
-				Methods(route.Method).
-				Path(route.Path).
-				HandlerFunc(route.HandlerFunc)
-
-			router.ServeHTTP(resprec, req)
+			cl := client.New(srv)
+			err := cl.Post(query, &resp)
 
 			if !tc.WantError {
-				assert.Equal(t, resprec.Code, tc.StatusCode)
-				returnedMessage := messagehttputilpkg.Message{}
-				err := json.NewDecoder(resprec.Body).Decode(&returnedMessage)
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
-				assert.Equal(t, message.Text, returnedMessage.Text)
+				assert.Equal(t, resp.GetHealthCheck.Status, status)
 			} else {
-				assert.Equal(t, resprec.Code, tc.StatusCode)
+				assert.NotNil(t, err, "Predicted error lost.")
 			}
 
 			tc.TearDown(t)

@@ -24,7 +24,7 @@ type TestSuite struct {
 	Cases Cases
 }
 
-func MockSchemaDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+func MockDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		return next(ctx)
 	}

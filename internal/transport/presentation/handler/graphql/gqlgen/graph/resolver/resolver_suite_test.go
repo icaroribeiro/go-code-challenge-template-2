@@ -73,7 +73,7 @@ func NewMockDB(driver string) (*gorm.DB, sqlmock.Sqlmock) {
 	return db, mock
 }
 
-func MockSchemaDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+func MockDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 		return next(ctx)
 	}

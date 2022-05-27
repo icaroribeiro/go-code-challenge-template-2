@@ -1,9 +1,11 @@
 package healthcheck_test
 
 import (
+	"context"
 	"log"
 	"testing"
 
+	"github.com/99designs/gqlgen/graphql"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
 	"github.com/stretchr/testify/suite"
@@ -25,6 +27,18 @@ type TestSuite struct {
 	Cases Cases
 }
 
+type GetHealthCheckQueryResponse struct {
+	GetHealthCheck struct {
+		Status string
+	}
+}
+
+var getHealthCheckQuery = `query {
+	getHealthCheck { 
+		status
+	}
+}`
+
 var (
 	dbDriver   = envpkg.GetEnvWithDefaultValue("DB_DRIVER", "postgres")
 	dbUser     = envpkg.GetEnvWithDefaultValue("DB_USER", "postgres")
@@ -45,6 +59,12 @@ func setupDBConfig() (map[string]string, error) {
 	}
 
 	return dbConfig, nil
+}
+
+func MockDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+		return next(ctx)
+	}
 }
 
 func (ts *TestSuite) SetupSuite() {

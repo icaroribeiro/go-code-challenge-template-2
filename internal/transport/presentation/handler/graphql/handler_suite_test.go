@@ -25,9 +25,9 @@ type TestSuite struct {
 	Cases Cases
 }
 
-func MockSchemaDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		return next(ctx)
+type GetHealthCheckQueryResponse struct {
+	GetHealthCheck struct {
+		Status string
 	}
 }
 
@@ -37,8 +37,8 @@ var getHealthCheckQuery = `query {
 	}
 }`
 
-type GetHealthCheckQueryResponse struct {
-	GetHealthCheck struct {
-		Status string
+func MockDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+		return next(ctx)
 	}
 }
