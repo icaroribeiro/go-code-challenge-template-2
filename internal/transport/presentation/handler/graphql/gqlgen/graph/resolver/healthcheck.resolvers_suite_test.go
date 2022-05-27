@@ -6,7 +6,7 @@ var getHealthCheckQuery = `query {
 		}
 	}`
 
-type GetHealthCheckResponse struct {
+type GetHealthCheckQueryResponse struct {
 	GetHealthCheck struct {
 		Status string
 	}

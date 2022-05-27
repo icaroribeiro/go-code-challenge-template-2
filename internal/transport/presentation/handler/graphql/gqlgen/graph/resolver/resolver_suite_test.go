@@ -7,6 +7,7 @@ import (
 
 	"github.com/99designs/gqlgen/client"
 	"github.com/DATA-DOG/go-sqlmock"
+	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
@@ -32,6 +33,13 @@ type TestSuite struct {
 func addTokenStringCtxValue(ctx context.Context, tokenString string) client.Option {
 	return func(bd *client.Request) {
 		ctx := authmiddlewarepkg.NewContext(ctx, tokenString)
+		bd.HTTP = bd.HTTP.WithContext(ctx)
+	}
+}
+
+func addDBTrxCtxValue(ctx context.Context, dbTrx *gorm.DB) client.Option {
+	return func(bd *client.Request) {
+		ctx := dbtrxdirectivepkg.NewContext(ctx, dbTrx)
 		bd.HTTP = bd.HTTP.WithContext(ctx)
 	}
 }

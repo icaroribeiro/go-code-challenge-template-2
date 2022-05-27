@@ -8,7 +8,7 @@ import (
 	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
 	userdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainfactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockvalidator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -30,7 +30,7 @@ func (ts *TestSuite) TestGetAll() {
 		{
 			Context: "ItShouldSucceedInGettingAllUsers",
 			SetUp: func(t *testing.T) {
-				user = domainfactorymodel.NewUser(nil)
+				user = domainmodelfactory.NewUser(nil)
 
 				returnArgs = ReturnArgs{
 					{domainmodel.Users{user}, nil},

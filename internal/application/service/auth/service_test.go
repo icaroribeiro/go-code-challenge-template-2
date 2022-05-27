@@ -12,7 +12,7 @@ import (
 	userdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
-	domainfactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
 	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
 	mockauth "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
 	mocksecurity "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mocksecurity"
@@ -57,7 +57,7 @@ func (ts *TestSuite) TestRegister() {
 					"username": credentials.Username,
 				}
 
-				user = domainfactorymodel.NewUser(args)
+				user = domainmodelfactory.NewUser(args)
 
 				id := uuid.NewV4()
 
@@ -66,7 +66,7 @@ func (ts *TestSuite) TestRegister() {
 					"username": credentials.Username,
 				}
 
-				newUser := domainfactorymodel.NewUser(args)
+				newUser := domainmodelfactory.NewUser(args)
 
 				args = map[string]interface{}{
 					"id":       uuid.Nil,
@@ -75,14 +75,14 @@ func (ts *TestSuite) TestRegister() {
 					"password": credentials.Password,
 				}
 
-				login = domainfactorymodel.NewLogin(args)
+				login = domainmodelfactory.NewLogin(args)
 
 				args = map[string]interface{}{
 					"id":     uuid.Nil,
 					"userID": newUser.ID,
 				}
 
-				auth = domainfactorymodel.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				id = uuid.NewV4()
 
@@ -91,7 +91,7 @@ func (ts *TestSuite) TestRegister() {
 					"userID": newUser.ID,
 				}
 
-				newAuth = domainfactorymodel.NewAuth(args)
+				newAuth = domainmodelfactory.NewAuth(args)
 
 				token = fake.Word()
 
@@ -1150,7 +1150,7 @@ func (ts *TestSuite) TestLogOut() {
 					"userID": userID,
 				}
 
-				auth := domainfactorymodel.NewAuth(args)
+				auth := domainmodelfactory.NewAuth(args)
 
 				returnArgs = ReturnArgs{
 					{nil},

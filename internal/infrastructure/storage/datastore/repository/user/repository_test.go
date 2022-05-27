@@ -9,8 +9,8 @@ import (
 	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainfactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
-	datastorefactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -41,14 +41,14 @@ func (ts *TestSuite) TestCreate() {
 					"id": uuid.Nil,
 				}
 
-				user = domainfactorymodel.NewUser(args)
+				user = domainmodelfactory.NewUser(args)
 
 				args = map[string]interface{}{
 					"id":       uuid.Nil,
 					"username": user.Username,
 				}
 
-				newUser = domainfactorymodel.NewUser(args)
+				newUser = domainmodelfactory.NewUser(args)
 
 				mock.ExpectBegin()
 
@@ -67,7 +67,7 @@ func (ts *TestSuite) TestCreate() {
 					"id": uuid.Nil,
 				}
 
-				user = domainfactorymodel.NewUser(args)
+				user = domainmodelfactory.NewUser(args)
 
 				mock.ExpectBegin()
 
@@ -84,7 +84,7 @@ func (ts *TestSuite) TestCreate() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenCreatingTheUserBecauseTheUserIsAlreadyRegistered",
 			SetUp: func(t *testing.T) {
-				user = domainfactorymodel.NewUser(nil)
+				user = domainmodelfactory.NewUser(nil)
 
 				mock.ExpectBegin()
 
@@ -137,7 +137,7 @@ func (ts *TestSuite) TestGetAll() {
 		{
 			Context: "ItShouldSucceedInGettingAllUsers",
 			SetUp: func(t *testing.T) {
-				userDatastore := datastorefactorymodel.NewUser(nil)
+				userDatastore := datastoremodelfactory.NewUser(nil)
 				user = userDatastore.ToDomain()
 
 				rows := sqlmock.

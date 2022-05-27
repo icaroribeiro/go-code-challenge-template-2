@@ -19,8 +19,8 @@ import (
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainfactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
-	datastorefactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
 	mockauthpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -41,7 +41,7 @@ func (ts *TestSuite) TestGetAllUsers() {
 
 	token := &jwt.Token{}
 
-	auth := domainfactorymodel.NewAuth(nil)
+	auth := domainmodelfactory.NewAuth(nil)
 
 	sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
 
@@ -50,7 +50,7 @@ func (ts *TestSuite) TestGetAllUsers() {
 		"userID": auth.UserID,
 	}
 
-	authDatastore := datastorefactorymodel.NewAuth(args)
+	authDatastore := datastoremodelfactory.NewAuth(args)
 
 	user := domainmodel.User{}
 
@@ -71,7 +71,7 @@ func (ts *TestSuite) TestGetAllUsers() {
 					WithArgs(authDatastore.ID).
 					WillReturnRows(rows)
 
-				user = domainfactorymodel.NewUser(nil)
+				user = domainmodelfactory.NewUser(nil)
 
 				returnArgs = ReturnArgs{
 					{token, nil},
@@ -133,7 +133,7 @@ func (ts *TestSuite) TestGetAllUsers() {
 
 			query := getAllUsersQuery
 
-			resp := GetAllUsersResponse{}
+			resp := GetAllUsersQueryResponse{}
 
 			err := cl.Post(query, &resp, addTokenStringCtxValue(ctx, tokenString))
 

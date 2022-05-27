@@ -9,8 +9,8 @@ import (
 	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
 	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainfactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
-	datastorefactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -46,14 +46,14 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainfactorymodel.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				args = map[string]interface{}{
 					"id":     uuid.Nil,
 					"userID": auth.UserID,
 				}
 
-				newAuth = domainfactorymodel.NewAuth(args)
+				newAuth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -75,7 +75,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainfactorymodel.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -99,7 +99,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainfactorymodel.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -113,7 +113,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				login := datastorefactorymodel.NewLogin(args)
+				login := datastoremodelfactory.NewLogin(args)
 
 				rows := sqlmock.
 					NewRows([]string{"id", "user_id", "username", "password", "created_at", "updated_at"}).
@@ -137,7 +137,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainfactorymodel.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -165,7 +165,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainfactorymodel.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -230,7 +230,7 @@ func (ts *TestSuite) TestGetByUserID() {
 					"userID": userID,
 				}
 
-				authDatastore := datastorefactorymodel.NewAuth(args)
+				authDatastore := datastoremodelfactory.NewAuth(args)
 				auth = authDatastore.ToDomain()
 
 				rows := sqlmock.
@@ -306,7 +306,7 @@ func (ts *TestSuite) TestDelete() {
 					"id": id,
 				}
 
-				authDatastore := datastorefactorymodel.NewAuth(args)
+				authDatastore := datastoremodelfactory.NewAuth(args)
 				auth = authDatastore.ToDomain()
 
 				rows := sqlmock.
@@ -362,7 +362,7 @@ func (ts *TestSuite) TestDelete() {
 					"id": id,
 				}
 
-				authDatastore := datastorefactorymodel.NewAuth(args)
+				authDatastore := datastoremodelfactory.NewAuth(args)
 				auth = authDatastore.ToDomain()
 
 				rows := sqlmock.
@@ -394,7 +394,7 @@ func (ts *TestSuite) TestDelete() {
 					"id": id,
 				}
 
-				authDatastore := datastorefactorymodel.NewAuth(args)
+				authDatastore := datastoremodelfactory.NewAuth(args)
 				auth = authDatastore.ToDomain()
 
 				rows := sqlmock.

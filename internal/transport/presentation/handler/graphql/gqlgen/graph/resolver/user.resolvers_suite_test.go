@@ -7,7 +7,7 @@ var getAllUsersQuery = `query {
 		}
 	}`
 
-type GetAllUsersResponse struct {
+type GetAllUsersQueryResponse struct {
 	GetAllUsers []struct {
 		ID       string
 		Username string

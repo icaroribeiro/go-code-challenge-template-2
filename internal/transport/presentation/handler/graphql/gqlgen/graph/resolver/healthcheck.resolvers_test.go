@@ -69,7 +69,7 @@ func (ts *TestSuite) TestGetHealthCheck() {
 
 			query := getHealthCheckQuery
 
-			resp := GetHealthCheckResponse{}
+			resp := GetHealthCheckQueryResponse{}
 
 			err := cl.Post(query, &resp)
 

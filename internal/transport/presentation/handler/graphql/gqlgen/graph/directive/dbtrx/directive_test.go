@@ -11,7 +11,7 @@ import (
 	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
 	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainfactorymodel "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -88,7 +88,7 @@ func (ts *TestSuite) TestFromContext() {
 }
 
 func (ts *TestSuite) TestDBTrxMiddleware() {
-	user := domainfactorymodel.NewUser(nil)
+	user := domainmodelfactory.NewUser(nil)
 
 	driver := "postgres"
 	db, mock := NewMockDB(driver)

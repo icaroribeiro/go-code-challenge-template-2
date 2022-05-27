@@ -33,7 +33,9 @@ func DBTrxMiddleware(db *gorm.DB) func(ctx context.Context, obj interface{}, nex
 			return next(ctx)
 		}
 
+		log.Printf("%v", &db)
 		dbTrx := db.Begin()
+		log.Printf("%v", &dbTrx)
 
 		defer func() {
 			if r := recover(); r != nil {
