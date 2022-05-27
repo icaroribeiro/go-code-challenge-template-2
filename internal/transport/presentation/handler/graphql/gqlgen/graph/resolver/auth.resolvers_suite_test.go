@@ -18,6 +18,18 @@ var refreshTokenMutation = `mutation {
 		}
 	}`
 
+var changePasswordMutation = `mutation($input: Passwords!) {
+		changePassword(input: $input) {
+			message
+		}
+	}`
+
+var signOutMutation = `mutation {
+		signOut {
+			message
+		}
+	}`
+
 type SignUpMutationResponse struct {
 	SignUp struct {
 		Token string
@@ -33,5 +45,17 @@ type SignInMutationResponse struct {
 type RefreshTokenMutationResponse struct {
 	RefreshToken struct {
 		Token string
+	}
+}
+
+type ChangePasswordMutationResponse struct {
+	ChangePassword struct {
+		Message string
+	}
+}
+
+type SignOutMutationResponse struct {
+	SignOut struct {
+		Message string
 	}
 }

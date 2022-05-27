@@ -32,33 +32,6 @@ type TestSuite struct {
 	Cases Cases
 }
 
-func MockSchemaDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		return next(ctx)
-	}
-}
-
-// func addTokenStringCtxValue(ctx context.Context, tokenString string) client.Option {
-// 	return func(bd *client.Request) {
-// 		ctx := authmiddlewarepkg.NewContext(ctx, tokenString)
-// 		bd.HTTP = bd.HTTP.WithContext(ctx)
-// 	}
-// }
-
-func addAuthDetailsToCtx(ctx context.Context, auth domainmodel.Auth) client.Option {
-	return func(bd *client.Request) {
-		ctx := authdirectivepkg.NewContext(ctx, auth)
-		bd.HTTP = bd.HTTP.WithContext(ctx)
-	}
-}
-
-func addDBTrxToCtx(ctx context.Context, dbTrx *gorm.DB) client.Option {
-	return func(bd *client.Request) {
-		ctx := dbtrxdirectivepkg.NewContext(ctx, dbTrx)
-		bd.HTTP = bd.HTTP.WithContext(ctx)
-	}
-}
-
 func NewMockDB(driver string) (*gorm.DB, sqlmock.Sqlmock) {
 	errorMsg := "failed to open a stub database connection"
 
@@ -98,4 +71,24 @@ func NewMockDB(driver string) (*gorm.DB, sqlmock.Sqlmock) {
 	}
 
 	return db, mock
+}
+
+func MockSchemaDirective() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+		return next(ctx)
+	}
+}
+
+func AddAuthDetailsToCtx(ctx context.Context, auth domainmodel.Auth) client.Option {
+	return func(bd *client.Request) {
+		ctx := authdirectivepkg.NewContext(ctx, auth)
+		bd.HTTP = bd.HTTP.WithContext(ctx)
+	}
+}
+
+func AddDBTrxToCtx(ctx context.Context, dbTrx *gorm.DB) client.Option {
+	return func(bd *client.Request) {
+		ctx := dbtrxdirectivepkg.NewContext(ctx, dbTrx)
+		bd.HTTP = bd.HTTP.WithContext(ctx)
+	}
 }

@@ -107,7 +107,7 @@ func (ts *TestSuite) TestSignUp() {
 			resp := SignUpMutationResponse{}
 
 			cl := client.New(srv)
-			err := cl.Post(mutation, &resp, opt, addDBTrxToCtx(ctx, dbTrx))
+			err := cl.Post(mutation, &resp, opt, AddDBTrxToCtx(ctx, dbTrx))
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
@@ -200,7 +200,7 @@ func (ts *TestSuite) TestSignIn() {
 			resp := SignInMutationResponse{}
 
 			cl := client.New(srv)
-			err := cl.Post(mutation, &resp, opt, addDBTrxToCtx(ctx, dbTrx))
+			err := cl.Post(mutation, &resp, opt, AddDBTrxToCtx(ctx, dbTrx))
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
@@ -277,10 +277,6 @@ func (ts *TestSuite) TestRefreshToken() {
 
 			c := generated.Config{Resolvers: resolver}
 
-			// authN := new(mockauthpkg.Auth)
-			// authN.On("ValidateTokenRenewal", tokenString, timeBeforeTokenExpTimeInSec).Return(returnArgs[0]...)
-			// authN.On("FetchAuthFromToken", token).Return(returnArgs[1]...)
-
 			c.Directives.UseAuthRenewalMiddleware = MockSchemaDirective()
 
 			srv := handler.NewDefaultServer(
@@ -293,12 +289,210 @@ func (ts *TestSuite) TestRefreshToken() {
 			resp := RefreshTokenMutationResponse{}
 
 			cl := client.New(srv)
-			err := cl.Post(mutation, &resp, addAuthDetailsToCtx(ctx, authDetails))
+			err := cl.Post(mutation, &resp, AddAuthDetailsToCtx(ctx, authDetails))
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.NotEmpty(t, resp.RefreshToken.Token)
 				assert.Equal(t, tokenString, resp.RefreshToken.Token)
+			} else {
+				assert.NotNil(t, err, "Predicted error lost.")
+			}
+		})
+	}
+}
+
+func (ts *TestSuite) TestChangePassword() {
+	passwords := securitypkgfactory.NewPasswords(nil)
+
+	opt := client.Var("input", passwords)
+
+	dbTrx := &gorm.DB{}
+	dbTrx = nil
+
+	message := ""
+
+	auth := domainmodelfactory.NewAuth(nil)
+
+	authDetails := domainmodel.Auth{}
+
+	ctx := context.Background()
+
+	returnArgs := ReturnArgs{}
+
+	ts.Cases = Cases{
+		{
+			Context: "ItShouldSucceedInResettingThePassword",
+			SetUp: func(t *testing.T) {
+				authDetails = auth
+
+				message = "the password has been updated successfully"
+
+				returnArgs = ReturnArgs{
+					{nil},
+				}
+			},
+			WantError: false,
+		},
+		{
+			Context: "ItShouldFailIfItIsNotPossibleToGetTheAuthFromTheRequestContext",
+			SetUp: func(t *testing.T) {
+				authDetails = domainmodel.Auth{}
+
+				returnArgs = ReturnArgs{
+					{nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfAnErrorOccursWhenResettingThePassword",
+			SetUp: func(t *testing.T) {
+				authDetails = auth
+
+				returnArgs = ReturnArgs{
+					{customerror.New("failed")},
+				}
+			},
+			WantError: true,
+		},
+	}
+
+	for _, tc := range ts.Cases {
+		ts.T().Run(tc.Context, func(t *testing.T) {
+			tc.SetUp(t)
+
+			healthCheckService := new(healthcheckmockservice.Service)
+			authService := new(authmockservice.Service)
+			authService.On("WithDBTrx", dbTrx).Return(authService)
+			authService.On("ModifyPassword", auth.UserID.String(), passwords).Return(returnArgs[0]...)
+			userService := new(usermockservice.Service)
+
+			resolver := resolverpkg.New(healthCheckService, authService, userService)
+
+			c := generated.Config{Resolvers: resolver}
+
+			c.Directives.UseAuthMiddleware = MockSchemaDirective()
+
+			srv := handler.NewDefaultServer(
+				generated.NewExecutableSchema(
+					c,
+				),
+			)
+
+			mutation := changePasswordMutation
+			resp := ChangePasswordMutationResponse{}
+
+			cl := client.New(srv)
+			err := cl.Post(mutation, &resp, opt, AddAuthDetailsToCtx(ctx, authDetails))
+
+			if !tc.WantError {
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
+				assert.NotEmpty(t, resp.ChangePassword.Message)
+				assert.Equal(t, message, resp.ChangePassword.Message)
+			} else {
+				assert.NotNil(t, err, "Predicted error lost.")
+			}
+		})
+	}
+}
+
+func (ts *TestSuite) TestSignOut() {
+	dbTrx := &gorm.DB{}
+	dbTrx = nil
+
+	auth := domainmodelfactory.NewAuth(nil)
+
+	opt := func(bd *client.Request) {}
+
+	message := ""
+
+	returnArgs := ReturnArgs{}
+
+	ts.Cases = Cases{
+		{
+			Context: "ItShouldSucceedInSigningOut",
+			SetUp: func(t *testing.T) {
+				ctx := context.Background()
+				opt = AddAuthDetailsToCtx(ctx, auth)
+
+				message = "you have logged out successfully"
+
+				returnArgs = ReturnArgs{
+					{nil},
+				}
+			},
+			WantError: false,
+		},
+		{
+			Context: "ItShouldFailIfItIsNotPossibleToGetTheAuthFromTheRequestContext",
+			SetUp: func(t *testing.T) {
+				opt = func(bd *client.Request) {}
+
+				returnArgs = ReturnArgs{
+					{nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthFromTheRequestContextIsEmpty",
+			SetUp: func(t *testing.T) {
+				ctx := context.Background()
+				opt = AddAuthDetailsToCtx(ctx, domainmodel.Auth{})
+
+				returnArgs = ReturnArgs{
+					{nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfAnErrorOccursWhenSigningOut",
+			SetUp: func(t *testing.T) {
+				ctx := context.Background()
+				opt = AddAuthDetailsToCtx(ctx, auth)
+
+				returnArgs = ReturnArgs{
+					{customerror.New("failed")},
+				}
+			},
+			WantError: true,
+		},
+	}
+
+	for _, tc := range ts.Cases {
+		ts.T().Run(tc.Context, func(t *testing.T) {
+			tc.SetUp(t)
+
+			healthCheckService := new(healthcheckmockservice.Service)
+			authService := new(authmockservice.Service)
+			authService.On("WithDBTrx", dbTrx).Return(authService)
+			authService.On("LogOut", auth.ID.String()).Return(returnArgs[0]...)
+			userService := new(usermockservice.Service)
+
+			resolver := resolverpkg.New(healthCheckService, authService, userService)
+
+			c := generated.Config{Resolvers: resolver}
+
+			c.Directives.UseAuthMiddleware = MockSchemaDirective()
+
+			srv := handler.NewDefaultServer(
+				generated.NewExecutableSchema(
+					c,
+				),
+			)
+
+			mutation := signOutMutation
+			resp := SignOutMutationResponse{}
+
+			cl := client.New(srv)
+			err := cl.Post(mutation, &resp, opt)
+
+			if !tc.WantError {
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
+				assert.NotEmpty(t, resp.SignOut.Message)
+				assert.Equal(t, message, resp.SignOut.Message)
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 			}
