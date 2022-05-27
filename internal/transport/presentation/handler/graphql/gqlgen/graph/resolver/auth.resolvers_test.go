@@ -272,27 +272,6 @@ func (ts *TestSuite) TestRefreshToken() {
 			},
 			WantError: false,
 		},
-		// {
-		// 	Context: "ItShouldFailIfItIsNotPossibleToGetTheAuthFromTheRequestContext",
-		// 	SetUp: func(t *testing.T) {
-		// 		rows := sqlmock.
-		// 			NewRows([]string{"id", "user_id", "created_at"}).
-		// 			AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
-
-		// 		mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-		// 			WithArgs(authDatastore.ID).
-		// 			WillReturnRows(rows)
-
-		// 		authDetailsCtxValue = domainmodel.Auth{}
-
-		// 		returnArgs = ReturnArgs{
-		// 			{token, nil},
-		// 			{auth, nil},
-		// 			{tokenString, nil},
-		// 		}
-		// 	},
-		// 	WantError: true,
-		// },
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenRefreshingTheToken",
 			SetUp: func(t *testing.T) {
