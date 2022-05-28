@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	passwordvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
+	passwordvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -44,7 +44,7 @@ func (ts *TestSuite) TestValidate() {
 
 	for _, tc := range ts.Cases {
 		ts.T().Run(tc.Context, func(t *testing.T) {
-			err := passwordvalidator.Validate(tc.Inf, tc.Param)
+			err := passwordvalidatorpkg.Validate(tc.Inf, tc.Param)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v", err))

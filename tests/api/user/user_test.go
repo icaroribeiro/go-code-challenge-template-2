@@ -1,123 +1,155 @@
 package user_test
 
-// import (
-// 	"encoding/json"
-// 	"fmt"
-// 	"net/http"
-// 	"net/http/httptest"
-// 	"testing"
+import (
+	"fmt"
+	"strings"
+	"testing"
 
-// 	fake "github.com/brianvoe/gofakeit/v5"
-// 	"github.com/gorilla/mux"
-// 	userservice "github.com/icaroribeiro/new-go-code-challenge-template/internal/application/service/user"
-// 	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template/internal/infrastructure/storage/datastore/model"
-// 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template/internal/infrastructure/storage/datastore/repository/user"
-// 	userhandler "github.com/icaroribeiro/new-go-code-challenge-template/internal/transport/presentation/handler/user"
-// 	presentationmodel "github.com/icaroribeiro/new-go-code-challenge-template/internal/transport/presentation/model"
-// 	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/request"
-// 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/route"
-// 	"github.com/stretchr/testify/assert"
-// 	"github.com/stretchr/testify/suite"
-// 	"gorm.io/gorm"
-// )
+	"github.com/99designs/gqlgen/client"
+	fake "github.com/brianvoe/gofakeit/v5"
+	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
+	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
+	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
+	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
+	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/dbtrx"
+	graphmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model"
+	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
+	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
+	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"gorm.io/gorm"
+)
 
-// func TestUserInteg(t *testing.T) {
-// 	suite.Run(t, new(TestSuite))
-// }
+func TestUserInteg(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}
 
-// func (ts *TestSuite) TestGetAll() {
-// 	dbTrx := &gorm.DB{}
+func (ts *TestSuite) TestGetAll() {
+	dbTrx := &gorm.DB{}
 
-// 	userDatastore := datastoremodel.User{}
+	var authN authpkg.IAuth
 
-// 	user := presentationmodel.User{}
+	timeBeforeTokenExpTimeInSec := 30
 
-// 	ts.Cases = Cases{
-// 		{
-// 			Context: "ItShouldSucceedInGettingAllUsers",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+	userDatastore := datastoremodel.User{}
+	user := graphmodel.User{}
+	loginDatastore := datastoremodel.Login{}
+	authDatastore := datastoremodel.Auth{}
 
-// 				username := fake.Username()
+	key := ""
+	bearerToken := []string{"", ""}
+	value := ""
 
-// 				userDatastore = datastoremodel.User{
-// 					Username: username,
-// 				}
+	adapters := map[string]adapterhttputilpkg.Adapter{
+		"authMiddleware": authmiddlewarepkg.Auth(),
+	}
 
-// 				result := dbTrx.Create(&userDatastore)
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+	opt := func(bd *client.Request) {}
 
-// 				domainUser := userDatastore.ToDomain()
-// 				user.FromDomain(domainUser)
-// 			},
-// 			StatusCode: http.StatusOK,
-// 			WantError:  false,
-// 			TearDown: func(t *testing.T) {
-// 				result := dbTrx.Rollback()
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-// 			},
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheDatabaseStateIsInconsistent",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+	ts.Cases = Cases{
+		{
+			Context: "ItShouldSucceedInGettingAllUsers",
+			SetUp: func(t *testing.T) {
+				dbTrx = ts.DB.Begin()
+				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
 
-// 				result := dbTrx.Rollback()
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-// 			},
-// 			StatusCode: http.StatusInternalServerError,
-// 			WantError:  true,
-// 			TearDown:   func(t *testing.T) {},
-// 		},
-// 	}
+				authN = authpkg.New(ts.RSAKeys)
 
-// 	for _, tc := range ts.Cases {
-// 		ts.T().Run(tc.Context, func(t *testing.T) {
-// 			tc.SetUp(t)
+				username := fake.Username()
+				password := fake.Password(true, true, true, false, false, 8)
 
-// 			userDatastoreRepository := userdatastorerepository.New(dbTrx)
-// 			userService := userservice.New(userDatastoreRepository, ts.Validator)
-// 			userHandler := userhandler.New(userService)
+				userDatastore = datastoremodel.User{
+					Username: username,
+				}
 
-// 			route := routehttputilpkg.Route{
-// 				Name:        "GetAllUsers",
-// 				Method:      "GET",
-// 				Path:        "/users",
-// 				HandlerFunc: userHandler.GetAll,
-// 			}
+				result := dbTrx.Create(&userDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-// 			requestData := requesthttputilpkg.RequestData{
-// 				Method: route.Method,
-// 				Target: route.Path,
-// 			}
+				domainUser := userDatastore.ToDomain()
+				user.FromDomain(domainUser)
 
-// 			req := httptest.NewRequest(requestData.Method, requestData.Target, nil)
+				loginDatastore = datastoremodel.Login{
+					UserID:   userDatastore.ID,
+					Username: username,
+					Password: password,
+				}
 
-// 			resprec := httptest.NewRecorder()
+				result = dbTrx.Create(&loginDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-// 			router := mux.NewRouter()
+				authDatastore = datastoremodel.Auth{
+					UserID: userDatastore.ID,
+				}
 
-// 			router.Name(route.Name).
-// 				Methods(route.Method).
-// 				Path(route.Path).
-// 				HandlerFunc(route.HandlerFunc)
+				result = dbTrx.Create(&authDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-// 			router.ServeHTTP(resprec, req)
+				key = "Authorization"
+				tokenString, err := authN.CreateToken(authDatastore.ToDomain(), ts.TokenExpTimeInSec)
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v", err))
+				bearerToken = []string{"Bearer", tokenString}
+				value = strings.Join(bearerToken[:], " ")
 
-// 			if !tc.WantError {
-// 				assert.Equal(t, resprec.Code, tc.StatusCode)
-// 				returnedUsers := presentationmodel.Users{}
-// 				err := json.NewDecoder(resprec.Body).Decode(&returnedUsers)
-// 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
-// 				assert.Equal(t, user.ID, returnedUsers[0].ID)
-// 				assert.Equal(t, user.Username, returnedUsers[0].Username)
-// 			} else {
-// 				assert.Equal(t, resprec.Code, tc.StatusCode)
-// 			}
+				opt = AddRequestHeaderEntries(key, value)
+			},
+			WantError: false,
+			TearDown: func(t *testing.T) {
+				result := dbTrx.Rollback()
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			},
+		},
+		{
+			Context: "ItShouldFailIfTheDatabaseStateIsInconsistent",
+			SetUp: func(t *testing.T) {
+				dbTrx = ts.DB.Begin()
+				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
 
-// 			tc.TearDown(t)
-// 		})
-// 	}
-// }
+				result := dbTrx.Rollback()
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			},
+			WantError: true,
+			TearDown:  func(t *testing.T) {},
+		},
+	}
+
+	for _, tc := range ts.Cases {
+		ts.T().Run(tc.Context, func(t *testing.T) {
+			tc.SetUp(t)
+
+			healthCheckService := new(healthcheckmockservice.Service)
+			authService := new(authmockservice.Service)
+
+			userDatastoreRepository := userdatastorerepository.New(dbTrx)
+			userService := userservice.New(userDatastoreRepository, ts.Validator)
+
+			dbTrxDirective := new(dbtrxmockdirective.Directive)
+			dbTrxDirective.On("DBTrxMiddleware").Return(MockDirective())
+
+			authDirective := authdirective.New(dbTrx, authN, timeBeforeTokenExpTimeInSec)
+
+			graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
+
+			query := getAllUsersQuery
+			resp := GetAllUsersQueryResponse{}
+
+			srv := AdaptHandlerWithHandlerFuncs(graphqlHandler.GraphQL(), adapters)
+
+			cl := client.New(srv)
+			err := cl.Post(query, &resp, opt)
+
+			if !tc.WantError {
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
+				assert.Equal(t, user.ID.String(), resp.GetAllUsers[0].ID)
+				assert.Equal(t, user.Username, resp.GetAllUsers[0].Username)
+			} else {
+				assert.NotNil(t, err, "Predicted error lost.")
+			}
+
+			tc.TearDown(t)
+		})
+	}
+}

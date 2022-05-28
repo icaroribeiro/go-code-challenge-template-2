@@ -7,15 +7,15 @@ package auth_test
 // 	"testing"
 
 // 	"github.com/dgrijalva/jwt-go"
-// 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/auth"
-// 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/datastore"
-// 	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/env"
-// 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/env"
-// 	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/security"
-// 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/validator"
-// 	passwordvalidator "github.com/icaroribeiro/new-go-code-challenge-template/pkg/validator/password"
-// 	usernamevalidator "github.com/icaroribeiro/new-go-code-challenge-template/pkg/validator/username"
-// 	uuidvalidator "github.com/icaroribeiro/new-go-code-challenge-template/pkg/validator/uuid"
+// 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
+// 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
+// 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
+// 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
+// 	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
+// 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
+// 	passwordvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
+// 	usernamevalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/username"
+// 	uuidvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
 // 	"github.com/stretchr/testify/suite"
 // 	validatorv2 "gopkg.in/validator.v2"
 // 	"gorm.io/gorm"
@@ -119,9 +119,9 @@ package auth_test
 // 	}
 
 // 	validationFuncs := map[string]validatorv2.ValidationFunc{
-// 		"uuid":     uuidvalidator.Validate,
-// 		"username": usernamevalidator.Validate,
-// 		"password": passwordvalidator.Validate,
+// 		"uuid":     uuidvalidatorpkg.Validate,
+// 		"username": usernamevalidatorpkg.Validate,
+// 		"password": passwordvalidatorpkg.Validate,
 // 	}
 
 // 	ts.Validator, err = validatorpkg.New(validationFuncs)

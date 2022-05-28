@@ -21,8 +21,8 @@ import (
 	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
 	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
-	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
-	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
+	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	graphqlrouter "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/router/graphql"
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
@@ -34,9 +34,9 @@ import (
 	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 	serverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/server"
 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
-	passwordvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
-	usernamevalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/username"
-	uuidvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
+	passwordvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
+	usernamevalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/username"
+	uuidvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
 	"github.com/spf13/cobra"
 	validatorv2 "gopkg.in/validator.v2"
 )
@@ -110,9 +110,9 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 	userDatastoreRepository := userdatastorerepository.New(db)
 
 	validationFuncs := map[string]validatorv2.ValidationFunc{
-		"uuid":     uuidvalidator.Validate,
-		"username": usernamevalidator.Validate,
-		"password": passwordvalidator.Validate,
+		"uuid":     uuidvalidatorpkg.Validate,
+		"username": usernamevalidatorpkg.Validate,
+		"password": passwordvalidatorpkg.Validate,
 	}
 
 	validator, err := validatorpkg.New(validationFuncs)
@@ -127,8 +127,8 @@ func execRunCmd(cmd *cobra.Command, args []string) {
 		authN, security, validator, tokenExpTimeInSec)
 	userService := userservice.New(userDatastoreRepository, validator)
 
-	dbTrxDirective := dbtrxdirectivepkg.New(db)
-	authDirective := authdirectivepkg.New(db, authN, timeBeforeTokenExpTimeInSec)
+	dbTrxDirective := dbtrxdirective.New(db)
+	authDirective := authdirective.New(db, authN, timeBeforeTokenExpTimeInSec)
 
 	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 

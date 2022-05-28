@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
-	uuidvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
+	uuidvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -91,7 +91,7 @@ func (ts *TestSuite) TestValidate() {
 
 func (ts *TestSuite) TestValidateWithTags() {
 	validationFuncs := map[string]validatorv2.ValidationFunc{
-		"uuid": uuidvalidator.Validate,
+		"uuid": uuidvalidatorpkg.Validate,
 	}
 
 	validator, err := validatorpkg.New(validationFuncs)

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	uuidvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
+	uuidvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -45,7 +45,7 @@ func (ts *TestSuite) TestValidate() {
 
 	for _, tc := range ts.Cases {
 		ts.T().Run(tc.Context, func(t *testing.T) {
-			err := uuidvalidator.Validate(tc.Inf, tc.Param)
+			err := uuidvalidatorpkg.Validate(tc.Inf, tc.Param)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v", err))

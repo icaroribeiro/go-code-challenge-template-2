@@ -9,7 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DATA-DOG/go-sqlmock"
 	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
-	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
+	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
 	"github.com/stretchr/testify/assert"
@@ -42,11 +42,11 @@ func (ts *TestSuite) TestNewContext() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			returnedCtx := dbtrxdirectivepkg.NewContext(ctx, dbTrxCtxValue)
+			returnedCtx := dbtrxdirective.NewContext(ctx, dbTrxCtxValue)
 
 			if !tc.WantError {
 				assert.NotEmpty(t, returnedCtx)
-				returnedDBTrxCtxValue, ok := dbtrxdirectivepkg.FromContext(returnedCtx)
+				returnedDBTrxCtxValue, ok := dbtrxdirective.FromContext(returnedCtx)
 				assert.True(t, ok, "Unexpected type assertion error.")
 				assert.Equal(t, dbTrxCtxValue, returnedDBTrxCtxValue)
 			}
@@ -66,7 +66,7 @@ func (ts *TestSuite) TestFromContext() {
 			Context: "ItShouldSucceedInGettingAnAssociatedValueFromAContext",
 			SetUp: func(t *testing.T) {
 				dbTrxCtxValue = db
-				ctx = dbtrxdirectivepkg.NewContext(ctx, dbTrxCtxValue)
+				ctx = dbtrxdirective.NewContext(ctx, dbTrxCtxValue)
 			},
 			WantError: false,
 		},
@@ -76,7 +76,7 @@ func (ts *TestSuite) TestFromContext() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			returnedDBTrxCtxValue, ok := dbtrxdirectivepkg.FromContext(ctx)
+			returnedDBTrxCtxValue, ok := dbtrxdirective.FromContext(ctx)
 
 			if !tc.WantError {
 				assert.True(t, ok, "Unexpected type assertion error.")
@@ -107,7 +107,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				dbAux = db
 
 				next = func(ctx context.Context) (interface{}, error) {
-					dbAux, _ := dbtrxdirectivepkg.FromContext(ctx)
+					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
 					userDatastore := datastoremodel.User{
 						Username: user.Username,
@@ -134,7 +134,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				dbAux = nil
 
 				next = func(ctx context.Context) (interface{}, error) {
-					_, ok := dbtrxdirectivepkg.FromContext(ctx)
+					_, ok := dbtrxdirective.FromContext(ctx)
 					if !ok {
 						return nil, customerror.New("failed")
 					}
@@ -150,7 +150,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				dbAux = db
 
 				next = func(ctx context.Context) (interface{}, error) {
-					dbAux, _ := dbtrxdirectivepkg.FromContext(ctx)
+					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
 					userDatastore := datastoremodel.User{
 						Username: user.Username,
@@ -180,7 +180,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				dbAux = db
 
 				next = func(ctx context.Context) (interface{}, error) {
-					dbAux, _ := dbtrxdirectivepkg.FromContext(ctx)
+					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
 					userDatastore := datastoremodel.User{
 						Username: user.Username,
@@ -210,7 +210,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				dbAux = db
 
 				next = func(ctx context.Context) (interface{}, error) {
-					dbAux, _ := dbtrxdirectivepkg.FromContext(ctx)
+					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
 					userDatastore := datastoremodel.User{
 						Username: user.Username,
@@ -240,7 +240,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				dbAux = db
 
 				next = func(ctx context.Context) (interface{}, error) {
-					dbAux, _ := dbtrxdirectivepkg.FromContext(ctx)
+					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
 					userDatastore := datastoremodel.User{
 						Username: user.Username,
@@ -268,7 +268,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				dbAux = db
 
 				next = func(ctx context.Context) (interface{}, error) {
-					dbAux, _ := dbtrxdirectivepkg.FromContext(ctx)
+					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
 					userDatastore := datastoremodel.User{
 						Username: user.Username,
@@ -296,7 +296,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			dbTrxDirective := dbtrxdirectivepkg.New(dbAux)
+			dbTrxDirective := dbtrxdirective.New(dbAux)
 
 			_, err := dbTrxDirective.DBTrxMiddleware()(ctx, nil, next)
 

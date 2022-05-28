@@ -9,8 +9,8 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DATA-DOG/go-sqlmock"
 	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
-	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
-	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
+	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -81,14 +81,14 @@ func MockDirective() func(ctx context.Context, obj interface{}, next graphql.Res
 
 func AddAuthDetailsToCtx(ctx context.Context, auth domainmodel.Auth) client.Option {
 	return func(bd *client.Request) {
-		ctx := authdirectivepkg.NewContext(ctx, auth)
+		ctx := authdirective.NewContext(ctx, auth)
 		bd.HTTP = bd.HTTP.WithContext(ctx)
 	}
 }
 
 func AddDBTrxToCtx(ctx context.Context, dbTrx *gorm.DB) client.Option {
 	return func(bd *client.Request) {
-		ctx := dbtrxdirectivepkg.NewContext(ctx, dbTrx)
+		ctx := dbtrxdirective.NewContext(ctx, dbTrx)
 		bd.HTTP = bd.HTTP.WithContext(ctx)
 	}
 }

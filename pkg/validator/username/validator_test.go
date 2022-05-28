@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	usernamevalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/username"
+	usernamevalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/username"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -49,7 +49,7 @@ func (ts *TestSuite) TestValidate() {
 
 	for _, tc := range ts.Cases {
 		ts.T().Run(tc.Context, func(t *testing.T) {
-			err := usernamevalidator.Validate(tc.Inf, tc.Param)
+			err := usernamevalidatorpkg.Validate(tc.Inf, tc.Param)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v", err))

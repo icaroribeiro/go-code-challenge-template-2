@@ -10,7 +10,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/dgrijalva/jwt-go"
 	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
-	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
 	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
@@ -44,11 +44,11 @@ func (ts *TestSuite) TestNewContext() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			returnedCtx := authdirectivepkg.NewContext(ctx, authDetailsCtxValue)
+			returnedCtx := authdirective.NewContext(ctx, authDetailsCtxValue)
 
 			if !tc.WantError {
 				assert.NotEmpty(t, returnedCtx)
-				returnedAuthDetailsCtxValue, ok := authdirectivepkg.FromContext(returnedCtx)
+				returnedAuthDetailsCtxValue, ok := authdirective.FromContext(returnedCtx)
 				assert.True(t, ok, "Unexpected type assertion error.")
 				assert.Equal(t, authDetailsCtxValue, returnedAuthDetailsCtxValue)
 			}
@@ -66,7 +66,7 @@ func (ts *TestSuite) TestFromContext() {
 			Context: "ItShouldSucceedInGettingAnAssociatedValueFromAContext",
 			SetUp: func(t *testing.T) {
 				authDetailsCtxValue = domainmodelfactory.NewAuth(nil)
-				ctx = authdirectivepkg.NewContext(ctx, authDetailsCtxValue)
+				ctx = authdirective.NewContext(ctx, authDetailsCtxValue)
 			},
 			WantError: false,
 		},
@@ -76,7 +76,7 @@ func (ts *TestSuite) TestFromContext() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			returnedAuthDetailsCtxValue, ok := authdirectivepkg.FromContext(ctx)
+			returnedAuthDetailsCtxValue, ok := authdirective.FromContext(ctx)
 
 			if !tc.WantError {
 				assert.True(t, ok, "Unexpected type assertion error.")
@@ -286,7 +286,7 @@ func (ts *TestSuite) TestAuthMiddleware() {
 			authN.On("DecodeToken", tokenString).Return(returnArgs[0]...)
 			authN.On("FetchAuthFromToken", token).Return(returnArgs[1]...)
 
-			authDirective := authdirectivepkg.New(db, authN, 0)
+			authDirective := authdirective.New(db, authN, 0)
 
 			_, err := authDirective.AuthMiddleware()(ctx, nil, next)
 
@@ -502,7 +502,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 			authN.On("ValidateTokenRenewal", tokenString, timeBeforeTokenExpTimeInSec).Return(returnArgs[0]...)
 			authN.On("FetchAuthFromToken", token).Return(returnArgs[1]...)
 
-			authDirective := authdirectivepkg.New(db, authN, timeBeforeTokenExpTimeInSec)
+			authDirective := authdirective.New(db, authN, timeBeforeTokenExpTimeInSec)
 
 			_, err := authDirective.AuthRenewalMiddleware()(ctx, nil, next)
 

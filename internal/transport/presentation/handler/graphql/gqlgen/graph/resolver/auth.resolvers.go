@@ -6,8 +6,8 @@ package resolver
 import (
 	"context"
 
-	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
-	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
+	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
@@ -15,7 +15,7 @@ import (
 )
 
 func (r *mutationResolver) SignUp(ctx context.Context, input security.Credentials) (*model.AuthPayload, error) {
-	dbTrx, ok := dbtrxdirectivepkg.FromContext(ctx)
+	dbTrx, ok := dbtrxdirective.FromContext(ctx)
 	if !ok || dbTrx == nil {
 		return &model.AuthPayload{}, customerror.New("failed to get db_trx_state value from the request context")
 	}
@@ -29,7 +29,7 @@ func (r *mutationResolver) SignUp(ctx context.Context, input security.Credential
 }
 
 func (r *mutationResolver) SignIn(ctx context.Context, input security.Credentials) (*model.AuthPayload, error) {
-	dbTrx, ok := dbtrxdirectivepkg.FromContext(ctx)
+	dbTrx, ok := dbtrxdirective.FromContext(ctx)
 	if !ok || dbTrx == nil {
 		return &model.AuthPayload{}, customerror.New("failed to get db_trx_state value from the request context")
 	}
@@ -43,7 +43,7 @@ func (r *mutationResolver) SignIn(ctx context.Context, input security.Credential
 }
 
 func (r *mutationResolver) RefreshToken(ctx context.Context) (*model.AuthPayload, error) {
-	auth, ok := authdirectivepkg.FromContext(ctx)
+	auth, ok := authdirective.FromContext(ctx)
 	if !ok || auth.IsEmpty() {
 		return &model.AuthPayload{}, customerror.New("failed to get the auth_details value from the request context")
 	}
@@ -57,7 +57,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context) (*model.AuthPayload
 }
 
 func (r *mutationResolver) ChangePassword(ctx context.Context, input security.Passwords) (*model.InfoPayload, error) {
-	auth, ok := authdirectivepkg.FromContext(ctx)
+	auth, ok := authdirective.FromContext(ctx)
 	if !ok || auth.IsEmpty() {
 		return &model.InfoPayload{}, customerror.New("failed to get the auth_details value from the request context")
 	}
@@ -73,7 +73,7 @@ func (r *mutationResolver) ChangePassword(ctx context.Context, input security.Pa
 }
 
 func (r *mutationResolver) SignOut(ctx context.Context) (*model.InfoPayload, error) {
-	auth, ok := authdirectivepkg.FromContext(ctx)
+	auth, ok := authdirective.FromContext(ctx)
 	if !ok || auth.IsEmpty() {
 		return &model.InfoPayload{}, customerror.New("failed to get the auth_details value from the request context")
 	}

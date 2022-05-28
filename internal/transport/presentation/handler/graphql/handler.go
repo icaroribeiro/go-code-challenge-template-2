@@ -5,8 +5,8 @@ import (
 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/user"
-	authdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
-	dbtrxdirectivepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
+	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
 )
@@ -17,7 +17,7 @@ type Handler struct {
 
 // New is the factory function that encapsulates the implementation related to graphql handler.
 func New(healthCheckService healthcheckservice.IService, authService authservice.IService, userService userservice.IService,
-	dbTrxDirective dbtrxdirectivepkg.IDirective, authDirective authdirectivepkg.IDirective) IHandler {
+	dbTrxDirective dbtrxdirective.IDirective, authDirective authdirective.IDirective) IHandler {
 	res := resolver.New(healthCheckService, authService, userService)
 
 	cfg := generated.Config{Resolvers: res}
