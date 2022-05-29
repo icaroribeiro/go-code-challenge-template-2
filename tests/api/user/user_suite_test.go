@@ -4,7 +4,6 @@ import (
 	"context"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"strconv"
 	"testing"
 
@@ -14,7 +13,6 @@ import (
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
-	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
 	uuidvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
 	"github.com/stretchr/testify/suite"
@@ -93,10 +91,10 @@ func AddRequestHeaderEntries(key string, value string) client.Option {
 	}
 }
 
-func AdaptHandlerWithHandlerFuncs(h http.Handler, adapters map[string]adapterhttputilpkg.Adapter) http.Handler {
-	return http.HandlerFunc(adapterhttputilpkg.AdaptFunc(h.ServeHTTP).
-		With(adapters["authMiddleware"]))
-}
+// func AdaptHandlerWithHandlerFuncs(h http.Handler, adapters map[string]adapterhttputilpkg.Adapter) http.Handler {
+// 	return http.HandlerFunc(adapterhttputilpkg.AdaptFunc(h.ServeHTTP).
+// 		With(adapters["authMiddleware"]))
+// }
 
 func (ts *TestSuite) SetupSuite() {
 	publicKey, err := ioutil.ReadFile(publicKeyPath)

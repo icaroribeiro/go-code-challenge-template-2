@@ -2,6 +2,7 @@ package user_test
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -120,10 +121,10 @@ func (ts *TestSuite) TestGetAll() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
+			userDatastoreRepository := userdatastorerepository.New(dbTrx)
+
 			healthCheckService := new(healthcheckmockservice.Service)
 			authService := new(authmockservice.Service)
-
-			userDatastoreRepository := userdatastorerepository.New(dbTrx)
 			userService := userservice.New(userDatastoreRepository, ts.Validator)
 
 			dbTrxDirective := new(dbtrxmockdirective.Directive)
@@ -136,7 +137,8 @@ func (ts *TestSuite) TestGetAll() {
 			query := getAllUsersQuery
 			resp := GetAllUsersQueryResponse{}
 
-			srv := AdaptHandlerWithHandlerFuncs(graphqlHandler.GraphQL(), adapters)
+			srv := http.HandlerFunc(adapterhttputilpkg.AdaptFunc(graphqlHandler.GraphQL()).
+				With(adapters["authMiddleware"]))
 
 			cl := client.New(srv)
 			err := cl.Post(query, &resp, opt)

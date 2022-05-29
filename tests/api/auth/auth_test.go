@@ -1,225 +1,128 @@
 package auth_test
 
-// import (
-// 	"encoding/json"
-// 	"fmt"
-// 	"net/http"
-// 	"net/http/httptest"
-// 	"testing"
+import (
+	"fmt"
+	"net/http"
+	"testing"
 
-// 	fake "github.com/brianvoe/gofakeit/v5"
-// 	"github.com/gorilla/mux"
-// 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
-// 	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
-// 	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
-// 	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
-// 	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
-// 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
-// 	authhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/auth"
-// 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-// 	messagehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/message"
-// 	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request"
-// 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
-// 	tokenhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/token"
-// 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-// 	dbtrxmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/dbtrx"
-// 	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
-// 	"github.com/stretchr/testify/assert"
-// 	"github.com/stretchr/testify/suite"
-// 	"gorm.io/gorm"
-// )
+	"github.com/99designs/gqlgen/client"
+	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
+	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
+	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
+	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
+	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
+	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
+	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
+	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/auth"
+	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
+	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"gorm.io/gorm"
+)
 
-// func TestAuthInt(t *testing.T) {
-// 	suite.Run(t, new(TestSuite))
-// }
+func TestAuthInteg(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}
 
-// func (ts *TestSuite) TestSignUp() {
-// 	dbTrx := &gorm.DB{}
+func (ts *TestSuite) TestSignUp() {
+	db := &gorm.DB{}
 
-// 	var authN authpkg.IAuth
+	var authN authpkg.IAuth
 
-// 	credentials := securitypkg.Credentials{}
+	credentials := securitypkgfactory.NewCredentials(nil)
 
-// 	body := ""
+	opt := func(bd *client.Request) {}
 
-// 	dbTrxCtxValue := &gorm.DB{}
+	ts.Cases = Cases{
+		{
+			Context: "ItShouldSucceedInSigningUp",
+			SetUp: func(t *testing.T) {
+				db = ts.DB
 
-// 	ts.Cases = Cases{
-// 		{
-// 			Context: "ItShouldSucceedInSigningUp",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+				authN = authpkg.New(ts.RSAKeys)
 
-// 				authN = authpkg.New(ts.RSAKeys)
+				opt = client.Var("input", credentials)
+			},
+			WantError: false,
+			TearDown: func(t *testing.T) {
+				result := db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.Auth{})
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.Login{})
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.User{})
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			},
+		},
+		{
+			Context: "ItShouldFailIfTheDatabaseIsNull",
+			SetUp: func(t *testing.T) {
+				db = nil
 
-// 				username := fake.Username()
-// 				password := fake.Password(true, true, true, false, false, 8)
+				authN = authpkg.New(ts.RSAKeys)
 
-// 				credentials = securitypkg.Credentials{
-// 					Username: username,
-// 					Password: password,
-// 				}
+				opt = client.Var("input", credentials)
+			},
+			WantError: true,
+			TearDown:  func(t *testing.T) {},
+		},
+		{
+			Context: "ItShouldFailIfTheDatabaseStateIsInconsistent",
+			SetUp: func(t *testing.T) {
+				db = ts.DB.Begin()
 
-// 				body = fmt.Sprintf(`
-// 				{
-// 					"username":"%s",
-// 					"password":"%s"
-// 				}`,
-// 					credentials.Username, credentials.Password)
+				authN = authpkg.New(ts.RSAKeys)
 
-// 				dbTrxCtxValue = dbTrx
-// 			},
-// 			StatusCode: http.StatusOK,
-// 			WantError:  false,
-// 			TearDown: func(t *testing.T) {
-// 				result := dbTrx.Rollback()
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-// 			},
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheDatabaseTransactionFromTheRequestContextIsNull",
-// 			SetUp: func(t *testing.T) {
-// 				authN = authpkg.New(ts.RSAKeys)
+				opt = client.Var("input", credentials)
+			},
+			WantError: true,
+			TearDown:  func(t *testing.T) {},
+		},
+	}
 
-// 				username := fake.Username()
-// 				password := fake.Password(true, true, true, false, false, 8)
+	for _, tc := range ts.Cases {
+		ts.T().Run(tc.Context, func(t *testing.T) {
+			tc.SetUp(t)
 
-// 				credentials = securitypkg.Credentials{
-// 					Username: username,
-// 					Password: password,
-// 				}
+			authDatastoreRepository := authdatastorerepository.New(db)
+			userDatastoreRepository := userdatastorerepository.New(db)
+			loginDatastoreRepository := logindatastorerepository.New(db)
 
-// 				body = ""
+			healthCheckService := new(healthcheckmockservice.Service)
+			authService := authservice.New(authDatastoreRepository, loginDatastoreRepository, userDatastoreRepository,
+				authN, ts.Security, ts.Validator, ts.TokenExpTimeInSec)
 
-// 				dbTrxCtxValue = nil
-// 			},
-// 			StatusCode: http.StatusInternalServerError,
-// 			WantError:  true,
-// 			TearDown:   func(t *testing.T) {},
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheRequestBodyIsAnImproperlyFormattedJsonString",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+			userService := userservice.New(userDatastoreRepository, ts.Validator)
 
-// 				authN = authpkg.New(ts.RSAKeys)
+			dbTrxDirective := dbtrxdirective.New(db)
 
-// 				username := fake.Username()
-// 				password := fake.Password(true, true, true, false, false, 8)
+			authDirective := new(authmockdirective.Directive)
+			authDirective.On("AuthMiddleware").Return(MockDirective())
+			authDirective.On("AuthRenewalMiddleware").Return(MockDirective())
 
-// 				credentials = securitypkg.Credentials{
-// 					Username: username,
-// 					Password: password,
-// 				}
+			graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 
-// 				body = fmt.Sprintf(`
-// 					"username":"%s",
-// 					"password":"%s"
-// 				`,
-// 					credentials.Username, credentials.Password)
+			mutation := signUpMutation
+			resp := SignUpMutationResponse{}
 
-// 				dbTrxCtxValue = dbTrx
-// 			},
-// 			StatusCode: http.StatusBadRequest,
-// 			WantError:  true,
-// 			TearDown:   func(t *testing.T) {},
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheDatabaseStateIsInconsistent",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+			srv := http.HandlerFunc(graphqlHandler.GraphQL())
 
-// 				result := dbTrx.Rollback()
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			cl := client.New(srv)
+			err := cl.Post(mutation, &resp, opt)
 
-// 				authN = authpkg.New(ts.RSAKeys)
+			if !tc.WantError {
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
+				assert.NotEmpty(t, resp.SignUp.Token)
+			} else {
+				assert.NotNil(t, err, "Predicted error lost.")
+			}
 
-// 				username := fake.Username()
-// 				password := fake.Password(true, true, true, false, false, 8)
-
-// 				credentials = securitypkg.Credentials{
-// 					Username: username,
-// 					Password: password,
-// 				}
-
-// 				body = fmt.Sprintf(`
-// 				{
-// 					"username":"%s",
-// 					"password":"%s"
-// 				}`,
-// 					credentials.Username, credentials.Password)
-
-// 				dbTrxCtxValue = dbTrx
-// 			},
-// 			StatusCode: http.StatusInternalServerError,
-// 			WantError:  true,
-// 			TearDown:   func(t *testing.T) {},
-// 		},
-// 	}
-
-// 	for _, tc := range ts.Cases {
-// 		ts.T().Run(tc.Context, func(t *testing.T) {
-// 			tc.SetUp(t)
-
-// 			authDatastoreRepository := authdatastorerepository.New(dbTrx)
-
-// 			userDatastoreRepository := userdatastorerepository.New(dbTrx)
-
-// 			loginDatastoreRepository := logindatastorerepository.New(dbTrx)
-
-// 			authService := authservice.New(authDatastoreRepository, loginDatastoreRepository, userDatastoreRepository,
-// 				authN, ts.Security, ts.Validator, ts.TokenExpTimeInSec)
-// 			authHandler := authhandler.New(authService)
-
-// 			route := routehttputilpkg.Route{
-// 				Name:        "SignUp",
-// 				Method:      http.MethodPost,
-// 				Path:        "/sign_up",
-// 				HandlerFunc: authHandler.SignUp,
-// 			}
-
-// 			requestData := requesthttputilpkg.RequestData{
-// 				Method: route.Method,
-// 				Target: route.Path,
-// 				Body:   body,
-// 			}
-
-// 			reqBody := requesthttputilpkg.PrepareRequestBody(requestData.Body)
-
-// 			req := httptest.NewRequest(requestData.Method, requestData.Target, reqBody)
-
-// 			ctx := req.Context()
-// 			ctx = dbtrxmiddlewarepkg.NewContext(ctx, dbTrxCtxValue)
-// 			req = req.WithContext(ctx)
-
-// 			resprec := httptest.NewRecorder()
-
-// 			router := mux.NewRouter()
-
-// 			router.Name(route.Name).
-// 				Methods(route.Method).
-// 				Path(route.Path).
-// 				HandlerFunc(route.HandlerFunc)
-
-// 			router.ServeHTTP(resprec, req)
-
-// 			if !tc.WantError {
-// 				assert.Equal(t, resprec.Code, tc.StatusCode)
-// 				returnedToken := tokenhttputilpkg.Token{}
-// 				err := json.NewDecoder(resprec.Body).Decode(&returnedToken)
-// 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
-// 				assert.NotEmpty(t, returnedToken.Text)
-// 			} else {
-// 				assert.Equal(t, resprec.Code, tc.StatusCode)
-// 			}
-
-// 			tc.TearDown(t)
-// 		})
-// 	}
-// }
+			tc.TearDown(t)
+		})
+	}
+}
 
 // func (ts *TestSuite) TestSignIn() {
 // 	dbTrx := &gorm.DB{}

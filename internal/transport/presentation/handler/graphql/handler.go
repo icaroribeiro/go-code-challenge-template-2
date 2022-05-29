@@ -1,6 +1,8 @@
 package graphql
 
 import (
+	"net/http"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
@@ -30,12 +32,12 @@ func New(healthCheckService healthcheckservice.IService, authService authservice
 	}
 }
 
-func (h *Handler) GraphQL() *handler.Server {
+func (h *Handler) GraphQL() func(w http.ResponseWriter, r *http.Request) {
 	srv := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			h.Cfg,
 		),
 	)
 
-	return srv
+	return srv.ServeHTTP
 }

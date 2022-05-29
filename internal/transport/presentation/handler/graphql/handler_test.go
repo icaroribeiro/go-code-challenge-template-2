@@ -2,6 +2,7 @@ package graphql_test
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
@@ -56,7 +57,7 @@ func (ts *TestSuite) TestGraphQL() {
 
 			graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 
-			srv := graphqlHandler.GraphQL()
+			srv := http.HandlerFunc(graphqlHandler.GraphQL())
 
 			query := getHealthCheckQuery
 			resp := GetHealthCheckQueryResponse{}

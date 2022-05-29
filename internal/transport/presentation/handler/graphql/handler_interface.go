@@ -1,10 +1,8 @@
 package graphql
 
-import (
-	"github.com/99designs/gqlgen/graphql/handler"
-)
+import "net/http"
 
 // IHandler interface is the graphql's handler contract.
 type IHandler interface {
-	GraphQL() *handler.Server
+	GraphQL() func(w http.ResponseWriter, r *http.Request)
 }

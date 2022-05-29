@@ -53,7 +53,7 @@ func (ts *TestSuite) TestConfigureRoutes() {
 						Name:   "GraphQL",
 						Method: http.MethodPost,
 						Path:   "/graphql",
-						HandlerFunc: adapterhttputilpkg.AdaptFunc(graphqlHandler.GraphQL().ServeHTTP).
+						HandlerFunc: adapterhttputilpkg.AdaptFunc(graphqlHandler.GraphQL()).
 							With(adapters["authMiddleware"]),
 					},
 				}
