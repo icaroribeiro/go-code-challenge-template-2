@@ -6,8 +6,9 @@ import (
 	"strings"
 	"testing"
 
+	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
+
 	"github.com/99designs/gqlgen/client"
-	fake "github.com/brianvoe/gofakeit/v5"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
 	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
@@ -33,6 +34,8 @@ func (ts *TestSuite) TestGetAll() {
 	dbTrx := &gorm.DB{}
 
 	var authN authpkg.IAuth
+
+	credentials := securitypkgfactory.NewCredentials(nil)
 
 	timeBeforeTokenExpTimeInSec := 30
 
@@ -60,11 +63,8 @@ func (ts *TestSuite) TestGetAll() {
 
 				authN = authpkg.New(ts.RSAKeys)
 
-				username := fake.Username()
-				password := fake.Password(true, true, true, false, false, 8)
-
 				userDatastore = datastoremodel.User{
-					Username: username,
+					Username: credentials.Username,
 				}
 
 				result := dbTrx.Create(&userDatastore)
@@ -75,8 +75,8 @@ func (ts *TestSuite) TestGetAll() {
 
 				loginDatastore = datastoremodel.Login{
 					UserID:   userDatastore.ID,
-					Username: username,
-					Password: password,
+					Username: credentials.Username,
+					Password: credentials.Password,
 				}
 
 				result = dbTrx.Create(&loginDatastore)
