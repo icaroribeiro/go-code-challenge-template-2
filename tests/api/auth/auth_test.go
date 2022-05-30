@@ -364,6 +364,8 @@ func (ts *TestSuite) TestRefreshToken() {
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 			}
+
+			tc.TearDown(t)
 		})
 	}
 }
@@ -509,7 +511,139 @@ func (ts *TestSuite) TestChangePassword() {
 	}
 }
 
-// func (ts *TestSuite) TestSignOut() {
+func (ts *TestSuite) TestSignOut() {
+	dbTrx := &gorm.DB{}
+
+	var authN authpkg.IAuth
+
+	credentials := securitypkgfactory.NewCredentials(nil)
+
+	timeBeforeTokenExpTimeInSec := 120
+
+	userDatastore := datastoremodel.User{}
+	loginDatastore := datastoremodel.Login{}
+	authDatastore := datastoremodel.Auth{}
+
+	key := ""
+	bearerToken := []string{"", ""}
+	value := ""
+
+	adapters := map[string]adapterhttputilpkg.Adapter{
+		"authMiddleware": authmiddlewarepkg.Auth(),
+	}
+
+	opt := func(bd *client.Request) {}
+
+	message := ""
+
+	ts.Cases = Cases{
+		{
+			Context: "ItShouldSucceedInSigningOut",
+			SetUp: func(t *testing.T) {
+				dbTrx = ts.DB.Begin()
+				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+
+				authN = authpkg.New(ts.RSAKeys)
+
+				userDatastore = datastoremodel.User{
+					Username: credentials.Username,
+				}
+
+				result := dbTrx.Create(&userDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+
+				loginDatastore = datastoremodel.Login{
+					UserID:   userDatastore.ID,
+					Username: credentials.Username,
+					Password: credentials.Password,
+				}
+
+				result = dbTrx.Create(&loginDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+
+				authDatastore = datastoremodel.Auth{
+					UserID: userDatastore.ID,
+				}
+
+				result = dbTrx.Create(&authDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+
+				key = "Authorization"
+				tokenString, err := authN.CreateToken(authDatastore.ToDomain(), ts.TokenExpTimeInSec)
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v", err))
+				bearerToken = []string{"Bearer", tokenString}
+				value = strings.Join(bearerToken[:], " ")
+
+				opt = AddRequestHeaderEntries(key, value)
+
+				message = "you have logged out successfully"
+			},
+			WantError: false,
+			TearDown: func(t *testing.T) {
+				result := dbTrx.Rollback()
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			},
+		},
+		{
+			Context: "ItShouldFailIfTheTokenIsNotSentIntheRequest",
+			SetUp: func(t *testing.T) {
+				dbTrx = ts.DB.Begin()
+				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+
+				authN = authpkg.New(ts.RSAKeys)
+
+				opt = func(bd *client.Request) {}
+			},
+			WantError: true,
+			TearDown: func(t *testing.T) {
+				result := dbTrx.Rollback()
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			},
+		},
+	}
+
+	for _, tc := range ts.Cases {
+		ts.T().Run(tc.Context, func(t *testing.T) {
+			tc.SetUp(t)
+
+			authDatastoreRepository := authdatastorerepository.New(dbTrx)
+			loginDatastoreRepository := logindatastorerepository.New(dbTrx)
+			userDatastoreRepository := userdatastorerepository.New(dbTrx)
+
+			healthCheckService := new(healthcheckmockservice.Service)
+			authService := authservice.New(authDatastoreRepository, loginDatastoreRepository, userDatastoreRepository,
+				authN, ts.Security, ts.Validator, ts.TokenExpTimeInSec)
+			userService := userservice.New(userDatastoreRepository, ts.Validator)
+
+			dbTrxDirective := new(dbtrxmockdirective.Directive)
+			dbTrxDirective.On("DBTrxMiddleware").Return(MockDirective())
+
+			authDirective := authdirective.New(dbTrx, authN, timeBeforeTokenExpTimeInSec)
+
+			graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
+
+			mutation := signOutMutation
+			resp := SignOutMutationResponse{}
+
+			srv := http.HandlerFunc(adapterhttputilpkg.AdaptFunc(graphqlHandler.GraphQL()).
+				With(adapters["authMiddleware"]))
+
+			cl := client.New(srv)
+			err := cl.Post(mutation, &resp, opt)
+
+			if !tc.WantError {
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
+				assert.NotEmpty(t, resp.SignOut.Message)
+				assert.Equal(t, message, resp.SignOut.Message)
+			} else {
+				assert.NotNil(t, err, "Predicted error lost.")
+			}
+
+			tc.TearDown(t)
+		})
+	}
+}
+
 // 	dbTrx := &gorm.DB{}
 
 // 	var authN authpkg.IAuth
