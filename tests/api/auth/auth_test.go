@@ -314,18 +314,6 @@ func (ts *TestSuite) TestRefreshToken() {
 			},
 		},
 		{
-			Context: "ItShouldFailIfTheDatabaseStateIsInconsistent",
-			SetUp: func(t *testing.T) {
-				dbTrx = ts.DB.Begin()
-				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
-
-				result := dbTrx.Rollback()
-				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-			},
-			WantError: true,
-			TearDown:  func(t *testing.T) {},
-		},
-		{
 			Context: "ItShouldFailIfTheTokenIsNotSentIntheRequest",
 			SetUp: func(t *testing.T) {
 				dbTrx = ts.DB.Begin()
@@ -380,252 +368,146 @@ func (ts *TestSuite) TestRefreshToken() {
 	}
 }
 
-// func (ts *TestSuite) TestChangePassword() {
-// 	dbTrx := &gorm.DB{}
+func (ts *TestSuite) TestChangePassword() {
+	dbTrx := &gorm.DB{}
 
-// 	var authN authpkg.IAuth
+	var authN authpkg.IAuth
 
-// 	userDatastore := datastoremodel.User{}
+	credentials := securitypkgfactory.NewCredentials(nil)
 
-// 	loginDatastore := datastoremodel.Login{}
+	timeBeforeTokenExpTimeInSec := 120
 
-// 	authDatastore := datastoremodel.Auth{}
+	userDatastore := datastoremodel.User{}
+	loginDatastore := datastoremodel.Login{}
+	authDatastore := datastoremodel.Auth{}
 
-// 	auth := domainmodel.Auth{}
+	key := ""
+	bearerToken := []string{"", ""}
+	value := ""
 
-// 	passwords := securitypkg.Passwords{}
+	adapters := map[string]adapterhttputilpkg.Adapter{
+		"authMiddleware": authmiddlewarepkg.Auth(),
+	}
 
-// 	body := ""
+	args := map[string]interface{}{
+		"currentPassword": credentials.Password,
+	}
 
-// 	authDetailsCtxValue := domainmodel.Auth{}
+	passwords := securitypkgfactory.NewPasswords(args)
 
-// 	ts.Cases = Cases{
-// 		{
-// 			Context: "ItShouldSucceedInResettingThePassword",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+	opts := []client.Option{}
 
-// 				authN = authpkg.New(ts.RSAKeys)
+	message := ""
 
-// 				username := fake.Username()
-// 				password := fake.Password(true, true, true, false, false, 8)
+	ts.Cases = Cases{
+		{
+			Context: "ItShouldSucceedInResettingThePassword",
+			SetUp: func(t *testing.T) {
+				dbTrx = ts.DB.Begin()
+				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
 
-// 				userDatastore = datastoremodel.User{
-// 					Username: username,
-// 				}
+				authN = authpkg.New(ts.RSAKeys)
 
-// 				result := dbTrx.Create(&userDatastore)
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+				userDatastore = datastoremodel.User{
+					Username: credentials.Username,
+				}
 
-// 				loginDatastore = datastoremodel.Login{
-// 					UserID:   userDatastore.ID,
-// 					Username: username,
-// 					Password: password,
-// 				}
+				result := dbTrx.Create(&userDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-// 				result = dbTrx.Create(&loginDatastore)
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+				loginDatastore = datastoremodel.Login{
+					UserID:   userDatastore.ID,
+					Username: credentials.Username,
+					Password: credentials.Password,
+				}
 
-// 				authDatastore = datastoremodel.Auth{
-// 					UserID: userDatastore.ID,
-// 				}
+				result = dbTrx.Create(&loginDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-// 				result = dbTrx.Create(&authDatastore)
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+				authDatastore = datastoremodel.Auth{
+					UserID: userDatastore.ID,
+				}
 
-// 				auth = authDatastore.ToDomain()
+				result = dbTrx.Create(&authDatastore)
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-// 				currentPassword := password
-// 				newPassword := fake.Password(true, true, true, false, false, 8)
+				key = "Authorization"
+				tokenString, err := authN.CreateToken(authDatastore.ToDomain(), ts.TokenExpTimeInSec)
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v", err))
+				bearerToken = []string{"Bearer", tokenString}
+				value = strings.Join(bearerToken[:], " ")
 
-// 				passwords = securitypkg.Passwords{
-// 					CurrentPassword: currentPassword,
-// 					NewPassword:     newPassword,
-// 				}
+				opts = []client.Option{}
+				opts = append(opts, AddRequestHeaderEntries(key, value))
+				opts = append(opts, client.Var("input", passwords))
 
-// 				body = fmt.Sprintf(`
-// 				{
-// 					"current_password":"%s",
-// 					"new_password":"%s"
-// 				}`,
-// 					passwords.CurrentPassword, passwords.NewPassword)
+				message = "the password has been updated successfully"
+			},
+			WantError: false,
+			TearDown: func(t *testing.T) {
+				result := dbTrx.Rollback()
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			},
+		},
+		{
+			Context: "ItShouldFailIfTheTokenIsNotSentIntheRequest",
+			SetUp: func(t *testing.T) {
+				dbTrx = ts.DB.Begin()
+				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
 
-// 				authDetailsCtxValue = auth
-// 			},
-// 			StatusCode: http.StatusOK,
-// 			WantError:  false,
-// 			TearDown: func(t *testing.T) {
-// 				result := dbTrx.Rollback()
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-// 			},
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheAuthDetailsFromTheRequestContextIsEmpty",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+				authN = authpkg.New(ts.RSAKeys)
 
-// 				authN = authpkg.New(ts.RSAKeys)
+				opts = []client.Option{}
+			},
+			WantError: true,
+			TearDown: func(t *testing.T) {
+				result := dbTrx.Rollback()
+				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			},
+		},
+	}
 
-// 				authDetailsCtxValue = domainmodel.Auth{}
-// 			},
-// 			StatusCode: http.StatusInternalServerError,
-// 			WantError:  true,
-// 			TearDown:   func(t *testing.T) {},
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheRequestBodyIsAnImproperlyFormattedJsonString",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
+	for _, tc := range ts.Cases {
+		ts.T().Run(tc.Context, func(t *testing.T) {
+			tc.SetUp(t)
 
-// 				authN = authpkg.New(ts.RSAKeys)
+			authDatastoreRepository := authdatastorerepository.New(dbTrx)
+			loginDatastoreRepository := logindatastorerepository.New(dbTrx)
+			userDatastoreRepository := userdatastorerepository.New(dbTrx)
 
-// 				username := fake.Username()
-// 				password := fake.Password(true, true, true, false, false, 8)
+			healthCheckService := new(healthcheckmockservice.Service)
+			authService := authservice.New(authDatastoreRepository, loginDatastoreRepository, userDatastoreRepository,
+				authN, ts.Security, ts.Validator, ts.TokenExpTimeInSec)
+			userService := userservice.New(userDatastoreRepository, ts.Validator)
 
-// 				userDatastore = datastoremodel.User{
-// 					Username: username,
-// 				}
+			dbTrxDirective := new(dbtrxmockdirective.Directive)
+			dbTrxDirective.On("DBTrxMiddleware").Return(MockDirective())
 
-// 				result := dbTrx.Create(&userDatastore)
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			authDirective := authdirective.New(dbTrx, authN, timeBeforeTokenExpTimeInSec)
 
-// 				loginDatastore = datastoremodel.Login{
-// 					UserID:   userDatastore.ID,
-// 					Username: username,
-// 					Password: password,
-// 				}
+			graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 
-// 				result = dbTrx.Create(&loginDatastore)
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			mutation := changePasswordMutation
+			resp := ChangePasswordMutationResponse{}
 
-// 				authDatastore = datastoremodel.Auth{
-// 					UserID: userDatastore.ID,
-// 				}
+			srv := http.HandlerFunc(adapterhttputilpkg.AdaptFunc(graphqlHandler.GraphQL()).
+				With(adapters["authMiddleware"]))
 
-// 				result = dbTrx.Create(&authDatastore)
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
+			cl := client.New(srv)
+			err := cl.Post(mutation, &resp, opts...)
 
-// 				auth = authDatastore.ToDomain()
+			if !tc.WantError {
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
+				assert.NotEmpty(t, resp.ChangePassword.Message)
+				assert.Equal(t, message, resp.ChangePassword.Message)
+			} else {
+				assert.NotNil(t, err, "Predicted error lost.")
+			}
 
-// 				currentPassword := fake.Password(true, true, true, false, false, 8)
-// 				newPassword := fake.Password(true, true, true, false, false, 8)
-
-// 				passwords = securitypkg.Passwords{
-// 					CurrentPassword: currentPassword,
-// 					NewPassword:     newPassword,
-// 				}
-
-// 				body = fmt.Sprintf(`
-// 					"current_password":"%s",
-// 					"new_password":"%s"
-// 				`,
-// 					passwords.CurrentPassword, passwords.NewPassword)
-
-// 				authDetailsCtxValue = auth
-// 			},
-// 			StatusCode: http.StatusBadRequest,
-// 			WantError:  true,
-// 			TearDown:   func(t *testing.T) {},
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheDatabaseStateIsInconsistent",
-// 			SetUp: func(t *testing.T) {
-// 				dbTrx = ts.DB.Begin()
-// 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
-
-// 				result := dbTrx.Rollback()
-// 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-
-// 				authN = authpkg.New(ts.RSAKeys)
-
-// 				auth = domainmodel.Auth{}
-
-// 				currentPassword := fake.Password(true, true, true, false, false, 8)
-// 				newPassword := fake.Password(true, true, true, false, false, 8)
-
-// 				passwords = securitypkg.Passwords{
-// 					CurrentPassword: currentPassword,
-// 					NewPassword:     newPassword,
-// 				}
-
-// 				body = fmt.Sprintf(`
-// 				{
-// 					"current_password":"%s",
-// 					"new_password":"%s"
-// 				}`,
-// 					passwords.CurrentPassword, passwords.NewPassword)
-
-// 				authDetailsCtxValue = auth
-// 			},
-// 			StatusCode: http.StatusInternalServerError,
-// 			WantError:  true,
-// 			TearDown:   func(t *testing.T) {},
-// 		},
-// 	}
-
-// 	for _, tc := range ts.Cases {
-// 		ts.T().Run(tc.Context, func(t *testing.T) {
-// 			tc.SetUp(t)
-
-// 			authDatastoreRepository := authdatastorerepository.New(dbTrx)
-
-// 			userDatastoreRepository := userdatastorerepository.New(dbTrx)
-
-// 			loginDatastoreRepository := logindatastorerepository.New(dbTrx)
-
-// 			authService := authservice.New(authDatastoreRepository, loginDatastoreRepository, userDatastoreRepository,
-// 				authN, ts.Security, ts.Validator, ts.TokenExpTimeInSec)
-// 			authHandler := authhandler.New(authService)
-
-// 			route := routehttputilpkg.Route{
-// 				Name:        "ChangePassword",
-// 				Method:      http.MethodPost,
-// 				Path:        "/change_password",
-// 				HandlerFunc: authHandler.ChangePassword,
-// 			}
-
-// 			requestData := requesthttputilpkg.RequestData{
-// 				Method: route.Method,
-// 				Target: route.Path,
-// 				Body:   body,
-// 			}
-
-// 			reqBody := requesthttputilpkg.PrepareRequestBody(requestData.Body)
-
-// 			req := httptest.NewRequest(requestData.Method, requestData.Target, reqBody)
-
-// 			ctx := req.Context()
-// 			ctx = authmiddlewarepkg.NewContext(ctx, authDetailsCtxValue)
-// 			req = req.WithContext(ctx)
-
-// 			resprec := httptest.NewRecorder()
-
-// 			router := mux.NewRouter()
-
-// 			router.Name(route.Name).
-// 				Methods(route.Method).
-// 				Path(route.Path).
-// 				HandlerFunc(route.HandlerFunc)
-
-// 			router.ServeHTTP(resprec, req)
-
-// 			if !tc.WantError {
-// 				assert.Equal(t, resprec.Code, tc.StatusCode)
-// 				returnedMessage := messagehttputilpkg.Message{}
-// 				err := json.NewDecoder(resprec.Body).Decode(&returnedMessage)
-// 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
-// 				assert.NotEmpty(t, returnedMessage.Text)
-// 			} else {
-// 				assert.Equal(t, resprec.Code, tc.StatusCode)
-// 			}
-
-// 			tc.TearDown(t)
-// 		})
-// 	}
-// }
+			tc.TearDown(t)
+		})
+	}
+}
 
 // func (ts *TestSuite) TestSignOut() {
 // 	dbTrx := &gorm.DB{}
