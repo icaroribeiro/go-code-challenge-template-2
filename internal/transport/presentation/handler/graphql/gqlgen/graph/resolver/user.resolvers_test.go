@@ -6,7 +6,7 @@ import (
 
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql/handler"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
 	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
@@ -14,7 +14,7 @@ import (
 	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/auth"
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -25,7 +25,7 @@ func TestUserResolversUnit(t *testing.T) {
 }
 
 func (ts *TestSuite) TestGetAllUsers() {
-	user := domainmodelfactory.NewUser(nil)
+	user := domainentityfactory.NewUser(nil)
 
 	dbTrx := &gorm.DB{}
 	dbTrx = nil
@@ -37,7 +37,7 @@ func (ts *TestSuite) TestGetAllUsers() {
 			Context: "ItShouldSucceedInGettingAllUsers",
 			SetUp: func(t *testing.T) {
 				returnArgs = ReturnArgs{
-					{domainmodel.Users{user}, nil},
+					{domainentity.Users{user}, nil},
 				}
 			},
 			WantError: false,
@@ -46,7 +46,7 @@ func (ts *TestSuite) TestGetAllUsers() {
 			Context: "ItShouldFailIfAnErrorOccursWhenGettingAllUsers",
 			SetUp: func(t *testing.T) {
 				returnArgs = ReturnArgs{
-					{domainmodel.Users{}, customerror.New("failed")},
+					{domainentity.Users{}, customerror.New("failed")},
 				}
 			},
 			WantError: true,

@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
-	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
+	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -25,9 +25,9 @@ func (ts *TestSuite) TestCreate() {
 	driver := "postgres"
 	db, mock := NewMockDB(driver)
 
-	user := domainmodel.User{}
+	user := domainentity.User{}
 
-	newUser := domainmodel.User{}
+	newUser := domainentity.User{}
 
 	errorType := customerror.NoType
 
@@ -41,14 +41,14 @@ func (ts *TestSuite) TestCreate() {
 					"id": uuid.Nil,
 				}
 
-				user = domainmodelfactory.NewUser(args)
+				user = domainentityfactory.NewUser(args)
 
 				args = map[string]interface{}{
 					"id":       uuid.Nil,
 					"username": user.Username,
 				}
 
-				newUser = domainmodelfactory.NewUser(args)
+				newUser = domainentityfactory.NewUser(args)
 
 				mock.ExpectBegin()
 
@@ -67,7 +67,7 @@ func (ts *TestSuite) TestCreate() {
 					"id": uuid.Nil,
 				}
 
-				user = domainmodelfactory.NewUser(args)
+				user = domainentityfactory.NewUser(args)
 
 				mock.ExpectBegin()
 
@@ -84,7 +84,7 @@ func (ts *TestSuite) TestCreate() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenCreatingTheUserBecauseTheUserIsAlreadyRegistered",
 			SetUp: func(t *testing.T) {
-				user = domainmodelfactory.NewUser(nil)
+				user = domainentityfactory.NewUser(nil)
 
 				mock.ExpectBegin()
 
@@ -127,7 +127,7 @@ func (ts *TestSuite) TestGetAll() {
 	driver := "postgres"
 	db, mock := NewMockDB(driver)
 
-	user := domainmodel.User{}
+	user := domainentity.User{}
 
 	errorType := customerror.NoType
 

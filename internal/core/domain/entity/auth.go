@@ -1,10 +1,10 @@
-package model
+package entity
 
 import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// Auth is the representation of the auth's domain model.
+// Auth is the representation of the auth's domain entity.
 type Auth struct {
 	ID     uuid.UUID
 	UserID uuid.UUID

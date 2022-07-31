@@ -1,16 +1,16 @@
-package model
+package entity
 
 import (
 	"github.com/bluele/factory-go/factory"
 	fake "github.com/brianvoe/gofakeit/v5"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	uuid "github.com/satori/go.uuid"
 )
 
 // NewLogin is the function that returns an instance of the login's domain model for performing tests.
-func NewLogin(args map[string]interface{}) domainmodel.Login {
+func NewLogin(args map[string]interface{}) domainentity.Login {
 	loginFactory := factory.NewFactory(
-		domainmodel.Login{},
+		domainentity.Login{},
 	).Attr("ID", func(fArgs factory.Args) (interface{}, error) {
 		id := uuid.NewV4()
 
@@ -45,5 +45,5 @@ func NewLogin(args map[string]interface{}) domainmodel.Login {
 		return password, nil
 	})
 
-	return loginFactory.MustCreate().(domainmodel.Login)
+	return loginFactory.MustCreate().(domainentity.Login)
 }

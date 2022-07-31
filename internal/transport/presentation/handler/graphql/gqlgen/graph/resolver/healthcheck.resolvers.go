@@ -6,16 +6,16 @@ package resolver
 import (
 	"context"
 
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/entity"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/generated"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model"
 )
 
-func (r *queryResolver) GetHealthCheck(ctx context.Context) (*model.HealthCheck, error) {
+func (r *queryResolver) GetHealthCheck(ctx context.Context) (*entity.HealthCheck, error) {
 	if err := r.HealthCheckService.GetStatus(); err != nil {
 		return nil, err
 	}
 
-	return &model.HealthCheck{
+	return &entity.HealthCheck{
 		Status: "everything is up and running",
 	}, nil
 }

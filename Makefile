@@ -1,5 +1,5 @@
 #
-# Set of tasks related to API building.
+# Set of tasks related to API building and running.
 #
 setup-api:
 	go mod download

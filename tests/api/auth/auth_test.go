@@ -10,7 +10,7 @@ import (
 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
-	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
 	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
 	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
@@ -53,11 +53,11 @@ func (ts *TestSuite) TestSignUp() {
 			},
 			WantError: false,
 			TearDown: func(t *testing.T) {
-				result := db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.Auth{})
+				result := db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.Auth{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.Login{})
+				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.Login{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.User{})
+				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.User{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 			},
 		},
@@ -136,8 +136,8 @@ func (ts *TestSuite) TestSignIn() {
 
 	credentials := securitypkgfactory.NewCredentials(nil)
 
-	userDatastore := datastoremodel.User{}
-	loginDatastore := datastoremodel.Login{}
+	userDatastore := datastoreentity.User{}
+	loginDatastore := datastoreentity.Login{}
 
 	opt := func(bd *client.Request) {}
 
@@ -149,14 +149,14 @@ func (ts *TestSuite) TestSignIn() {
 
 				authN = authpkg.New(ts.RSAKeys)
 
-				userDatastore = datastoremodel.User{
+				userDatastore = datastoreentity.User{
 					Username: credentials.Username,
 				}
 
 				result := db.Create(&userDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				loginDatastore = datastoremodel.Login{
+				loginDatastore = datastoreentity.Login{
 					UserID:   userDatastore.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -169,11 +169,11 @@ func (ts *TestSuite) TestSignIn() {
 			},
 			WantError: false,
 			TearDown: func(t *testing.T) {
-				result := db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.Auth{})
+				result := db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.Auth{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.Login{})
+				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.Login{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoremodel.User{})
+				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.User{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 			},
 		},
@@ -253,9 +253,9 @@ func (ts *TestSuite) TestRefreshToken() {
 
 	timeBeforeTokenExpTimeInSec := 120
 
-	userDatastore := datastoremodel.User{}
-	loginDatastore := datastoremodel.Login{}
-	authDatastore := datastoremodel.Auth{}
+	userDatastore := datastoreentity.User{}
+	loginDatastore := datastoreentity.Login{}
+	authDatastore := datastoreentity.Auth{}
 
 	key := ""
 	bearerToken := []string{"", ""}
@@ -276,14 +276,14 @@ func (ts *TestSuite) TestRefreshToken() {
 
 				authN = authpkg.New(ts.RSAKeys)
 
-				userDatastore = datastoremodel.User{
+				userDatastore = datastoreentity.User{
 					Username: credentials.Username,
 				}
 
 				result := dbTrx.Create(&userDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				loginDatastore = datastoremodel.Login{
+				loginDatastore = datastoreentity.Login{
 					UserID:   userDatastore.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -292,7 +292,7 @@ func (ts *TestSuite) TestRefreshToken() {
 				result = dbTrx.Create(&loginDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				authDatastore = datastoremodel.Auth{
+				authDatastore = datastoreentity.Auth{
 					UserID: userDatastore.ID,
 				}
 
@@ -379,9 +379,9 @@ func (ts *TestSuite) TestChangePassword() {
 
 	timeBeforeTokenExpTimeInSec := 120
 
-	userDatastore := datastoremodel.User{}
-	loginDatastore := datastoremodel.Login{}
-	authDatastore := datastoremodel.Auth{}
+	userDatastore := datastoreentity.User{}
+	loginDatastore := datastoreentity.Login{}
+	authDatastore := datastoreentity.Auth{}
 
 	key := ""
 	bearerToken := []string{"", ""}
@@ -410,14 +410,14 @@ func (ts *TestSuite) TestChangePassword() {
 
 				authN = authpkg.New(ts.RSAKeys)
 
-				userDatastore = datastoremodel.User{
+				userDatastore = datastoreentity.User{
 					Username: credentials.Username,
 				}
 
 				result := dbTrx.Create(&userDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				loginDatastore = datastoremodel.Login{
+				loginDatastore = datastoreentity.Login{
 					UserID:   userDatastore.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -426,7 +426,7 @@ func (ts *TestSuite) TestChangePassword() {
 				result = dbTrx.Create(&loginDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				authDatastore = datastoremodel.Auth{
+				authDatastore = datastoreentity.Auth{
 					UserID: userDatastore.ID,
 				}
 
@@ -520,9 +520,9 @@ func (ts *TestSuite) TestSignOut() {
 
 	timeBeforeTokenExpTimeInSec := 120
 
-	userDatastore := datastoremodel.User{}
-	loginDatastore := datastoremodel.Login{}
-	authDatastore := datastoremodel.Auth{}
+	userDatastore := datastoreentity.User{}
+	loginDatastore := datastoreentity.Login{}
+	authDatastore := datastoreentity.Auth{}
 
 	key := ""
 	bearerToken := []string{"", ""}
@@ -545,14 +545,14 @@ func (ts *TestSuite) TestSignOut() {
 
 				authN = authpkg.New(ts.RSAKeys)
 
-				userDatastore = datastoremodel.User{
+				userDatastore = datastoreentity.User{
 					Username: credentials.Username,
 				}
 
 				result := dbTrx.Create(&userDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				loginDatastore = datastoremodel.Login{
+				loginDatastore = datastoreentity.Login{
 					UserID:   userDatastore.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -561,7 +561,7 @@ func (ts *TestSuite) TestSignOut() {
 				result = dbTrx.Create(&loginDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				authDatastore = datastoremodel.Auth{
+				authDatastore = datastoreentity.Auth{
 					UserID: userDatastore.ID,
 				}
 
@@ -648,15 +648,15 @@ func (ts *TestSuite) TestSignOut() {
 
 // 	var authN authpkg.IAuth
 
-// 	userDatastore := datastoremodel.User{}
+// 	userDatastore := datastoreentity.User{}
 
-// 	loginDatastore := datastoremodel.Login{}
+// 	loginDatastore := datastoreentity.Login{}
 
-// 	authDatastore := datastoremodel.Auth{}
+// 	authDatastore := datastoreentity.Auth{}
 
-// 	auth := domainmodel.Auth{}
+// 	auth := domainentity.Auth{}
 
-// 	authDetailsCtxValue := domainmodel.Auth{}
+// 	authDetailsCtxValue := domainentity.Auth{}
 
 // 	ts.Cases = Cases{
 // 		{
@@ -670,14 +670,14 @@ func (ts *TestSuite) TestSignOut() {
 // 				username := fake.Username()
 // 				password := fake.Password(true, true, true, false, false, 8)
 
-// 				userDatastore = datastoremodel.User{
+// 				userDatastore = datastoreentity.User{
 // 					Username: username,
 // 				}
 
 // 				result := dbTrx.Create(&userDatastore)
 // 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-// 				loginDatastore = datastoremodel.Login{
+// 				loginDatastore = datastoreentity.Login{
 // 					UserID:   userDatastore.ID,
 // 					Username: username,
 // 					Password: password,
@@ -686,7 +686,7 @@ func (ts *TestSuite) TestSignOut() {
 // 				result = dbTrx.Create(&loginDatastore)
 // 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-// 				authDatastore = datastoremodel.Auth{
+// 				authDatastore = datastoreentity.Auth{
 // 					UserID: userDatastore.ID,
 // 				}
 
@@ -712,7 +712,7 @@ func (ts *TestSuite) TestSignOut() {
 
 // 				authN = authpkg.New(ts.RSAKeys)
 
-// 				authDetailsCtxValue = domainmodel.Auth{}
+// 				authDetailsCtxValue = domainentity.Auth{}
 // 			},
 // 			StatusCode: http.StatusInternalServerError,
 // 			WantError:  true,
@@ -729,7 +729,7 @@ func (ts *TestSuite) TestSignOut() {
 
 // 				authN = authpkg.New(ts.RSAKeys)
 
-// 				auth = domainmodel.Auth{}
+// 				auth = domainentity.Auth{}
 
 // 				authDetailsCtxValue = auth
 // 			},

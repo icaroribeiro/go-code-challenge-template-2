@@ -1,7 +1,7 @@
 package auth
 
 import (
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
 	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/auth"
 	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/login"
@@ -58,7 +58,7 @@ func (a *Service) Register(credentials securitypkg.Credentials) (string, error) 
 		return "", customerror.Conflict.Newf("the username %s is already registered", credentials.Username)
 	}
 
-	user := domainmodel.User{
+	user := domainentity.User{
 		Username: credentials.Username,
 	}
 
@@ -67,7 +67,7 @@ func (a *Service) Register(credentials securitypkg.Credentials) (string, error) 
 		return "", err
 	}
 
-	login = domainmodel.Login{
+	login = domainentity.Login{
 		UserID:   newUser.ID,
 		Username: credentials.Username,
 		Password: credentials.Password,
@@ -78,7 +78,7 @@ func (a *Service) Register(credentials securitypkg.Credentials) (string, error) 
 		return "", err
 	}
 
-	auth := domainmodel.Auth{
+	auth := domainentity.Auth{
 		UserID: newUser.ID,
 	}
 
@@ -123,7 +123,7 @@ func (a *Service) LogIn(credentials securitypkg.Credentials) (string, error) {
 		return "", customerror.Newf("the user with username %s is already logged in", credentials.Username)
 	}
 
-	auth = domainmodel.Auth{
+	auth = domainentity.Auth{
 		UserID: login.UserID,
 	}
 
@@ -143,7 +143,7 @@ func (a *Service) LogIn(credentials securitypkg.Credentials) (string, error) {
 }
 
 // RenewToken is the function that renews the token.
-func (a *Service) RenewToken(auth domainmodel.Auth) (string, error) {
+func (a *Service) RenewToken(auth domainentity.Auth) (string, error) {
 	return a.AuthN.CreateToken(auth, a.TokenExpTimeInSec)
 }
 

@@ -7,7 +7,7 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/dgrijalva/jwt-go"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	uuid "github.com/satori/go.uuid"
@@ -22,7 +22,7 @@ func TestAuthUnit(t *testing.T) {
 func (ts *TestSuite) TestCreateToken() {
 	rsaKeys := ts.RSAKeys
 
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
 	tokenExpTimeInSec := 0
 
@@ -33,7 +33,7 @@ func (ts *TestSuite) TestCreateToken() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -61,7 +61,7 @@ func (ts *TestSuite) TestCreateToken() {
 }
 
 func (ts *TestSuite) TestDecodeToken() {
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
 	issuedAt := time.Now().Unix()
 	expiredAt := time.Now().Unix()
@@ -82,7 +82,7 @@ func (ts *TestSuite) TestDecodeToken() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -105,7 +105,7 @@ func (ts *TestSuite) TestDecodeToken() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -138,7 +138,7 @@ func (ts *TestSuite) TestDecodeToken() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -186,7 +186,7 @@ func (ts *TestSuite) TestDecodeToken() {
 }
 
 func (ts *TestSuite) TestValidateTokenRenewal() {
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
 	issuedAt := time.Now().Unix()
 	expiredAt := time.Now().Unix()
@@ -208,7 +208,7 @@ func (ts *TestSuite) TestValidateTokenRenewal() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -230,7 +230,7 @@ func (ts *TestSuite) TestValidateTokenRenewal() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -252,7 +252,7 @@ func (ts *TestSuite) TestValidateTokenRenewal() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -269,7 +269,7 @@ func (ts *TestSuite) TestValidateTokenRenewal() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}

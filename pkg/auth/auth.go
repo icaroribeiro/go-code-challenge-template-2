@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	uuid "github.com/satori/go.uuid"
 )
@@ -30,7 +30,7 @@ func New(rsaKeys RSAKeys) IAuth {
 }
 
 // CreateToken is the function that creates a new token for a specific auth and time duration.
-func (a *Auth) CreateToken(auth domainmodel.Auth, tokenExpTimeInSec int) (string, error) {
+func (a *Auth) CreateToken(auth domainentity.Auth, tokenExpTimeInSec int) (string, error) {
 	duration := time.Second * time.Duration(tokenExpTimeInSec)
 
 	claims := jwt.MapClaims{
@@ -104,8 +104,8 @@ func (a *Auth) ValidateTokenRenewal(tokenString string, timeBeforeTokenExpTimeIn
 }
 
 // FetchAuthFromToken is the function that get auth data from the token.
-func (a *Auth) FetchAuthFromToken(token *jwt.Token) (domainmodel.Auth, error) {
-	auth := domainmodel.Auth{}
+func (a *Auth) FetchAuthFromToken(token *jwt.Token) (domainentity.Auth, error) {
+	auth := domainentity.Auth{}
 
 	if token == nil {
 		return auth, customerror.New("the token is nil")

@@ -1,7 +1,7 @@
 package user
 
 import (
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/user"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/user"
 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
@@ -21,10 +21,10 @@ func New(userDatastoreRepository userdatastorerepository.IRepository, validator 
 }
 
 // GetAll is the function that deals with the user repository for getting all users.
-func (u *Service) GetAll() (domainmodel.Users, error) {
+func (u *Service) GetAll() (domainentity.Users, error) {
 	users, err := u.UserDatastoreRepository.GetAll()
 	if err != nil {
-		return domainmodel.Users{}, err
+		return domainentity.Users{}, err
 	}
 
 	return users, nil

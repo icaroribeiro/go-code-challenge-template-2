@@ -8,7 +8,7 @@ import (
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql/handler"
 	fake "github.com/brianvoe/gofakeit/v5"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
 	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
@@ -17,7 +17,7 @@ import (
 	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/dbtrx"
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/resolver"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
 	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -281,7 +281,7 @@ func (ts *TestSuite) TestRefreshToken() {
 
 	tokenString := fake.Word()
 
-	auth := domainmodelfactory.NewAuth(nil)
+	auth := domainentityfactory.NewAuth(nil)
 
 	opt := func(bd *client.Request) {}
 
@@ -315,7 +315,7 @@ func (ts *TestSuite) TestRefreshToken() {
 			Context: "ItShouldFailIfTheAuthFromTheRequestContextIsEmpty",
 			SetUp: func(t *testing.T) {
 				ctx := context.Background()
-				opt = AddAuthDetailsToCtx(ctx, domainmodel.Auth{})
+				opt = AddAuthDetailsToCtx(ctx, domainentity.Auth{})
 
 				returnArgs = ReturnArgs{
 					{"", nil},
@@ -385,7 +385,7 @@ func (ts *TestSuite) TestChangePassword() {
 
 	passwords := securitypkgfactory.NewPasswords(nil)
 
-	auth := domainmodelfactory.NewAuth(nil)
+	auth := domainentityfactory.NewAuth(nil)
 
 	opts := []client.Option{}
 
@@ -428,7 +428,7 @@ func (ts *TestSuite) TestChangePassword() {
 				opts = []client.Option{}
 				opts = append(opts, client.Var("input", passwords))
 				ctx := context.Background()
-				opts = append(opts, AddAuthDetailsToCtx(ctx, domainmodel.Auth{}))
+				opts = append(opts, AddAuthDetailsToCtx(ctx, domainentity.Auth{}))
 
 				returnArgs = ReturnArgs{
 					{nil},
@@ -498,7 +498,7 @@ func (ts *TestSuite) TestSignOut() {
 	dbTrx := &gorm.DB{}
 	dbTrx = nil
 
-	auth := domainmodelfactory.NewAuth(nil)
+	auth := domainentityfactory.NewAuth(nil)
 
 	opt := func(bd *client.Request) {}
 
@@ -536,7 +536,7 @@ func (ts *TestSuite) TestSignOut() {
 			Context: "ItShouldFailIfTheAuthFromTheRequestContextIsEmpty",
 			SetUp: func(t *testing.T) {
 				ctx := context.Background()
-				opt = AddAuthDetailsToCtx(ctx, domainmodel.Auth{})
+				opt = AddAuthDetailsToCtx(ctx, domainentity.Auth{})
 
 				returnArgs = ReturnArgs{
 					{nil},

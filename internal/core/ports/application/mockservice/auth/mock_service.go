@@ -3,12 +3,12 @@
 package auth
 
 import (
+	entity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	auth "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
+
 	gorm "gorm.io/gorm"
 
 	mock "github.com/stretchr/testify/mock"
-
-	model "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
 
 	security "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 )
@@ -89,18 +89,18 @@ func (_m *Service) Register(credentials security.Credentials) (string, error) {
 }
 
 // RenewToken provides a mock function with given fields: _a0
-func (_m *Service) RenewToken(_a0 model.Auth) (string, error) {
+func (_m *Service) RenewToken(_a0 entity.Auth) (string, error) {
 	ret := _m.Called(_a0)
 
 	var r0 string
-	if rf, ok := ret.Get(0).(func(model.Auth) string); ok {
+	if rf, ok := ret.Get(0).(func(entity.Auth) string); ok {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(model.Auth) error); ok {
+	if rf, ok := ret.Get(1).(func(entity.Auth) error); ok {
 		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)

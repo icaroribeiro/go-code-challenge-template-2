@@ -1,10 +1,10 @@
-package model
+package entity
 
 import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// User is the representation of the user's domain model.
+// User is the representation of the user's domain entity.
 type User struct {
 	ID       uuid.UUID
 	Username string

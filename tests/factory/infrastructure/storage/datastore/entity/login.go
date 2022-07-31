@@ -1,20 +1,20 @@
-package model
+package entity
 
 import (
 	"time"
 
 	"github.com/bluele/factory-go/factory"
 	fake "github.com/brianvoe/gofakeit/v5"
-	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
 	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// NewLogin is the function that returns an instance of the the login's datastore model for performing tests.
-func NewLogin(args map[string]interface{}) datastoremodel.Login {
+// NewLogin is the function that returns an instance of the the login's datastore entity for performing tests.
+func NewLogin(args map[string]interface{}) datastoreentity.Login {
 	loginFactory := factory.NewFactory(
-		datastoremodel.Login{},
+		datastoreentity.Login{},
 	).Attr("ID", func(fArgs factory.Args) (interface{}, error) {
 		id := uuid.NewV4()
 
@@ -73,5 +73,5 @@ func NewLogin(args map[string]interface{}) datastoremodel.Login {
 		return updatedAt, nil
 	})
 
-	return loginFactory.MustCreate().(datastoremodel.Login)
+	return loginFactory.MustCreate().(datastoreentity.Login)
 }

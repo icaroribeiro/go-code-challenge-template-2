@@ -3,9 +3,9 @@ package user
 import (
 	"strings"
 
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/user"
-	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	"gorm.io/gorm"
 )
@@ -25,27 +25,27 @@ func New(db *gorm.DB) userdatastorerepository.IRepository {
 }
 
 // Create is the function that creates a user in the database.
-func (r *Repository) Create(user domainmodel.User) (domainmodel.User, error) {
-	userDatastore := datastoremodel.User{}
+func (r *Repository) Create(user domainentity.User) (domainentity.User, error) {
+	userDatastore := datastoreentity.User{}
 	userDatastore.FromDomain(user)
 
 	if result := r.DB.Create(&userDatastore); result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key value") {
-			return domainmodel.User{}, customerror.Conflict.New(result.Error.Error())
+			return domainentity.User{}, customerror.Conflict.New(result.Error.Error())
 		}
 
-		return domainmodel.User{}, result.Error
+		return domainentity.User{}, result.Error
 	}
 
 	return userDatastore.ToDomain(), nil
 }
 
 // GetAll is the function that gets the list of all users from the database.
-func (r *Repository) GetAll() (domainmodel.Users, error) {
-	usersDatastore := datastoremodel.Users{}
+func (r *Repository) GetAll() (domainentity.Users, error) {
+	usersDatastore := datastoreentity.Users{}
 
 	if result := r.DB.Find(&usersDatastore); result.Error != nil {
-		return domainmodel.Users{}, result.Error
+		return domainentity.Users{}, result.Error
 	}
 
 	return usersDatastore.ToDomain(), nil

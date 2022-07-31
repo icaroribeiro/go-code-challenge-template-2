@@ -1,6 +1,6 @@
-package model
+package entity
 
-// HealthCheck is the health check's model.
+// HealthCheck is the health check's entity.
 type HealthCheck struct {
 	Status string `json:"status"`
 }

@@ -6,19 +6,19 @@ package resolver
 import (
 	"context"
 
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/entity"
 )
 
-func (r *queryResolver) GetAllUsers(ctx context.Context) ([]*model.User, error) {
+func (r *queryResolver) GetAllUsers(ctx context.Context) ([]*entity.User, error) {
 	domainUsers, err := r.UserService.WithDBTrx(nil).GetAll()
 	if err != nil {
 		return nil, err
 	}
 
-	users := model.Users{}
+	users := entity.Users{}
 	users.FromDomain(domainUsers)
 
-	allUsers := []*model.User{}
+	allUsers := []*entity.User{}
 	for i := range users {
 		allUsers = append(allUsers, &users[i])
 	}

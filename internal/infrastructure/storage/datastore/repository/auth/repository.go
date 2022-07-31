@@ -3,9 +3,9 @@ package auth
 import (
 	"strings"
 
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/auth"
-	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	"gorm.io/gorm"
 )
@@ -25,62 +25,62 @@ func New(db *gorm.DB) authdatastorerepository.IRepository {
 }
 
 // Create is the function that creates an auth in the datastore.
-func (r *Repository) Create(auth domainmodel.Auth) (domainmodel.Auth, error) {
-	authDatastore := datastoremodel.Auth{}
+func (r *Repository) Create(auth domainentity.Auth) (domainentity.Auth, error) {
+	authDatastore := datastoreentity.Auth{}
 	authDatastore.FromDomain(auth)
 
 	result := r.DB.Create(&authDatastore)
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "auths_user_id_key") {
-			loginDatastore := datastoremodel.Login{}
+			loginDatastore := datastoreentity.Login{}
 
 			if result := r.DB.Find(&loginDatastore, "user_id=?", authDatastore.UserID); result.Error != nil {
-				return domainmodel.Auth{}, result.Error
+				return domainentity.Auth{}, result.Error
 			}
 
 			if result.RowsAffected == 0 && loginDatastore.IsEmpty() {
-				return domainmodel.Auth{}, customerror.NotFound.Newf("the login record with user id %s was not found", authDatastore.UserID)
+				return domainentity.Auth{}, customerror.NotFound.Newf("the login record with user id %s was not found", authDatastore.UserID)
 			}
 
-			return domainmodel.Auth{}, customerror.Conflict.Newf("The user with id %s is already logged in", authDatastore.UserID)
+			return domainentity.Auth{}, customerror.Conflict.Newf("The user with id %s is already logged in", authDatastore.UserID)
 		}
 
-		return domainmodel.Auth{}, result.Error
+		return domainentity.Auth{}, result.Error
 	}
 
 	return authDatastore.ToDomain(), nil
 }
 
 // GetByUserID is the function that gets an auth by user id from the datastore.
-func (r *Repository) GetByUserID(userID string) (domainmodel.Auth, error) {
-	authDatastore := datastoremodel.Auth{}
+func (r *Repository) GetByUserID(userID string) (domainentity.Auth, error) {
+	authDatastore := datastoreentity.Auth{}
 
 	if result := r.DB.Find(&authDatastore, "user_id=?", userID); result.Error != nil {
-		return domainmodel.Auth{}, result.Error
+		return domainentity.Auth{}, result.Error
 	}
 
 	return authDatastore.ToDomain(), nil
 }
 
 // Delete is the function that deletes an auth by id from the datastore.
-func (r *Repository) Delete(id string) (domainmodel.Auth, error) {
-	authDatastore := datastoremodel.Auth{}
+func (r *Repository) Delete(id string) (domainentity.Auth, error) {
+	authDatastore := datastoreentity.Auth{}
 
 	result := r.DB.Find(&authDatastore, "id=?", id)
 	if result.Error != nil {
-		return domainmodel.Auth{}, result.Error
+		return domainentity.Auth{}, result.Error
 	}
 
 	if result.RowsAffected == 0 {
-		return domainmodel.Auth{}, customerror.NotFound.Newf("the auth with id %s was not found", id)
+		return domainentity.Auth{}, customerror.NotFound.Newf("the auth with id %s was not found", id)
 	}
 
 	if result = r.DB.Delete(&authDatastore); result.Error != nil {
-		return domainmodel.Auth{}, result.Error
+		return domainentity.Auth{}, result.Error
 	}
 
 	if result.RowsAffected == 0 {
-		return domainmodel.Auth{}, customerror.NotFound.Newf("the auth with id %s was not deleted", id)
+		return domainentity.Auth{}, customerror.NotFound.Newf("the auth with id %s was not deleted", id)
 	}
 
 	return authDatastore.ToDomain(), nil

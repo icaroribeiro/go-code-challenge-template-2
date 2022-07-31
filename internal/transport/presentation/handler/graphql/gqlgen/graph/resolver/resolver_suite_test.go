@@ -8,7 +8,7 @@ import (
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DATA-DOG/go-sqlmock"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
 	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/dbtrx"
 	"github.com/stretchr/testify/suite"
@@ -79,7 +79,7 @@ func MockDirective() func(ctx context.Context, obj interface{}, next graphql.Res
 	}
 }
 
-func AddAuthDetailsToCtx(ctx context.Context, auth domainmodel.Auth) client.Option {
+func AddAuthDetailsToCtx(ctx context.Context, auth domainentity.Auth) client.Option {
 	return func(bd *client.Request) {
 		ctx := authdirective.NewContext(ctx, auth)
 		bd.HTTP = bd.HTTP.WithContext(ctx)

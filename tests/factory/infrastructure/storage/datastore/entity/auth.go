@@ -1,17 +1,17 @@
-package model
+package entity
 
 import (
 	"time"
 
 	"github.com/bluele/factory-go/factory"
-	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
 	uuid "github.com/satori/go.uuid"
 )
 
-// NewAuth is the function that returns an instance of the auth's datastore model for performing tests.
-func NewAuth(args map[string]interface{}) datastoremodel.Auth {
+// NewAuth is the function that returns an instance of the auth's datastore entity for performing tests.
+func NewAuth(args map[string]interface{}) datastoreentity.Auth {
 	authFactory := factory.NewFactory(
-		datastoremodel.Auth{},
+		datastoreentity.Auth{},
 	).Attr("ID", func(fArgs factory.Args) (interface{}, error) {
 		id := uuid.NewV4()
 
@@ -38,5 +38,5 @@ func NewAuth(args map[string]interface{}) datastoremodel.Auth {
 		return createdAt, nil
 	})
 
-	return authFactory.MustCreate().(datastoremodel.Auth)
+	return authFactory.MustCreate().(datastoreentity.Auth)
 }

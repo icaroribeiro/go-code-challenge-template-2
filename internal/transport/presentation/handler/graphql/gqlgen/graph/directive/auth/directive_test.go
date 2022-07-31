@@ -9,12 +9,12 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/dgrijalva/jwt-go"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
-	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
+	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
 	mockauthpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
@@ -26,7 +26,7 @@ func TestDirectiveUnit(t *testing.T) {
 }
 
 func (ts *TestSuite) TestNewContext() {
-	authDetailsCtxValue := domainmodel.Auth{}
+	authDetailsCtxValue := domainentity.Auth{}
 
 	ctx := context.Background()
 
@@ -34,7 +34,7 @@ func (ts *TestSuite) TestNewContext() {
 		{
 			Context: "ItShouldSucceedInCreatingACopyOfAContextWithAnAssociatedValue",
 			SetUp: func(t *testing.T) {
-				authDetailsCtxValue = domainmodelfactory.NewAuth(nil)
+				authDetailsCtxValue = domainentityfactory.NewAuth(nil)
 			},
 			WantError: false,
 		},
@@ -57,7 +57,7 @@ func (ts *TestSuite) TestNewContext() {
 }
 
 func (ts *TestSuite) TestFromContext() {
-	authDetailsCtxValue := domainmodel.Auth{}
+	authDetailsCtxValue := domainentity.Auth{}
 
 	ctx := context.Background()
 
@@ -65,7 +65,7 @@ func (ts *TestSuite) TestFromContext() {
 		{
 			Context: "ItShouldSucceedInGettingAnAssociatedValueFromAContext",
 			SetUp: func(t *testing.T) {
-				authDetailsCtxValue = domainmodelfactory.NewAuth(nil)
+				authDetailsCtxValue = domainentityfactory.NewAuth(nil)
 				ctx = authdirective.NewContext(ctx, authDetailsCtxValue)
 			},
 			WantError: false,
@@ -122,7 +122,7 @@ func (ts *TestSuite) TestAuthMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodelfactory.NewAuth(args), nil},
+					{domainentityfactory.NewAuth(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -146,7 +146,7 @@ func (ts *TestSuite) TestAuthMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{nil, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 				}
 			},
 			WantError: true,
@@ -161,7 +161,7 @@ func (ts *TestSuite) TestAuthMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{nil, customerror.New("failed")},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 				}
 			},
 			WantError: true,
@@ -178,7 +178,7 @@ func (ts *TestSuite) TestAuthMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodel.Auth{}, customerror.New("failed")},
+					{domainentity.Auth{}, customerror.New("failed")},
 				}
 			},
 			WantError: true,
@@ -201,7 +201,7 @@ func (ts *TestSuite) TestAuthMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodelfactory.NewAuth(args), nil},
+					{domainentityfactory.NewAuth(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -230,7 +230,7 @@ func (ts *TestSuite) TestAuthMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodelfactory.NewAuth(args), nil},
+					{domainentityfactory.NewAuth(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -259,7 +259,7 @@ func (ts *TestSuite) TestAuthMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodelfactory.NewAuth(args), nil},
+					{domainentityfactory.NewAuth(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -338,7 +338,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodelfactory.NewAuth(args), nil},
+					{domainentityfactory.NewAuth(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -362,7 +362,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{nil, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 				}
 			},
 			WantError: true,
@@ -377,7 +377,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{nil, customerror.New("failed")},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 				}
 			},
 			WantError: true,
@@ -394,7 +394,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodel.Auth{}, customerror.New("failed")},
+					{domainentity.Auth{}, customerror.New("failed")},
 				}
 			},
 			WantError: true,
@@ -417,7 +417,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodelfactory.NewAuth(args), nil},
+					{domainentityfactory.NewAuth(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -446,7 +446,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodelfactory.NewAuth(args), nil},
+					{domainentityfactory.NewAuth(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -475,7 +475,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainmodelfactory.NewAuth(args), nil},
+					{domainentityfactory.NewAuth(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`

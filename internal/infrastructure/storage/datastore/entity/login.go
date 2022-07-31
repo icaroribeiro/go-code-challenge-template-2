@@ -1,16 +1,16 @@
-package model
+package entity
 
 import (
 	"time"
 
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-// Login is the representation of the login's datastore model.
+// Login is the representation of the login's datastore entity.
 type Login struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key" validate:"uuid"`
 	UserID    uuid.UUID `gorm:"type:uuid;not null;unique" validate:"uuid"`
@@ -20,7 +20,7 @@ type Login struct {
 	UpdatedAt time.Time
 }
 
-// IsEmpty is the function that checks if login's datastore model is empty.
+// IsEmpty is the function that checks if login's datastore entity is empty.
 func (l Login) IsEmpty() bool {
 	return l == Login{}
 }
@@ -55,8 +55,8 @@ func (l *Login) BeforeUpdate(tx *gorm.DB) error {
 	return nil
 }
 
-// FromDomain is the function that builds a datastore model based on the model's data from domain.
-func (l *Login) FromDomain(login domainmodel.Login) {
+// FromDomain is the function that builds a datastore entity based on the model's data from domain.
+func (l *Login) FromDomain(login domainentity.Login) {
 	l.ID = login.ID
 	l.UserID = login.UserID
 	l.Username = login.Username
@@ -64,8 +64,8 @@ func (l *Login) FromDomain(login domainmodel.Login) {
 }
 
 // ToDomain is the function that returns a domain model built using the model's data from datastore.
-func (l *Login) ToDomain() domainmodel.Login {
-	return domainmodel.Login{
+func (l *Login) ToDomain() domainentity.Login {
+	return domainentity.Login{
 		ID:       l.ID,
 		UserID:   l.UserID,
 		Username: l.Username,

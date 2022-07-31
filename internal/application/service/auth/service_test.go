@@ -6,13 +6,13 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/auth"
 	logindatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/login"
 	userdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
 	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
 	mockauth "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
 	mocksecurity "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mocksecurity"
@@ -30,13 +30,13 @@ func TestServiceUnit(t *testing.T) {
 func (ts *TestSuite) TestRegister() {
 	credentials := security.Credentials{}
 
-	user := domainmodel.User{}
+	user := domainentity.User{}
 
-	login := domainmodel.Login{}
+	login := domainentity.Login{}
 
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
-	newAuth := domainmodel.Auth{}
+	newAuth := domainentity.Auth{}
 
 	tokenExpTimeInSec := fake.Number(2, 10)
 
@@ -57,7 +57,7 @@ func (ts *TestSuite) TestRegister() {
 					"username": credentials.Username,
 				}
 
-				user = domainmodelfactory.NewUser(args)
+				user = domainentityfactory.NewUser(args)
 
 				id := uuid.NewV4()
 
@@ -66,7 +66,7 @@ func (ts *TestSuite) TestRegister() {
 					"username": credentials.Username,
 				}
 
-				newUser := domainmodelfactory.NewUser(args)
+				newUser := domainentityfactory.NewUser(args)
 
 				args = map[string]interface{}{
 					"id":       uuid.Nil,
@@ -75,14 +75,14 @@ func (ts *TestSuite) TestRegister() {
 					"password": credentials.Password,
 				}
 
-				login = domainmodelfactory.NewLogin(args)
+				login = domainentityfactory.NewLogin(args)
 
 				args = map[string]interface{}{
 					"id":     uuid.Nil,
 					"userID": newUser.ID,
 				}
 
-				auth = domainmodelfactory.NewAuth(args)
+				auth = domainentityfactory.NewAuth(args)
 
 				id = uuid.NewV4()
 
@@ -91,15 +91,15 @@ func (ts *TestSuite) TestRegister() {
 					"userID": newUser.ID,
 				}
 
-				newAuth = domainmodelfactory.NewAuth(args)
+				newAuth = domainentityfactory.NewAuth(args)
 
 				token = fake.Word()
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{newUser, nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{newAuth, nil},
 					{token, nil},
 				}
@@ -114,10 +114,10 @@ func (ts *TestSuite) TestRegister() {
 
 				returnArgs = ReturnArgs{
 					{customerror.New("failed")},
-					{domainmodel.Login{}, nil},
-					{domainmodel.User{}, nil},
-					{domainmodel.Login{}, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Login{}, nil},
+					{domainentity.User{}, nil},
+					{domainentity.Login{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -139,10 +139,10 @@ func (ts *TestSuite) TestRegister() {
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Login{}, customerror.New("failed")},
-					{domainmodel.User{}, nil},
-					{domainmodel.Login{}, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Login{}, customerror.New("failed")},
+					{domainentity.User{}, nil},
+					{domainentity.Login{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -159,7 +159,7 @@ func (ts *TestSuite) TestRegister() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       id,
 					UserID:   userID,
 					Username: credentials.Username,
@@ -169,9 +169,9 @@ func (ts *TestSuite) TestRegister() {
 				returnArgs = ReturnArgs{
 					{nil},
 					{login, nil},
-					{domainmodel.User{}, nil},
-					{domainmodel.Login{}, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.User{}, nil},
+					{domainentity.Login{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -185,16 +185,16 @@ func (ts *TestSuite) TestRegister() {
 			SetUp: func(t *testing.T) {
 				credentials = securitypkgfactory.NewCredentials(nil)
 
-				user = domainmodel.User{
+				user = domainentity.User{
 					Username: credentials.Username,
 				}
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Login{}, nil},
-					{domainmodel.User{}, customerror.New("failed")},
-					{domainmodel.Login{}, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Login{}, nil},
+					{domainentity.User{}, customerror.New("failed")},
+					{domainentity.Login{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -208,18 +208,18 @@ func (ts *TestSuite) TestRegister() {
 			SetUp: func(t *testing.T) {
 				credentials = securitypkgfactory.NewCredentials(nil)
 
-				user = domainmodel.User{
+				user = domainentity.User{
 					Username: credentials.Username,
 				}
 
 				id := uuid.NewV4()
 
-				newUser := domainmodel.User{
+				newUser := domainentity.User{
 					ID:       id,
 					Username: credentials.Username,
 				}
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					UserID:   newUser.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -227,10 +227,10 @@ func (ts *TestSuite) TestRegister() {
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{newUser, nil},
-					{domainmodel.Login{}, customerror.New("failed")},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Login{}, customerror.New("failed")},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -244,18 +244,18 @@ func (ts *TestSuite) TestRegister() {
 			SetUp: func(t *testing.T) {
 				credentials = securitypkgfactory.NewCredentials(nil)
 
-				user = domainmodel.User{
+				user = domainentity.User{
 					Username: credentials.Username,
 				}
 
 				id := uuid.NewV4()
 
-				newUser := domainmodel.User{
+				newUser := domainentity.User{
 					ID:       id,
 					Username: credentials.Username,
 				}
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					UserID:   newUser.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -263,23 +263,23 @@ func (ts *TestSuite) TestRegister() {
 
 				id = uuid.NewV4()
 
-				newLogin := domainmodel.Login{
+				newLogin := domainentity.Login{
 					ID:       id,
 					UserID:   newUser.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					UserID: newUser.ID,
 				}
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{newUser, nil},
 					{newLogin, nil},
-					{domainmodel.Auth{}, customerror.New("failed")},
+					{domainentity.Auth{}, customerror.New("failed")},
 					{"", nil},
 				}
 
@@ -293,18 +293,18 @@ func (ts *TestSuite) TestRegister() {
 			SetUp: func(t *testing.T) {
 				credentials = securitypkgfactory.NewCredentials(nil)
 
-				user = domainmodel.User{
+				user = domainentity.User{
 					Username: credentials.Username,
 				}
 
 				id := uuid.NewV4()
 
-				newUser := domainmodel.User{
+				newUser := domainentity.User{
 					ID:       id,
 					Username: credentials.Username,
 				}
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					UserID:   newUser.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -312,27 +312,27 @@ func (ts *TestSuite) TestRegister() {
 
 				id = uuid.NewV4()
 
-				newLogin := domainmodel.Login{
+				newLogin := domainentity.Login{
 					ID:       id,
 					UserID:   newUser.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					UserID: newUser.ID,
 				}
 
 				id = uuid.NewV4()
 
-				newAuth = domainmodel.Auth{
+				newAuth = domainentity.Auth{
 					ID:     id,
 					UserID: newUser.ID,
 				}
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{newUser, nil},
 					{newLogin, nil},
 					{newAuth, nil},
@@ -391,11 +391,11 @@ func (ts *TestSuite) TestRegister() {
 func (ts *TestSuite) TestLogIn() {
 	credentials := security.Credentials{}
 
-	login := domainmodel.Login{}
+	login := domainentity.Login{}
 
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
-	newAuth := domainmodel.Auth{}
+	newAuth := domainentity.Auth{}
 
 	tokenExpTimeInSec := fake.Number(2, 10)
 
@@ -414,20 +414,20 @@ func (ts *TestSuite) TestLogIn() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       id,
 					UserID:   userID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					UserID: login.UserID,
 				}
 
 				id = uuid.NewV4()
 
-				newAuth = domainmodel.Auth{
+				newAuth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -438,7 +438,7 @@ func (ts *TestSuite) TestLogIn() {
 					{nil},
 					{login, nil},
 					{nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 					{newAuth, nil},
 					{token, nil},
 				}
@@ -453,10 +453,10 @@ func (ts *TestSuite) TestLogIn() {
 
 				returnArgs = ReturnArgs{
 					{customerror.New("failed")},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{nil},
-					{domainmodel.Auth{}, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -472,10 +472,10 @@ func (ts *TestSuite) TestLogIn() {
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Login{}, customerror.New("failed")},
+					{domainentity.Login{}, customerror.New("failed")},
 					{nil},
-					{domainmodel.Auth{}, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -491,10 +491,10 @@ func (ts *TestSuite) TestLogIn() {
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{nil},
-					{domainmodel.Auth{}, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -511,7 +511,7 @@ func (ts *TestSuite) TestLogIn() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       id,
 					UserID:   userID,
 					Username: credentials.Username,
@@ -522,8 +522,8 @@ func (ts *TestSuite) TestLogIn() {
 					{nil},
 					{login, nil},
 					{customerror.New("failed")},
-					{domainmodel.Auth{}, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -540,14 +540,14 @@ func (ts *TestSuite) TestLogIn() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       id,
 					UserID:   userID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					UserID: login.UserID,
 				}
 
@@ -555,8 +555,8 @@ func (ts *TestSuite) TestLogIn() {
 					{nil},
 					{login, nil},
 					{nil},
-					{domainmodel.Auth{}, customerror.New("failed")},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, customerror.New("failed")},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -573,20 +573,20 @@ func (ts *TestSuite) TestLogIn() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       id,
 					UserID:   userID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					UserID: login.UserID,
 				}
 
 				id = uuid.NewV4()
 
-				newAuth = domainmodel.Auth{
+				newAuth = domainentity.Auth{
 					ID:     id,
 					UserID: login.UserID,
 				}
@@ -596,7 +596,7 @@ func (ts *TestSuite) TestLogIn() {
 					{login, nil},
 					{nil},
 					{auth, nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 					{"", nil},
 				}
 
@@ -613,14 +613,14 @@ func (ts *TestSuite) TestLogIn() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       id,
 					UserID:   userID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					UserID: login.UserID,
 				}
 
@@ -628,8 +628,8 @@ func (ts *TestSuite) TestLogIn() {
 					{nil},
 					{login, nil},
 					{nil},
-					{domainmodel.Auth{}, nil},
-					{domainmodel.Auth{}, customerror.New("failed")},
+					{domainentity.Auth{}, nil},
+					{domainentity.Auth{}, customerror.New("failed")},
 					{"", nil},
 				}
 
@@ -646,20 +646,20 @@ func (ts *TestSuite) TestLogIn() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       id,
 					UserID:   userID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					UserID: login.UserID,
 				}
 
 				id = uuid.NewV4()
 
-				newAuth = domainmodel.Auth{
+				newAuth = domainentity.Auth{
 					ID:     id,
 					UserID: login.UserID,
 				}
@@ -668,7 +668,7 @@ func (ts *TestSuite) TestLogIn() {
 					{nil},
 					{login, nil},
 					{nil},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 					{newAuth, nil},
 					{"", customerror.New("failed")},
 				}
@@ -722,7 +722,7 @@ func (ts *TestSuite) TestLogIn() {
 }
 
 func (ts *TestSuite) TestRenewToken() {
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
 	tokenExpTimeInSec := fake.Number(2, 10)
 
@@ -739,7 +739,7 @@ func (ts *TestSuite) TestRenewToken() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -760,7 +760,7 @@ func (ts *TestSuite) TestRenewToken() {
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
 
-				auth = domainmodel.Auth{
+				auth = domainentity.Auth{
 					ID:     id,
 					UserID: userID,
 				}
@@ -819,9 +819,9 @@ func (ts *TestSuite) TestModifyPassword() {
 
 	passwords := security.Passwords{}
 
-	login := domainmodel.Login{}
+	login := domainentity.Login{}
 
-	updatedLogin := domainmodel.Login{}
+	updatedLogin := domainentity.Login{}
 
 	errorType := customerror.NoType
 
@@ -840,7 +840,7 @@ func (ts *TestSuite) TestModifyPassword() {
 				userID := uuid.NewV4()
 				username := fake.Username()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       loginID,
 					UserID:   userID,
 					Username: username,
@@ -870,9 +870,9 @@ func (ts *TestSuite) TestModifyPassword() {
 				returnArgs = ReturnArgs{
 					{customerror.New("failed")},
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 				}
 
 				errorType = customerror.BadRequest
@@ -887,9 +887,9 @@ func (ts *TestSuite) TestModifyPassword() {
 				returnArgs = ReturnArgs{
 					{nil},
 					{customerror.New("failed")},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 				}
 
 				errorType = customerror.BadRequest
@@ -911,9 +911,9 @@ func (ts *TestSuite) TestModifyPassword() {
 				returnArgs = ReturnArgs{
 					{nil},
 					{nil},
-					{domainmodel.Login{}, customerror.New("failed")},
+					{domainentity.Login{}, customerror.New("failed")},
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 				}
 
 				errorType = customerror.NoType
@@ -935,9 +935,9 @@ func (ts *TestSuite) TestModifyPassword() {
 				returnArgs = ReturnArgs{
 					{nil},
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 				}
 
 				errorType = customerror.NotFound
@@ -960,7 +960,7 @@ func (ts *TestSuite) TestModifyPassword() {
 				userID := uuid.NewV4()
 				username := fake.Username()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       loginID,
 					UserID:   userID,
 					Username: username,
@@ -972,7 +972,7 @@ func (ts *TestSuite) TestModifyPassword() {
 					{nil},
 					{login, nil},
 					{customerror.Unauthorized.New("the password is invalid")},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 				}
 
 				errorType = customerror.Unauthorized
@@ -995,7 +995,7 @@ func (ts *TestSuite) TestModifyPassword() {
 				userID := uuid.NewV4()
 				username := fake.Username()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       loginID,
 					UserID:   userID,
 					Username: username,
@@ -1007,7 +1007,7 @@ func (ts *TestSuite) TestModifyPassword() {
 					{nil},
 					{login, nil},
 					{customerror.New("failed")},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 				}
 
 				errorType = customerror.NoType
@@ -1030,7 +1030,7 @@ func (ts *TestSuite) TestModifyPassword() {
 				userID := uuid.NewV4()
 				username := fake.Username()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       loginID,
 					UserID:   userID,
 					Username: username,
@@ -1042,7 +1042,7 @@ func (ts *TestSuite) TestModifyPassword() {
 					{nil},
 					{login, nil},
 					{nil},
-					{domainmodel.Login{}, nil},
+					{domainentity.Login{}, nil},
 				}
 
 				errorType = customerror.BadRequest
@@ -1065,7 +1065,7 @@ func (ts *TestSuite) TestModifyPassword() {
 				userID := uuid.NewV4()
 				username := fake.Username()
 
-				login = domainmodel.Login{
+				login = domainentity.Login{
 					ID:       loginID,
 					UserID:   userID,
 					Username: username,
@@ -1080,7 +1080,7 @@ func (ts *TestSuite) TestModifyPassword() {
 					{nil},
 					{login, nil},
 					{nil},
-					{domainmodel.Login{}, customerror.New("failed")},
+					{domainentity.Login{}, customerror.New("failed")},
 				}
 
 				errorType = customerror.NoType
@@ -1150,7 +1150,7 @@ func (ts *TestSuite) TestLogOut() {
 					"userID": userID,
 				}
 
-				auth := domainmodelfactory.NewAuth(args)
+				auth := domainentityfactory.NewAuth(args)
 
 				returnArgs = ReturnArgs{
 					{nil},
@@ -1166,7 +1166,7 @@ func (ts *TestSuite) TestLogOut() {
 
 				returnArgs = ReturnArgs{
 					{customerror.New("failed")},
-					{domainmodel.Auth{}, nil},
+					{domainentity.Auth{}, nil},
 				}
 
 				errorType = customerror.BadRequest
@@ -1180,7 +1180,7 @@ func (ts *TestSuite) TestLogOut() {
 
 				returnArgs = ReturnArgs{
 					{nil},
-					{domainmodel.Auth{}, customerror.New("failed")},
+					{domainentity.Auth{}, customerror.New("failed")},
 				}
 
 				errorType = customerror.NoType

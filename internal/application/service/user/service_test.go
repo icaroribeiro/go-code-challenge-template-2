@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	userdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/user"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
+	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockvalidator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -20,7 +20,7 @@ func TestServiceUnit(t *testing.T) {
 }
 
 func (ts *TestSuite) TestGetAll() {
-	user := domainmodel.User{}
+	user := domainentity.User{}
 
 	returnArgs := ReturnArgs{}
 
@@ -30,10 +30,10 @@ func (ts *TestSuite) TestGetAll() {
 		{
 			Context: "ItShouldSucceedInGettingAllUsers",
 			SetUp: func(t *testing.T) {
-				user = domainmodelfactory.NewUser(nil)
+				user = domainentityfactory.NewUser(nil)
 
 				returnArgs = ReturnArgs{
-					{domainmodel.Users{user}, nil},
+					{domainentity.Users{user}, nil},
 				}
 			},
 			WantError: false,
@@ -42,7 +42,7 @@ func (ts *TestSuite) TestGetAll() {
 			Context: "ItShouldFailIfItIsNotPossibleToGetAllUsers",
 			SetUp: func(t *testing.T) {
 				returnArgs = ReturnArgs{
-					{domainmodel.Users{}, customerror.New("failed")},
+					{domainentity.Users{}, customerror.New("failed")},
 				}
 
 				errorType = customerror.NoType

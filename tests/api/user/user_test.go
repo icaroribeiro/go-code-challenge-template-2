@@ -6,21 +6,20 @@ import (
 	"strings"
 	"testing"
 
-	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
-
 	"github.com/99designs/gqlgen/client"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
 	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
-	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
 	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql"
 	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/directive/auth"
+	graphentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/entity"
 	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/mockdirective/dbtrx"
-	graphmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/transport/presentation/handler/graphql/gqlgen/graph/model"
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
+	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -39,10 +38,10 @@ func (ts *TestSuite) TestGetAll() {
 
 	timeBeforeTokenExpTimeInSec := 30
 
-	userDatastore := datastoremodel.User{}
-	user := graphmodel.User{}
-	loginDatastore := datastoremodel.Login{}
-	authDatastore := datastoremodel.Auth{}
+	userDatastore := datastoreentity.User{}
+	user := graphentity.User{}
+	loginDatastore := datastoreentity.Login{}
+	authDatastore := datastoreentity.Auth{}
 
 	key := ""
 	bearerToken := []string{"", ""}
@@ -63,7 +62,7 @@ func (ts *TestSuite) TestGetAll() {
 
 				authN = authpkg.New(ts.RSAKeys)
 
-				userDatastore = datastoremodel.User{
+				userDatastore = datastoreentity.User{
 					Username: credentials.Username,
 				}
 
@@ -73,7 +72,7 @@ func (ts *TestSuite) TestGetAll() {
 				domainUser := userDatastore.ToDomain()
 				user.FromDomain(domainUser)
 
-				loginDatastore = datastoremodel.Login{
+				loginDatastore = datastoreentity.Login{
 					UserID:   userDatastore.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -82,7 +81,7 @@ func (ts *TestSuite) TestGetAll() {
 				result = dbTrx.Create(&loginDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				authDatastore = datastoremodel.Auth{
+				authDatastore = datastoreentity.Auth{
 					UserID: userDatastore.ID,
 				}
 

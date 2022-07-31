@@ -1,18 +1,18 @@
-package model
+package entity
 
 import (
 	"time"
 
 	"github.com/bluele/factory-go/factory"
 	fake "github.com/brianvoe/gofakeit/v5"
-	datastoremodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/model"
+	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
 	uuid "github.com/satori/go.uuid"
 )
 
-// NewUser is the function that returns an instance of the the user's datastore model for performing tests.
-func NewUser(args map[string]interface{}) datastoremodel.User {
+// NewUser is the function that returns an instance of the the user's datastore entity for performing tests.
+func NewUser(args map[string]interface{}) datastoreentity.User {
 	userFactory := factory.NewFactory(
-		datastoremodel.User{},
+		datastoreentity.User{},
 	).Attr("ID", func(fArgs factory.Args) (interface{}, error) {
 		id := uuid.NewV4()
 
@@ -47,5 +47,5 @@ func NewUser(args map[string]interface{}) datastoremodel.User {
 		return updatedAt, nil
 	})
 
-	return userFactory.MustCreate().(datastoremodel.User)
+	return userFactory.MustCreate().(datastoreentity.User)
 }

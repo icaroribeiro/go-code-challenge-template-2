@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/model"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/model"
-	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/model"
+	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -25,9 +25,9 @@ func (ts *TestSuite) TestCreate() {
 	driver := "postgres"
 	db, mock := NewMockDB(driver)
 
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
-	newAuth := domainmodel.Auth{}
+	newAuth := domainentity.Auth{}
 
 	errorType := customerror.NoType
 
@@ -46,14 +46,14 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainmodelfactory.NewAuth(args)
+				auth = domainentityfactory.NewAuth(args)
 
 				args = map[string]interface{}{
 					"id":     uuid.Nil,
 					"userID": auth.UserID,
 				}
 
-				newAuth = domainmodelfactory.NewAuth(args)
+				newAuth = domainentityfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -75,7 +75,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainmodelfactory.NewAuth(args)
+				auth = domainentityfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -99,7 +99,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainmodelfactory.NewAuth(args)
+				auth = domainentityfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -137,7 +137,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainmodelfactory.NewAuth(args)
+				auth = domainentityfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -165,7 +165,7 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainmodelfactory.NewAuth(args)
+				auth = domainentityfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
@@ -214,7 +214,7 @@ func (ts *TestSuite) TestGetByUserID() {
 
 	var userID uuid.UUID
 
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
 	errorType := customerror.NoType
 
@@ -288,7 +288,7 @@ func (ts *TestSuite) TestDelete() {
 
 	var id uuid.UUID
 
-	auth := domainmodel.Auth{}
+	auth := domainentity.Auth{}
 
 	errorType := customerror.NoType
 
