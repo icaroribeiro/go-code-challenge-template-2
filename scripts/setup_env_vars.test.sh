@@ -18,7 +18,7 @@ export TOKEN_EXP_TIME_IN_SEC="120"
 export TIME_BEFORE_TOKEN_EXP_TIME_IN_SEC="30"
 
 #
-# Database settings
+# Datastore settings
 #
 export DB_DRIVER="postgres"
 export DB_USER="postgres"
