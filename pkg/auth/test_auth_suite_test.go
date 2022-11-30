@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/auth"
+	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	"github.com/stretchr/testify/suite"
 )
 

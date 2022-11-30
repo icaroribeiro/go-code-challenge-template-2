@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/datastore"
+	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	"github.com/stretchr/testify/assert"
 )
 

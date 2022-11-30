@@ -7,9 +7,9 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/customerror"
-	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/adapter"
-	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/response"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
+	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
 	"github.com/stretchr/testify/assert"
 )
 

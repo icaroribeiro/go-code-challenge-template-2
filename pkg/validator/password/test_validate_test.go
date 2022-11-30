@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	passwordvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/validator/password"
+	passwordvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
 	"github.com/stretchr/testify/assert"
 )
 

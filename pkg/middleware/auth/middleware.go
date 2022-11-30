@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template/internal/core/domain/entity"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/auth"
-	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/customerror"
-	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/response"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
+	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
 	"gorm.io/gorm"
 )
 

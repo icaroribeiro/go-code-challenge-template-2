@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/httputil/request"
+	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request"
 	"github.com/stretchr/testify/assert"
 )
 

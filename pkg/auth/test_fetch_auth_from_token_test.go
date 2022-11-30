@@ -6,8 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/dgrijalva/jwt-go"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/auth"
-	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/customerror"
+	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )

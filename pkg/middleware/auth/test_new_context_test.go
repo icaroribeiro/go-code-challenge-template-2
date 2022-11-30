@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template/internal/core/domain/entity"
-	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template/pkg/middleware/auth"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template/tests/factory/core/domain/entity"
+	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
+	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
 	"github.com/stretchr/testify/assert"
 )
 

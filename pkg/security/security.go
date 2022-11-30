@@ -1,7 +1,7 @@
 package security
 
 import (
-	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/customerror"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	"golang.org/x/crypto/bcrypt"
 )
 

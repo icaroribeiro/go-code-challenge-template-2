@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/customerror"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	"github.com/stretchr/testify/assert"
 )
 
