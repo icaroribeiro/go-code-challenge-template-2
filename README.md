@@ -1,4 +1,4 @@
-# Hi there! 👋 (NOT FINISHED!)
+# Hi there! 👋 (Not Finished!)
 
 Be very welcome to my solution to X's code challenge.
 
