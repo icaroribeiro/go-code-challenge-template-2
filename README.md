@@ -1,6 +1,4 @@
-# new-go-code-challenge-template-2-2
-
-# Hi there! 👋
+# Hi there! 👋 (NOT FINISHED!)
 
 Be very welcome to my solution to X's code challenge.
 
@@ -11,13 +9,11 @@ Be very welcome to my solution to X's code challenge.
 - [API documentation](#api-documentation)
 - [Test cases](#test-cases)
 - [How to run the tests?](#how-to-run-the-tests)
-- [Deployment](#deployment)
-- [How to deploy the project?](#how-to-deploy-the-project)
 - [References](#references)
 
 ## Introduction
 
-This project consists of the development of a **REST API** using **Go** programming language, **Json Web Token** and **Postgres** database for managing authentication operations and accessing users data.
+This project consists of the development of a **GraphQL API** using **Go** programming language, **Json Web Token** and **Postgres** database for managing authentication operations and accessing users data.
 
 ## Architecture
 
@@ -47,7 +43,7 @@ This layer is responsible for serving as a supporting layer for other layers.
 
 It contains the procedures to establish connection to the database and the implementation of repositories that interact with the database by retrieving and/or modifing records.
 
-#### Interfaces
+#### Presentation
 
 This layer is responsible for the interaction with user by accepting API requests, calling out the relevant services and then delivering the response.
 
@@ -189,207 +185,64 @@ Note:
 
 ## How to run the tests?
 
-Before running the project tests, it is needed to start up the Docker containers named **api_container** and **postgrestestdb_container** successfully.
+It is possible to run the tests of the applicatinon locally or even with Docker containers.
 
-The **postgrestestdb_container** container is necessary to execute the integration tests and it can be initialized by running the command:
+### Local Machine
 
-```
-make start-deps
-```
+If you are intended to execute them locally, it is firstly necessary to install postgreSQL database and set up the tables informed in the file **database/postgres/scripts/1-create_tables.sql**.
 
-After all these containers are successfully initialized, to execute the tests of the project, run the command:
+After that, it is needed to configure the enviroment variables of the file **scripts/setup_env_vars.test.sh** related to the postgreSQL database. The other variables related to RSA keys and authentication settings do not need to be adjusted.
 
-```
-make test-app
-```
-
-After running any of the tests, it is possible to check the percentage of code coverage that is met by each test case displayed in the test execution output.
-
-The statistics collected from the run are saved in the **docs/api/tests/unit/coverage.out** file for coverage analysis. To check the **unit** test coverage report informed in the **coverage.out** file, run the command:
+Then, execute all the tests:
 
 ```
-make analyze-app
+make test-api
 ```
+
+After running any of the tests, it is feasible to check the percentage of code coverage that is met by each test case displayed in the test execution output.
+
+The statistics collected from the run of **unit** tests are saved in the **docs/api/tests/unit/coverage.out** file and the related report is **docs/api/tests/unit/coverage_report.out**. In case of the **integration** tests, the data are saved in the **docs/api/tests/integration/coverage.out** and the associated report is **docs/api/tests/unit/coverage_report.out**.
 
 Notes:
 
 - The **coverage.out** file contains only **unit** test execution statistics. (There are no statistics on the execution of the **integration** tests.)
 
-## Deployment
+### Docker Containers
 
-The project was deployed as a Docker container on the **Heroku** hosting service using the infrastructure tool as code **Terraform**.
-
-The API endpoints can be accessed from the hosted project using the following base URL:
+Before executing the application tests, it is needed to start up the Docker container named **postgrestestdb_container** that is necessary to execute the integration tests:
 
 ```
-https://icaroribeiro-<something>.api.herokuapp.com
+make start-deps
 ```
 
-For example, to check API documentation through your web browser, go to the following URL:
+After all these dependencies are successfully started, initialize the application by starting up the Docker container named **apitest_container** :
 
 ```
-Method: HTTP GET
-URL: https://icaroribeiro-<something>.api.herokuapp.com/swagger/index.html
+make init-app
 ```
 
-To validate the application status, check the result of the request to the following API endpoint:
+Then, it is possible to execute the tests of the application:
 
 ```
-Method: HTTP GET
-URL: https://icaroribeiro-<something>.api.herokuapp.com/status
+make test-app
 ```
 
-## How to deploy the project?
-
-Below there are the procedures used to deploy the project.
-
-Note:
-
-- To proceed with the deployment process it is necessary to have a Heroku account and the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) and [Terraform](https://www.terraform.io/downloads.html) softwares installed on the local machine.
-
-First, it were created a manifest file called **heroku.yml** and a file named **Dockerfile.multistage** in the **deployments/heroku/app** directory that was used to build the project as a Docker container.
-
-The Docker file was designed using a Docker stages feature that allows creating multiple images in the same Dockerfile (Docker's multi-stage image):
-
-In summary, the first **FROM** statement of this file is related to an image that uses an alternative name "as constructor" to be referred to later in the file and the respective code contains the generation of the middle layer where the compilation of Go takes place; and the second **FROM** statement is directed to an image of [**alpine**](https://hub.docker.com/_/alpine) where simply the instruction "--from=builder" is defined to get the executable from the intermediate layer.
-
-The objective of this approach is to build a final image that is as lean as possible, that is, with reduced size, containing only the binary application and the base operating system necessary to run it. This way, the application could be deployed quickly, even under slow network conditions.
-
-Next, it was needed to create a file called **deployments/heroku/scripts/setup_env.sh** that have the following environment variables:
-
-```sh
-#!/bin/bash
-
-#
-# Heroku platform settings
-#
-export TF_VAR_heroku_email=<heroku_email>
-export TF_VAR_heroku_api_key=<heroku_api_key>
-
-#
-# Heroku application settings
-#
-export TF_VAR_heroku_app_name=<heroku_app_name>
-```
-
-The first and second variables above are related to the Heroku Platform API settings and refer to the email address of Heroku account and a Heroku API key, respectively. The third variable refers to the name of the application that will be hosted on Heroku.
-
-After installing the Heroku CLI software, to get a Heroku API key, run the Heroku CLI command:
+Finally, it is feasible to destroy the application:
 
 ```
-heroku login
+make destroy-app
 ```
-
-This way, you will be redirected to the web browser so that you can login to the Heroku website. After that, run the command to get the Heroku API key:
-
-```
-heroku auth:token
-```
-
-After obtaining the Heroku API key, configure the values ​​of the environment variables defined in the **setup_env.sh** file.
-
-Then, run the below commands located in the Makefile file.
-
-To initialize everything Terraform requires to provision the infrastructure, run the command:
-
-```
-make init-deploy
-```
-
-The previous command downloads the plugin from the Heroku provider and stores it in a hidden .terraform folder.
-
-The infrastructure resources referring to the API were defined in the **deployments/heroku/terraform/resources.tf** file.
-
-Then, for details on what will happen to the infrastructure without making any changes to it, run the command:
-
-```
-make plan-deploy
-```
-
-To make the necessary changes to reach the desired state of the configuration, run the command:
-
-```
-make apply-deploy
-```
-
-After applying the changes, it is possible to set up the database tables by means of CLI Heroku commands.
-
-Firstly, to identify what is the identifier of the Heroku Postgres database, execute the command:
-
-```
-heroku pg:info -a=<HEROKU_APP_NAME>
-```
-
-The output should look something like this:
-
-```
-=== DATABASE_URL
-...
-Add-on: <HEROKU_POSTGRES>
-```
-
-Then, to create the database tables, run the command:
-
-```
-heroku pg:psql -a=<HEROKU_APP_NAME> <HEROKU_POSTGRES> < database/postgres/scripts/1-create_tables.sql
-```
-
-Finally, in order to terminate all the provisioned infrastructure components, run the command:
-
-```
-make destroy-deploy
-```
-
-### Accessing remote Postgres database locally
-
-It is possible to verify the data generated in Heroku using [pgAdmin](https://www.pgadmin.org/) tool.
-
-To achieve this, firstly access the Heroku website in order to check the datastore settings.
-
-In the Settings tab, click the View Credentials... button and take note of the following data: **Host**, **Database**, **User**, **Port** and **Password**.
-
-In what follows, there are the steps to configure a remote server in pgAdmin and to establish access to the Postgres database using the previous data:
-
-In pgAdmin, right click Server(s) icon, and then navigate to Create and Server options.
-
-After that, it is necessary to fill out the following parameters:
-
-In the General tab, name the server whatever you want.
-
-Under the Connection tab, inform the Host name and port. The Host name is the one configured like ...amazonaws.com and the port is 5432. In Maintenance database, informe the Database name from the previous data and do the same procedure to fill out the Username and Password fields.
-
-In the SSL tab, mark SSL mode as Require.
-
-Before finalising, it is necessary to apply one more configuration:
-
-The database name needs to be informed in a "desired database list" in order to avoid parsing many other databases that are not cared about. (This has to do with how Heroku configures their servers.)
-
-In this regard, go to the Advanced tab and under DB restriction copy the Database name (It's the same value filled in the Maintenance database field earlier), and then click Save button.
-
-Finally, navigate through the options structure: Databases, database name, Schemas, public and inside Tables, check the tables. (In case of the tables are not displayed, try right click the related Server created and then click Refresh option.)
-
-**Note**
-
-This project was configured with a Heroku Postgres database resource in a **Free plan** (Hobby Dev - Free). Because of that, the database will only support a limited number of records (10.000 rows). Therefore, please evaluate the operations to be carried out before using the application in this way.
 
 ## References
 
-Project layout:
+### Project layout
 
 - https://github.com/golang-standards/project-layout
 
-Domain Driven Design
+### Domain Driven Design
 
 - https://dev.to/stevensunflash/using-domain-driven-design-ddd-in-golang-3ee5
 
-Hexagonal Architecture
-
-- https://medium.com/avenue-tech/arquitetura-hexagonal-com-golang-c344411aa940
-
-Dependency Injection
-
-- https://medium.com/avenue-tech/dependency-injection-in-go-35293ef7b6
-
-Database Transaction
+### Database transaction
 
 - https://medium.com/wesionary-team/implement-database-transactions-with-repository-pattern-golang-gin-and-gorm-application-907517fd0743

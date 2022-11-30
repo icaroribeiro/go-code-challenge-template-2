@@ -9,18 +9,16 @@ import (
 
 // RequestData is the model of a request data.
 type RequestData struct {
-	Method string
-	Target string
-	Body   interface{}
+	Method  string
+	Target  string
+	Body    interface{}
+	Headers map[string][]string
 }
 
-// SetRequestHeaders is the function that configures the header entries before executing a request.
-func SetRequestHeaders(r *http.Request, headers map[string][]string) {
-	for key, values := range headers {
-		for _, value := range values {
-			r.Header.Set(key, value)
-		}
-	}
+type ContextKeyType string
+
+type contextKey struct {
+	name string
 }
 
 // PrepareRequestBody is the fucntion that formats the request body before executing a request.
@@ -49,4 +47,13 @@ func PrepareRequestBody(body interface{}) io.Reader {
 	}
 
 	return reqBody
+}
+
+// SetRequestHeaders is the function that configures the header entries before executing a request.
+func SetRequestHeaders(r *http.Request, headers map[string][]string) {
+	for key, values := range headers {
+		for _, value := range values {
+			r.Header.Set(key, value)
+		}
+	}
 }

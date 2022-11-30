@@ -5,9 +5,9 @@ services:
     container_name: api_container
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     env_file:
-      - ./.env
+      - ./.env.prod
     restart: on-failure
     ports:
       - "8080:8080"
@@ -22,7 +22,7 @@ services:
       context: ./database/postgres
       dockerfile: Dockerfile
     env_file:
-      - ./database/postgres/.env
+      - ./database/postgres/.env.prod
     restart: on-failure
     ports:
       - "5433:5432"
@@ -31,21 +31,5 @@ services:
     volumes:
       - postgresdb-data:/var/lib/postgresql/data
 
-  postgrestestdb:
-    container_name: postgrestestdb_container
-    build:
-      context: ./database/postgres
-      dockerfile: Dockerfile
-    env_file:
-      - ./database/postgres/.env.test
-    restart: on-failure
-    ports:
-      - "5434:5432"
-    expose:
-      - "5434"
-    volumes:
-      - postgrestestdb-data:/var/lib/postgresql/data
-
 volumes:
   postgresdb-data:
-  postgrestestdb-data:

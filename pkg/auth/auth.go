@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template/internal/core/domain/entity"
+	"github.com/icaroribeiro/new-go-code-challenge-template/pkg/customerror"
 	uuid "github.com/satori/go.uuid"
 )
 
