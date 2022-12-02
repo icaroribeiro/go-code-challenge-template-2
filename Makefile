@@ -17,7 +17,7 @@ format-api:
 # if anything is missing or inconsistent related to dependency management in GoLang.
 #
 generate-gql:
-	go run -mod=mod github.com/99designs/gqlgen generate --config internal/transport/presentation/handler/graphql/gqlgen/gqlgen.yml
+	go run -mod=mod github.com/99designs/gqlgen generate --config internal/presentation/graphql/gqlgen/gqlgen.yml
 
 run-api:
 	. ./scripts/setup_env_vars.sh; \
