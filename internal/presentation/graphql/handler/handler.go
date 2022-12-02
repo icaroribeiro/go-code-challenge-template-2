@@ -25,7 +25,7 @@ func New(healthCheckService healthcheckservice.IService, authService authservice
 	cfg := generated.Config{Resolvers: res}
 	cfg.Directives.UseDBTrxMiddleware = dbTrxDirective.DBTrxMiddleware()
 	cfg.Directives.UseAuthMiddleware = authDirective.AuthMiddleware()
-	cfg.Directives.UseAuthRenewalMiddleware = authDirective.AuthRenewalMiddleware()
+	// cfg.Directives.UseAuthRenewalMiddleware = authDirective.AuthRenewalMiddleware()
 
 	return &Handler{
 		Cfg: cfg,

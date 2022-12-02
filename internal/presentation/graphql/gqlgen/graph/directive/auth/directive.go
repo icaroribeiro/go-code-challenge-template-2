@@ -75,27 +75,27 @@ func (d *Directive) AuthMiddleware() func(ctx context.Context, obj interface{}, 
 }
 
 // AuthRenewalMiddleware is the function that acts as a HTTP middleware to evaluate the authentication renewal of API based on a JWT token.
-func (d *Directive) AuthRenewalMiddleware() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
-		if !ok || tokenString == "" {
-			return nil, customerror.New("failed to get the token_string value from the request context")
-		}
+// func (d *Directive) AuthRenewalMiddleware() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+// 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
+// 		tokenString, ok := authmiddlewarepkg.FromContext(ctx)
+// 		if !ok || tokenString == "" {
+// 			return nil, customerror.New("failed to get the token_string value from the request context")
+// 		}
 
-		token, err := d.AuthN.ValidateTokenRenewal(tokenString, d.TimeBeforeTokenExpTimeInSec)
-		if err != nil {
-			return nil, err
-		}
+// 		token, err := d.AuthN.ValidateTokenRenewal(tokenString, d.TimeBeforeTokenExpTimeInSec)
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		auth, err := buildAuth(d.DB, d.AuthN, token)
-		if err != nil {
-			return nil, err
-		}
+// 		auth, err := buildAuth(d.DB, d.AuthN, token)
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		ctx = context.WithValue(ctx, authDetailsCtxKey, auth)
-		return next(ctx)
-	}
-}
+// 		ctx = context.WithValue(ctx, authDetailsCtxKey, auth)
+// 		return next(ctx)
+// 	}
+// }
 
 // NewContext is the function that returns a new Context that carries auth_details value.
 func NewContext(ctx context.Context, auth domainentity.Auth) context.Context {
