@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/99designs/gqlgen/graphql"
 	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
@@ -78,7 +77,6 @@ func (d *Directive) AuthMiddleware() func(ctx context.Context, obj interface{}, 
 // AuthRenewalMiddleware is the function that acts as a HTTP middleware to evaluate the authentication renewal of API based on a JWT token.
 func (d *Directive) AuthRenewalMiddleware() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		fmt.Println("kkkk")
 		// tokenString, ok := authmiddlewarepkg.FromContext(ctx)
 		// if !ok || tokenString == "" {
 		// 	return nil, customerror.New("failed to get the token_string value from the request context")
