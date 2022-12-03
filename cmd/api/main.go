@@ -124,7 +124,7 @@ func main() {
 	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"authMiddleware": authmiddlewarepkg.Auth(),
+		"authMiddleware": authmiddlewarepkg.Auth(db, authN),
 	}
 
 	routes := make(routehttputilpkg.Routes, 0)

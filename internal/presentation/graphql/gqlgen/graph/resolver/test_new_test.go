@@ -8,12 +8,7 @@ import (
 	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/resolver"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 )
-
-func TestResolverUnit(t *testing.T) {
-	suite.Run(t, new(TestSuite))
-}
 
 func (ts *TestSuite) TestNew() {
 	ts.Cases = Cases{

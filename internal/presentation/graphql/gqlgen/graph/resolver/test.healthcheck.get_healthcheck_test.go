@@ -13,12 +13,7 @@ import (
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/resolver"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 )
-
-func TestHealthCheckResolversUnit(t *testing.T) {
-	suite.Run(t, new(TestSuite))
-}
 
 func (ts *TestSuite) TestGetHealthCheck() {
 	status := ""

@@ -1,4 +1,4 @@
-package user_test
+package auth_test
 
 import (
 	"fmt"
@@ -7,39 +7,34 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
+	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
 	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
-	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
 	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
 	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
+	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
+	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
 	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
-	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql"
 	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/directive/auth"
-	graphentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/entity"
 	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/mockdirective/dbtrx"
+	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/handler"
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
 	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
 )
 
-func TestUserInteg(t *testing.T) {
-	suite.Run(t, new(TestSuite))
-}
-
-func (ts *TestSuite) TestGetAll() {
+func (ts *TestSuite) TestRefreshToken() {
 	dbTrx := &gorm.DB{}
 
 	var authN authpkg.IAuth
 
 	credentials := securitypkgfactory.NewCredentials(nil)
 
-	timeBeforeTokenExpTimeInSec := 30
+	timeBeforeTokenExpTimeInSec := 120
 
 	userDatastore := datastoreentity.User{}
-	user := graphentity.User{}
 	loginDatastore := datastoreentity.Login{}
 	authDatastore := datastoreentity.Auth{}
 
@@ -48,14 +43,14 @@ func (ts *TestSuite) TestGetAll() {
 	value := ""
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"authMiddleware": authmiddlewarepkg.Auth(),
+		"authMiddleware": authmiddlewarepkg.Auth(dbTrx, authN),
 	}
 
 	opt := func(bd *client.Request) {}
 
 	ts.Cases = Cases{
 		{
-			Context: "ItShouldSucceedInGettingAllUsers",
+			Context: "ItShouldSucceedInRefreshingTheToken",
 			SetUp: func(t *testing.T) {
 				dbTrx = ts.DB.Begin()
 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
@@ -68,9 +63,6 @@ func (ts *TestSuite) TestGetAll() {
 
 				result := dbTrx.Create(&userDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-
-				domainUser := userDatastore.ToDomain()
-				user.FromDomain(domainUser)
 
 				loginDatastore = datastoreentity.Login{
 					UserID:   userDatastore.ID,
@@ -103,16 +95,18 @@ func (ts *TestSuite) TestGetAll() {
 			},
 		},
 		{
-			Context: "ItShouldFailIfTheDatabaseStateIsInconsistent",
+			Context: "ItShouldFailIfTheTokenIsNotSentIntheRequest",
 			SetUp: func(t *testing.T) {
 				dbTrx = ts.DB.Begin()
 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
 
+				authN = authpkg.New(ts.RSAKeys)
+			},
+			WantError: true,
+			TearDown: func(t *testing.T) {
 				result := dbTrx.Rollback()
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 			},
-			WantError: true,
-			TearDown:  func(t *testing.T) {},
 		},
 	}
 
@@ -120,10 +114,13 @@ func (ts *TestSuite) TestGetAll() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
+			authDatastoreRepository := authdatastorerepository.New(dbTrx)
+			loginDatastoreRepository := logindatastorerepository.New(dbTrx)
 			userDatastoreRepository := userdatastorerepository.New(dbTrx)
 
 			healthCheckService := new(healthcheckmockservice.Service)
-			authService := new(authmockservice.Service)
+			authService := authservice.New(authDatastoreRepository, loginDatastoreRepository, userDatastoreRepository,
+				authN, ts.Security, ts.Validator, ts.TokenExpTimeInSec)
 			userService := userservice.New(userDatastoreRepository, ts.Validator)
 
 			dbTrxDirective := new(dbtrxmockdirective.Directive)
@@ -133,19 +130,18 @@ func (ts *TestSuite) TestGetAll() {
 
 			graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 
-			query := getAllUsersQuery
-			resp := GetAllUsersQueryResponse{}
+			mutation := refreshTokenMutation
+			resp := RefreshTokenMutationResponse{}
 
 			srv := http.HandlerFunc(adapterhttputilpkg.AdaptFunc(graphqlHandler.GraphQL()).
 				With(adapters["authMiddleware"]))
 
 			cl := client.New(srv)
-			err := cl.Post(query, &resp, opt)
+			err := cl.Post(mutation, &resp, opt)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
-				assert.Equal(t, user.ID.String(), resp.GetAllUsers[0].ID)
-				assert.Equal(t, user.Username, resp.GetAllUsers[0].Username)
+				assert.NotEmpty(t, resp.RefreshToken.Token)
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 			}

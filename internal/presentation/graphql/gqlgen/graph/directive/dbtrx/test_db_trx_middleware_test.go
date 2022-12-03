@@ -13,79 +13,8 @@ import (
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
 )
-
-func TestDirectiveUnit(t *testing.T) {
-	suite.Run(t, new(TestSuite))
-}
-
-func (ts *TestSuite) TestNewContext() {
-	driver := "postgres"
-	db, _ := NewMockDB(driver)
-	dbTrxCtxValue := &gorm.DB{}
-
-	ctx := context.Background()
-
-	ts.Cases = Cases{
-		{
-			Context: "ItShouldSucceedInCreatingACopyOfAContextWithAnAssociatedValue",
-			SetUp: func(t *testing.T) {
-				dbTrxCtxValue = db
-			},
-			WantError: false,
-		},
-	}
-
-	for _, tc := range ts.Cases {
-		ts.T().Run(tc.Context, func(t *testing.T) {
-			tc.SetUp(t)
-
-			returnedCtx := dbtrxdirective.NewContext(ctx, dbTrxCtxValue)
-
-			if !tc.WantError {
-				assert.NotEmpty(t, returnedCtx)
-				returnedDBTrxCtxValue, ok := dbtrxdirective.FromContext(returnedCtx)
-				assert.True(t, ok, "Unexpected type assertion error.")
-				assert.Equal(t, dbTrxCtxValue, returnedDBTrxCtxValue)
-			}
-		})
-	}
-}
-
-func (ts *TestSuite) TestFromContext() {
-	driver := "postgres"
-	db, _ := NewMockDB(driver)
-	dbTrxCtxValue := &gorm.DB{}
-
-	ctx := context.Background()
-
-	ts.Cases = Cases{
-		{
-			Context: "ItShouldSucceedInGettingAnAssociatedValueFromAContext",
-			SetUp: func(t *testing.T) {
-				dbTrxCtxValue = db
-				ctx = dbtrxdirective.NewContext(ctx, dbTrxCtxValue)
-			},
-			WantError: false,
-		},
-	}
-
-	for _, tc := range ts.Cases {
-		ts.T().Run(tc.Context, func(t *testing.T) {
-			tc.SetUp(t)
-
-			returnedDBTrxCtxValue, ok := dbtrxdirective.FromContext(ctx)
-
-			if !tc.WantError {
-				assert.True(t, ok, "Unexpected type assertion error.")
-				assert.NotEmpty(t, returnedDBTrxCtxValue)
-				assert.Equal(t, dbTrxCtxValue, returnedDBTrxCtxValue)
-			}
-		})
-	}
-}
 
 func (ts *TestSuite) TestDBTrxMiddleware() {
 	user := domainentityfactory.NewUser(nil)
@@ -314,10 +243,4 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 			assert.Nil(ts.T(), err, fmt.Sprintf("There were unfulfilled expectations: %v.", err))
 		})
 	}
-}
-
-func ShouldPanic(t *testing.T, f graphql.Resolver, ctx context.Context) {
-	defer func() { recover() }()
-	f(ctx)
-	t.Errorf("It should have panicked.")
 }

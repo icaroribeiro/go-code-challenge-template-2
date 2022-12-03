@@ -98,3 +98,7 @@ func (ts *TestSuite) TearDownSuite() {
 		log.Panicf("Got error when closing the database instance: %s", err.Error())
 	}
 }
+
+func TestHealthCheckIntegSuite(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}

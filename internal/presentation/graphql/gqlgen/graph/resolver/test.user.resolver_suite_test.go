@@ -1,5 +1,11 @@
 package resolver_test
 
+import (
+	"testing"
+
+	"github.com/stretchr/testify/suite"
+)
+
 type GetAllUsersQueryResponse struct {
 	GetAllUsers []struct {
 		ID       string
@@ -13,3 +19,7 @@ var getAllUsersQuery = `query {
 			username
 		}
 	}`
+
+func TestUserResolverSuite(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}

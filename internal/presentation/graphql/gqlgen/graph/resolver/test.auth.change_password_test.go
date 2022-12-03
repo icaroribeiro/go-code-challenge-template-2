@@ -1,6 +1,7 @@
 package resolver_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -15,38 +16,78 @@ import (
 	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/resolver"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
 )
 
-func TestUserResolversUnit(t *testing.T) {
-	suite.Run(t, new(TestSuite))
-}
-
-func (ts *TestSuite) TestGetAllUsers() {
-	user := domainentityfactory.NewUser(nil)
-
+func (ts *TestSuite) TestChangePassword() {
 	dbTrx := &gorm.DB{}
 	dbTrx = nil
+
+	passwords := securitypkgfactory.NewPasswords(nil)
+
+	auth := domainentityfactory.NewAuth(nil)
+
+	opts := []client.Option{}
+
+	message := ""
 
 	returnArgs := ReturnArgs{}
 
 	ts.Cases = Cases{
 		{
-			Context: "ItShouldSucceedInGettingAllUsers",
+			Context: "ItShouldSucceedInResettingThePassword",
 			SetUp: func(t *testing.T) {
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", passwords))
+				ctx := context.Background()
+				opts = append(opts, AddAuthDetailsToCtx(ctx, auth))
+
+				message = "the password has been updated successfully"
+
 				returnArgs = ReturnArgs{
-					{domainentity.Users{user}, nil},
+					{nil},
 				}
 			},
 			WantError: false,
 		},
 		{
-			Context: "ItShouldFailIfAnErrorOccursWhenGettingAllUsers",
+			Context: "ItShouldFailIfItIsNotPossibleToGetTheAuthFromTheRequestContext",
 			SetUp: func(t *testing.T) {
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", passwords))
+
 				returnArgs = ReturnArgs{
-					{domainentity.Users{}, customerror.New("failed")},
+					{nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfItTheAuthFromTheRequestContextIsEmpty",
+			SetUp: func(t *testing.T) {
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", passwords))
+				ctx := context.Background()
+				opts = append(opts, AddAuthDetailsToCtx(ctx, domainentity.Auth{}))
+
+				returnArgs = ReturnArgs{
+					{nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfAnErrorOccursWhenResettingThePassword",
+			SetUp: func(t *testing.T) {
+				opts = []client.Option{}
+				opts = append(opts, client.Var("input", passwords))
+				ctx := context.Background()
+				opts = append(opts, AddAuthDetailsToCtx(ctx, auth))
+
+				returnArgs = ReturnArgs{
+					{customerror.New("failed")},
 				}
 			},
 			WantError: true,
@@ -59,10 +100,9 @@ func (ts *TestSuite) TestGetAllUsers() {
 
 			healthCheckService := new(healthcheckmockservice.Service)
 			authService := new(authmockservice.Service)
-
+			authService.On("WithDBTrx", dbTrx).Return(authService)
+			authService.On("ModifyPassword", auth.UserID.String(), passwords).Return(returnArgs[0]...)
 			userService := new(usermockservice.Service)
-			userService.On("WithDBTrx", dbTrx).Return(userService)
-			userService.On("GetAll").Return(returnArgs[0]...)
 
 			res := resolverpkg.New(healthCheckService, authService, userService)
 
@@ -79,16 +119,16 @@ func (ts *TestSuite) TestGetAllUsers() {
 				),
 			)
 
-			query := getAllUsersQuery
-			resp := GetAllUsersQueryResponse{}
+			mutation := changePasswordMutation
+			resp := ChangePasswordMutationResponse{}
 
 			cl := client.New(srv)
-			err := cl.Post(query, &resp)
+			err := cl.Post(mutation, &resp, opts...)
 
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
-				assert.Equal(t, user.ID.String(), resp.GetAllUsers[0].ID)
-				assert.Equal(t, user.Username, resp.GetAllUsers[0].Username)
+				assert.NotEmpty(t, resp.ChangePassword.Message)
+				assert.Equal(t, message, resp.ChangePassword.Message)
 			} else {
 				assert.NotNil(t, err, "Predicted error lost.")
 			}

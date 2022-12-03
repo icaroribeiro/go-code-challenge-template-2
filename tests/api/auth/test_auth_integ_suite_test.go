@@ -1,9 +1,9 @@
-package user_test
+package auth_test
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"testing"
 
@@ -13,7 +13,10 @@ import (
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
+	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
 	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
+	passwordvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/password"
+	usernamevalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/username"
 	uuidvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
 	"github.com/stretchr/testify/suite"
 	validatorv2 "gopkg.in/validator.v2"
@@ -35,22 +38,69 @@ type TestSuite struct {
 	RSAKeys           authpkg.RSAKeys
 	TokenExpTimeInSec int
 	Validator         validatorpkg.IValidator
+	Security          securitypkg.ISecurity
 	Cases             Cases
 }
 
-type GetAllUsersQueryResponse struct {
-	GetAllUsers []struct {
-		ID       string
-		Username string
+type SignUpMutationResponse struct {
+	SignUp struct {
+		Token string
 	}
 }
 
-var getAllUsersQuery = `query {
-		getAllUsers {
-			id
-			username
-		}
-	}`
+type SignInMutationResponse struct {
+	SignIn struct {
+		Token string
+	}
+}
+
+type RefreshTokenMutationResponse struct {
+	RefreshToken struct {
+		Token string
+	}
+}
+
+type ChangePasswordMutationResponse struct {
+	ChangePassword struct {
+		Message string
+	}
+}
+
+type SignOutMutationResponse struct {
+	SignOut struct {
+		Message string
+	}
+}
+
+var signUpMutation = `mutation($input: Credentials!) {
+	signUp(input: $input) {
+		token
+	}
+}`
+
+var signInMutation = `mutation($input: Credentials!) {
+	signIn(input: $input) {
+		token
+	}
+}`
+
+var refreshTokenMutation = `mutation {
+	refreshToken {
+		token
+	}
+}`
+
+var changePasswordMutation = `mutation($input: Passwords!) {
+	changePassword(input: $input) {
+		message
+	}
+}`
+
+var signOutMutation = `mutation {
+	signOut {
+		message
+	}
+}`
 
 var (
 	publicKeyPath  = envpkg.GetEnvWithDefaultValue("RSA_PUBLIC_KEY_PATH", "../../../tests/configs/auth/rsa_keys/rsa.public")
@@ -91,13 +141,8 @@ func AddRequestHeaderEntries(key string, value string) client.Option {
 	}
 }
 
-// func AdaptHandlerWithHandlerFuncs(h http.Handler, adapters map[string]adapterhttputilpkg.Adapter) http.Handler {
-// 	return http.HandlerFunc(adapterhttputilpkg.AdaptFunc(h.ServeHTTP).
-// 		With(adapters["authMiddleware"]))
-// }
-
 func (ts *TestSuite) SetupSuite() {
-	publicKey, err := ioutil.ReadFile(publicKeyPath)
+	publicKey, err := os.ReadFile(publicKeyPath)
 	if err != nil {
 		log.Panicf("%s", err.Error())
 	}
@@ -107,7 +152,7 @@ func (ts *TestSuite) SetupSuite() {
 		log.Panicf("%s", err.Error())
 	}
 
-	privateKey, err := ioutil.ReadFile(privateKeyPath)
+	privateKey, err := os.ReadFile(privateKeyPath)
 	if err != nil {
 		log.Panicf("%s", err.Error())
 	}
@@ -147,13 +192,17 @@ func (ts *TestSuite) SetupSuite() {
 	}
 
 	validationFuncs := map[string]validatorv2.ValidationFunc{
-		"uuid": uuidvalidatorpkg.Validate,
+		"uuid":     uuidvalidatorpkg.Validate,
+		"username": usernamevalidatorpkg.Validate,
+		"password": passwordvalidatorpkg.Validate,
 	}
 
 	ts.Validator, err = validatorpkg.New(validationFuncs)
 	if err != nil {
 		log.Panicf("Got error when setting up the validator: %s", err.Error())
 	}
+
+	ts.Security = securitypkg.New()
 }
 
 func (ts *TestSuite) TearDownSuite() {
@@ -165,4 +214,8 @@ func (ts *TestSuite) TearDownSuite() {
 	if err = db.Close(); err != nil {
 		log.Panicf("Got error when closing the database instance: %s", err.Error())
 	}
+}
+
+func TestAuthIntegSuite(t *testing.T) {
+	suite.Run(t, new(TestSuite))
 }

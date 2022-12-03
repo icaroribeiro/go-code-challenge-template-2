@@ -1,5 +1,11 @@
 package resolver_test
 
+import (
+	"testing"
+
+	"github.com/stretchr/testify/suite"
+)
+
 type SignUpMutationResponse struct {
 	SignUp struct {
 		Token string
@@ -59,3 +65,7 @@ var signOutMutation = `mutation {
 		message
 	}
 }`
+
+func TestAuthResolverSuite(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}

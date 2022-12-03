@@ -9,17 +9,12 @@ import (
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"
 	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
 	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
-	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql"
 	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/mockdirective/auth"
 	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/mockdirective/dbtrx"
+	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/handler"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
 )
-
-func TestHealthCheckInteg(t *testing.T) {
-	suite.Run(t, new(TestSuite))
-}
 
 func (ts *TestSuite) TestGetStatus() {
 	db := &gorm.DB{}

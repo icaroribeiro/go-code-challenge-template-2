@@ -1,9 +1,11 @@
 package dbtrx_test
 
 import (
+	"context"
 	"log"
 	"testing"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
@@ -66,4 +68,14 @@ func NewMockDB(driver string) (*gorm.DB, sqlmock.Sqlmock) {
 	}
 
 	return db, mock
+}
+
+func ShouldPanic(t *testing.T, f graphql.Resolver, ctx context.Context) {
+	defer func() { recover() }()
+	f(ctx)
+	t.Errorf("It should have panicked.")
+}
+
+func TestDirectiveSuite(t *testing.T) {
+	suite.Run(t, new(TestSuite))
 }

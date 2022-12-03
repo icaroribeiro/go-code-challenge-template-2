@@ -92,3 +92,7 @@ func AddDBTrxToCtx(ctx context.Context, dbTrx *gorm.DB) client.Option {
 		bd.HTTP = bd.HTTP.WithContext(ctx)
 	}
 }
+
+func TestResolverSuite(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}
