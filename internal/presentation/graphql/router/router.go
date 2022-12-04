@@ -12,10 +12,11 @@ import (
 func ConfigureRoutes(graphqlHandler graphqlhandler.IHandler, adapters map[string]adapterhttputilpkg.Adapter) routehttputilpkg.Routes {
 	return routehttputilpkg.Routes{
 		routehttputilpkg.Route{
-			Name:        "GraphQL",
-			Method:      http.MethodPost,
-			Path:        "/graphql",
-			HandlerFunc: graphqlHandler.GraphQL(),
+			Name:   "GraphQL",
+			Method: http.MethodPost,
+			Path:   "/graphql",
+			HandlerFunc: adapterhttputilpkg.AdaptFunc(graphqlHandler.GraphQL()).
+				With(adapters["authMiddleware"]),
 		},
 	}
 }

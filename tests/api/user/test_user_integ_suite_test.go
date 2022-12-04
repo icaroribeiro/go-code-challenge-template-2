@@ -2,8 +2,8 @@ package user_test
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"testing"
 
@@ -97,7 +97,7 @@ func AddRequestHeaderEntries(key string, value string) client.Option {
 // }
 
 func (ts *TestSuite) SetupSuite() {
-	publicKey, err := ioutil.ReadFile(publicKeyPath)
+	publicKey, err := os.ReadFile(publicKeyPath)
 	if err != nil {
 		log.Panicf("%s", err.Error())
 	}
@@ -107,7 +107,7 @@ func (ts *TestSuite) SetupSuite() {
 		log.Panicf("%s", err.Error())
 	}
 
-	privateKey, err := ioutil.ReadFile(privateKeyPath)
+	privateKey, err := os.ReadFile(privateKeyPath)
 	if err != nil {
 		log.Panicf("%s", err.Error())
 	}

@@ -58,6 +58,27 @@ func (_m *Auth) DecodeToken(tokenString string) (*jwt.Token, error) {
 	return r0, r1
 }
 
+// ExtractTokenString provides a mock function with given fields: authHeaderString
+func (_m *Auth) ExtractTokenString(authHeaderString string) (string, error) {
+	ret := _m.Called(authHeaderString)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(authHeaderString)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(authHeaderString)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // FetchAuthFromToken provides a mock function with given fields: token
 func (_m *Auth) FetchAuthFromToken(token *jwt.Token) (entity.Auth, error) {
 	ret := _m.Called(token)
@@ -79,13 +100,13 @@ func (_m *Auth) FetchAuthFromToken(token *jwt.Token) (entity.Auth, error) {
 	return r0, r1
 }
 
-// ValidateTokenRenewal provides a mock function with given fields: tokenString, timeBeforeTokenExpTimeInSec
-func (_m *Auth) ValidateTokenRenewal(tokenString string, timeBeforeTokenExpTimeInSec int) (*jwt.Token, error) {
-	ret := _m.Called(tokenString, timeBeforeTokenExpTimeInSec)
+// ValidateTokenRenewal provides a mock function with given fields: token, timeBeforeTokenExpTimeInSec
+func (_m *Auth) ValidateTokenRenewal(token *jwt.Token, timeBeforeTokenExpTimeInSec int) (*jwt.Token, error) {
+	ret := _m.Called(token, timeBeforeTokenExpTimeInSec)
 
 	var r0 *jwt.Token
-	if rf, ok := ret.Get(0).(func(string, int) *jwt.Token); ok {
-		r0 = rf(tokenString, timeBeforeTokenExpTimeInSec)
+	if rf, ok := ret.Get(0).(func(*jwt.Token, int) *jwt.Token); ok {
+		r0 = rf(token, timeBeforeTokenExpTimeInSec)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*jwt.Token)
@@ -93,8 +114,8 @@ func (_m *Auth) ValidateTokenRenewal(tokenString string, timeBeforeTokenExpTimeI
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, int) error); ok {
-		r1 = rf(tokenString, timeBeforeTokenExpTimeInSec)
+	if rf, ok := ret.Get(1).(func(*jwt.Token, int) error); ok {
+		r1 = rf(token, timeBeforeTokenExpTimeInSec)
 	} else {
 		r1 = ret.Error(1)
 	}

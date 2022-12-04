@@ -47,6 +47,7 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldSucceedInWrappingAFunctionWithAuthenticationMiddleware",
 			SetUp: func(t *testing.T) {
+
 				bearerToken = []string{"Bearer", fake.Word()}
 
 				key := "Authorization"
@@ -90,6 +91,7 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldFailIfTheAuthorizationHeaderIsNotSetInTheRequestHeader",
 			SetUp: func(t *testing.T) {
+
 				bearerToken = []string{"", ""}
 
 				headers = map[string][]string{}
@@ -106,6 +108,7 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldFailIfTheAuthenticationTokenIsNotSetInAuthorizationHeader",
 			SetUp: func(t *testing.T) {
+
 				bearerToken = []string{"Bearer", ""}
 
 				key := "Authorization"
@@ -126,6 +129,7 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldFailIfTheTokenIsNotDecoded",
 			SetUp: func(t *testing.T) {
+
 				bearerToken = []string{"Bearer", fake.Word()}
 
 				key := "Authorization"
@@ -146,6 +150,7 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldFailIfTheAuthIsNotFetchedFromTheToken",
 			SetUp: func(t *testing.T) {
+
 				bearerToken = []string{"Bearer", fake.Word()}
 
 				key := "Authorization"
@@ -167,6 +172,7 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenTryingToFindTheAuthInTheDatabase",
 			SetUp: func(t *testing.T) {
+
 				bearerToken = []string{"Bearer", fake.Word()}
 
 				key := "Authorization"
@@ -201,6 +207,7 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldFailIfTheAuthIsNotFoundInTheDatabase",
 			SetUp: func(t *testing.T) {
+
 				bearerToken = []string{"Bearer", fake.Word()}
 
 				key := "Authorization"
@@ -235,6 +242,7 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldFailIfTheUserIDFromTokenDoesNotMatchWithTheUserIDFromAuthRecordFromTheDatabase",
 			SetUp: func(t *testing.T) {
+
 				bearerToken = []string{"Bearer", fake.Word()}
 
 				key := "Authorization"

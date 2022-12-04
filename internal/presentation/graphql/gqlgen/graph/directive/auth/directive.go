@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/dgrijalva/jwt-go"
 	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
@@ -32,38 +33,43 @@ type contextKey struct {
 	name string
 }
 
-func validateAuth(auth domainentity.Auth, db *gorm.DB, authN authpkg.IAuth) error {
+func buildAuth(db *gorm.DB, authN authpkg.IAuth, token *jwt.Token) (domainentity.Auth, error) {
+	auth, err := authN.FetchAuthFromToken(token)
+	if err != nil {
+		return domainentity.Auth{}, err
+	}
+
 	// Before proceeding is necessary to check if the user who is performing operations is logged
 	// based on the authentication details inserted within in the token.
 	authAux := domainentity.Auth{}
 
 	result := db.Find(&authAux, "id=?", auth.ID)
 	if result.Error != nil {
-		return result.Error
+		return domainentity.Auth{}, result.Error
 	}
 
 	if authAux.IsEmpty() {
 		errorMessage := "you are not logged in, then perform a login to get a token before proceeding"
-		return customerror.BadRequest.New(errorMessage)
+		return domainentity.Auth{}, customerror.BadRequest.New(errorMessage)
 	}
 
 	if auth.UserID.String() != authAux.UserID.String() {
 		errorMessage := "the token's auth_id and user_id are not associated"
-		return customerror.BadRequest.New(errorMessage)
+		return domainentity.Auth{}, customerror.BadRequest.New(errorMessage)
 	}
 
-	return nil
+	return auth, nil
 }
 
 // AuthMiddleware is the function that acts as a HTTP middleware to evaluate the authentication of API based on a JWT token.
 func (d *Directive) AuthMiddleware() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		auth, ok := authmiddlewarepkg.FromContext(ctx)
-		if !ok || auth.IsEmpty() {
-			return nil, customerror.New("failed to get the auth_details value from the request context")
+		token, ok := authmiddlewarepkg.FromContext(ctx)
+		if !ok {
+			return nil, customerror.New("failed to get the token value from the request context")
 		}
 
-		err := validateAuth(auth, d.DB, d.AuthN)
+		auth, err := buildAuth(d.DB, d.AuthN, token)
 		if err != nil {
 			return nil, err
 		}
@@ -77,22 +83,23 @@ func (d *Directive) AuthMiddleware() func(ctx context.Context, obj interface{}, 
 // AuthRenewalMiddleware is the function that acts as a HTTP middleware to evaluate the authentication renewal of API based on a JWT token.
 func (d *Directive) AuthRenewalMiddleware() func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	return func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		// tokenString, ok := authmiddlewarepkg.FromContext(ctx)
-		// if !ok || tokenString == "" {
-		// 	return nil, customerror.New("failed to get the token_string value from the request context")
-		// }
+		token, ok := authmiddlewarepkg.FromContext(ctx)
+		if !ok {
+			return nil, customerror.New("failed to get the token value from the request context")
+		}
 
-		// token, err := d.AuthN.ValidateTokenRenewal(tokenString, d.TimeBeforeTokenExpTimeInSec)
-		// if err != nil {
-		// 	return nil, err
-		// }
+		token, err := d.AuthN.ValidateTokenRenewal(token, d.TimeBeforeTokenExpTimeInSec)
+		if err != nil {
+			return nil, err
+		}
 
-		// auth, err := buildAuth(d.DB, d.AuthN, token)
-		// if err != nil {
-		// 	return nil, err
-		// }
+		auth, err := buildAuth(d.DB, d.AuthN, token)
+		if err != nil {
+			return nil, err
+		}
 
-		// ctx = context.WithValue(ctx, authDetailsCtxKey, auth)
+		ctx = NewContext(ctx, auth)
+
 		return next(ctx)
 	}
 }

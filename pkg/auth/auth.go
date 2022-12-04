@@ -2,6 +2,7 @@ package auth
 
 import (
 	"crypto/rsa"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -57,6 +58,22 @@ func parseToken(tokenString string, publicKey *rsa.PublicKey) (*jwt.Token, error
 	return jwt.Parse(tokenString, keyFunc)
 }
 
+// ExtractTokenString is the function that extracts the token string from authentication header string.
+func (a *Auth) ExtractTokenString(authHeaderString string) (string, error) {
+	if len(authHeaderString) == 0 {
+		errorMessage := "the auth header must be informed along with the token"
+		return "", customerror.BadRequest.New(errorMessage)
+	}
+
+	bearerToken := strings.Split(authHeaderString, " ")
+	if len(bearerToken) != 2 {
+		errorMessage := "the token must be associated with the auth header"
+		return "", customerror.BadRequest.New(errorMessage)
+	}
+
+	return bearerToken[1], nil
+}
+
 // DecodeToken is the function that translates a token string in a jwt token
 // and checks if the jwt token is valid or not.
 func (a *Auth) DecodeToken(tokenString string) (*jwt.Token, error) {
@@ -75,20 +92,8 @@ func (a *Auth) DecodeToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
-// ValidateTokenRenewal is the function that translates a token string in a jwt token
-// and validates if the jwt token is already expired to be renewed.
-func (a *Auth) ValidateTokenRenewal(tokenString string, timeBeforeTokenExpTimeInSec int) (*jwt.Token, error) {
-	token, err := parseToken(tokenString, a.RSAKeys.PublicKey)
-
-	if verr, ok := err.(*jwt.ValidationError); ok {
-		switch verr.Errors {
-		case jwt.ValidationErrorExpired:
-			break
-		default:
-			return token, err
-		}
-	}
-
+// ValidateTokenRenewal is the function that validates if the jwt token is already expired to be renewed.
+func (a *Auth) ValidateTokenRenewal(token *jwt.Token, timeBeforeTokenExpTimeInSec int) (*jwt.Token, error) {
 	claims, _ := token.Claims.(jwt.MapClaims)
 
 	expiredAt, _ := claims["exp"].(float64)

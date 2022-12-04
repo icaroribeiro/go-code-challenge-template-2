@@ -4,14 +4,13 @@ import (
 	"context"
 	"testing"
 
-	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
+	"github.com/dgrijalva/jwt-go"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
 	"github.com/stretchr/testify/assert"
 )
 
 func (ts *TestSuite) TestNewContext() {
-	authDetailsCtxValue := domainmodel.Auth{}
+	tokenCtxValue := &jwt.Token{}
 
 	ctx := context.Background()
 
@@ -19,7 +18,9 @@ func (ts *TestSuite) TestNewContext() {
 		{
 			Context: "ItShouldSucceedInCreatingACopyOfAContextWithAnAssociatedValue",
 			SetUp: func(t *testing.T) {
-				authDetailsCtxValue = domainmodelfactory.NewAuth(nil)
+				tokenCtxValue = &jwt.Token{
+					Valid: true,
+				}
 			},
 			WantError: false,
 		},
@@ -29,13 +30,13 @@ func (ts *TestSuite) TestNewContext() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			returnedCtx := authmiddlewarepkg.NewContext(ctx, authDetailsCtxValue)
+			returnedCtx := authmiddlewarepkg.NewContext(ctx, tokenCtxValue)
 
 			if !tc.WantError {
 				assert.NotEmpty(t, returnedCtx)
-				returnedAuthDetailsCtxValue, ok := authmiddlewarepkg.FromContext(returnedCtx)
+				returnedTokenCtxValue, ok := authmiddlewarepkg.FromContext(returnedCtx)
 				assert.True(t, ok, "Unexpected type assertion error.")
-				assert.Equal(t, authDetailsCtxValue, returnedAuthDetailsCtxValue)
+				assert.Equal(t, tokenCtxValue, returnedTokenCtxValue)
 			}
 		})
 	}
