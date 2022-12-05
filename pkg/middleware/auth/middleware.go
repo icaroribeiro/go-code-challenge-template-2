@@ -17,17 +17,6 @@ type contextKey struct {
 	name string
 }
 
-// NewContext is the function that returns a new Context that carries auth_details value.
-func NewContext(ctx context.Context, token *jwt.Token) context.Context {
-	return context.WithValue(ctx, tokenCtxKey, token)
-}
-
-// FromContext is the function that returns the token value stored in context, if any.
-func FromContext(ctx context.Context) (*jwt.Token, bool) {
-	raw, ok := ctx.Value(tokenCtxKey).(*jwt.Token)
-	return raw, ok
-}
-
 // Auth is the function that wraps a http.Handler to evaluate the authentication of API based on a JWT token.
 func Auth(db *gorm.DB, authN authpkg.IAuth) func(http.HandlerFunc) http.HandlerFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
@@ -55,4 +44,15 @@ func Auth(db *gorm.DB, authN authpkg.IAuth) func(http.HandlerFunc) http.HandlerF
 			next.ServeHTTP(w, r)
 		}
 	}
+}
+
+// NewContext is the function that returns a new Context that carries auth_details value.
+func NewContext(ctx context.Context, token *jwt.Token) context.Context {
+	return context.WithValue(ctx, tokenCtxKey, token)
+}
+
+// FromContext is the function that returns the token value stored in context, if any.
+func FromContext(ctx context.Context) (*jwt.Token, bool) {
+	raw, ok := ctx.Value(tokenCtxKey).(*jwt.Token)
+	return raw, ok
 }

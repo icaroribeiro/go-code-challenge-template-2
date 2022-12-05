@@ -66,7 +66,7 @@ func (a *Auth) ExtractTokenString(authHeaderString string) (string, error) {
 	}
 
 	bearerToken := strings.Split(authHeaderString, " ")
-	if len(bearerToken) != 2 {
+	if bearerToken[1] == "" {
 		errorMessage := "the token must be associated with the auth header"
 		return "", customerror.BadRequest.New(errorMessage)
 	}

@@ -1,230 +1,205 @@
 package auth_test
 
-// import (
-// 	"context"
-// 	"fmt"
-// 	"regexp"
-// 	"testing"
+import (
+	"context"
+	"fmt"
+	"regexp"
+	"testing"
 
-// 	"github.com/DATA-DOG/go-sqlmock"
-// 	"github.com/dgrijalva/jwt-go"
-// 	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-// 	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/directive/auth"
-// 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-// 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-// 	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
-// 	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
-// 	mockauthpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
-// 	uuid "github.com/satori/go.uuid"
-// 	"github.com/stretchr/testify/assert"
-// )
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/dgrijalva/jwt-go"
+	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
+	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql/gqlgen/graph/directive/auth"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
+	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
+	mockauthpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
+	uuid "github.com/satori/go.uuid"
+	"github.com/stretchr/testify/assert"
+)
 
-// func (ts *TestSuite) TestAuthMiddleware() {
-// 	driver := "postgres"
-// 	db, mock := NewMockDB(driver)
+func (ts *TestSuite) TestAuthMiddleware() {
+	driver := "postgres"
+	db, mock := NewMockDB(driver)
 
-// 	ctx := context.Background()
+	ctx := context.Background()
 
-// 	tokenString := ""
-// 	authDetailsCtxValue := domainentity.Auth{}
+	token := &jwt.Token{}
 
-// 	token := &jwt.Token{}
+	next := func(ctx context.Context) (interface{}, error) { return nil, nil }
 
-// 	next := func(ctx context.Context) (interface{}, error) { return nil, nil }
+	returnArgs := ReturnArgs{}
 
-// 	returnArgs := ReturnArgs{}
+	ts.Cases = Cases{
+		{
+			Context: "ItShouldSucceedInWrappingAFunctionWithAuthenticationMiddleware",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+				ctx = authmiddlewarepkg.NewContext(ctx, token)
 
-// 	ts.Cases = Cases{
-// 		{
-// 			Context: "ItShouldSucceedInWrappingAFunctionWithAuthenticationMiddleware",
-// 			SetUp: func(t *testing.T) {
-// 				ctx = context.Background()
+				id := uuid.NewV4()
+				userID := uuid.NewV4()
 
-// 				ctx = authmiddlewarepkg.NewContext(ctx, authDetailsCtxValue)
+				args := map[string]interface{}{
+					"id":     id,
+					"userID": userID,
+				}
 
-// 				token = &jwt.Token{}
+				returnArgs = ReturnArgs{
+					{domainentityfactory.NewAuth(args), nil},
+				}
 
-// 				id := uuid.NewV4()
-// 				userID := uuid.NewV4()
+				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
 
-// 				args := map[string]interface{}{
-// 					"id":     id,
-// 					"userID": userID,
-// 				}
+				authDatastore := datastoremodelfactory.NewAuth(args)
 
-// 				returnArgs = ReturnArgs{
-// 					{token, nil},
-// 					{domainentityfactory.NewAuth(args), nil},
-// 				}
+				rows := sqlmock.
+					NewRows([]string{"id", "user_id", "created_at"}).
+					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
 
-// 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(id).
+					WillReturnRows(rows)
+			},
+			WantError: false,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthenticationTokenIsNotSetInTheContext",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
 
-// 				authDatastore := datastoremodelfactory.NewAuth(args)
+				returnArgs = ReturnArgs{
+					{domainentity.Auth{}, nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheTokenIsNotDecoded",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+				ctx = authmiddlewarepkg.NewContext(ctx, token)
 
-// 				rows := sqlmock.
-// 					NewRows([]string{"id", "user_id", "created_at"}).
-// 					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
+				returnArgs = ReturnArgs{
+					{domainentity.Auth{}, nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthIsNotFetchedFromTheToken",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+				ctx = authmiddlewarepkg.NewContext(ctx, token)
 
-// 				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-// 					WithArgs(id).
-// 					WillReturnRows(rows)
-// 			},
-// 			WantError: false,
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheAuthenticationTokenIsNotSetInTheContext",
-// 			SetUp: func(t *testing.T) {
-// 				ctx = context.Background()
+				token = &jwt.Token{}
 
-// 				returnArgs = ReturnArgs{
-// 					{nil, nil},
-// 					{domainentity.Auth{}, nil},
-// 				}
-// 			},
-// 			WantError: true,
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheTokenIsNotDecoded",
-// 			SetUp: func(t *testing.T) {
-// 				ctx = context.Background()
+				returnArgs = ReturnArgs{
+					{domainentity.Auth{}, customerror.New("failed")},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfAnErrorOccursWhenTryingToFindTheAuthInTheDatabase",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+				ctx = authmiddlewarepkg.NewContext(ctx, token)
 
-// 				ctx = authmiddlewarepkg.NewContext(ctx, authDetailsCtxValue)
+				id := uuid.NewV4()
 
-// 				returnArgs = ReturnArgs{
-// 					{nil, customerror.New("failed")},
-// 					{domainentity.Auth{}, nil},
-// 				}
-// 			},
-// 			WantError: true,
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheAuthIsNotFetchedFromTheToken",
-// 			SetUp: func(t *testing.T) {
-// 				ctx = context.Background()
+				args := map[string]interface{}{
+					"id": id,
+				}
 
-// 				ctx = authmiddlewarepkg.NewContext(ctx, authDetailsCtxValue)
+				returnArgs = ReturnArgs{
+					{domainentityfactory.NewAuth(args), nil},
+				}
 
-// 				token = &jwt.Token{}
+				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
 
-// 				returnArgs = ReturnArgs{
-// 					{token, nil},
-// 					{domainentity.Auth{}, customerror.New("failed")},
-// 				}
-// 			},
-// 			WantError: true,
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfAnErrorOccursWhenTryingToFindTheAuthInTheDatabase",
-// 			SetUp: func(t *testing.T) {
-// 				ctx = context.Background()
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(id).
+					WillReturnError(customerror.New("failed"))
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthIsNotFoundInTheDatabase",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+				ctx = authmiddlewarepkg.NewContext(ctx, token)
 
-// 				ctx = authmiddlewarepkg.NewContext(ctx, authDetailsCtxValue)
+				id := uuid.NewV4()
 
-// 				token = &jwt.Token{}
+				args := map[string]interface{}{
+					"id": id,
+				}
 
-// 				id := uuid.NewV4()
+				returnArgs = ReturnArgs{
+					{domainentityfactory.NewAuth(args), nil},
+				}
 
-// 				args := map[string]interface{}{
-// 					"id": id,
-// 				}
+				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
 
-// 				returnArgs = ReturnArgs{
-// 					{token, nil},
-// 					{domainentityfactory.NewAuth(args), nil},
-// 				}
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(id).
+					WillReturnRows(&sqlmock.Rows{})
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheUserIDFromTokenDoesNotMatchWithTheUserIDFromAuthRecordFromTheDatabase",
+			SetUp: func(t *testing.T) {
+				ctx = context.Background()
+				ctx = authmiddlewarepkg.NewContext(ctx, token)
 
-// 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
+				id := uuid.NewV4()
 
-// 				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-// 					WithArgs(id).
-// 					WillReturnError(customerror.New("failed"))
-// 			},
-// 			WantError: true,
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheAuthIsNotFoundInTheDatabase",
-// 			SetUp: func(t *testing.T) {
-// 				ctx = context.Background()
+				args := map[string]interface{}{
+					"id": id,
+				}
 
-// 				ctx = authmiddlewarepkg.NewContext(ctx, authDetailsCtxValue)
+				returnArgs = ReturnArgs{
+					{domainentityfactory.NewAuth(args), nil},
+				}
 
-// 				token = &jwt.Token{}
+				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
 
-// 				id := uuid.NewV4()
+				authDatastore := datastoremodelfactory.NewAuth(args)
 
-// 				args := map[string]interface{}{
-// 					"id": id,
-// 				}
+				rows := sqlmock.
+					NewRows([]string{"id", "user_id", "created_at"}).
+					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
 
-// 				returnArgs = ReturnArgs{
-// 					{token, nil},
-// 					{domainentityfactory.NewAuth(args), nil},
-// 				}
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(id).
+					WillReturnRows(rows)
+			},
+			WantError: true,
+		},
+	}
 
-// 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
+	for _, tc := range ts.Cases {
+		ts.T().Run(tc.Context, func(t *testing.T) {
+			tc.SetUp(t)
 
-// 				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-// 					WithArgs(id).
-// 					WillReturnRows(&sqlmock.Rows{})
-// 			},
-// 			WantError: true,
-// 		},
-// 		{
-// 			Context: "ItShouldFailIfTheUserIDFromTokenDoesNotMatchWithTheUserIDFromAuthRecordFromTheDatabase",
-// 			SetUp: func(t *testing.T) {
-// 				ctx = context.Background()
+			authN := new(mockauthpkg.Auth)
+			authN.On("FetchAuthFromToken", token).Return(returnArgs[0]...)
 
-// 				ctx = authmiddlewarepkg.NewContext(ctx, authDetailsCtxValue)
+			authDirective := authdirective.New(db, authN, 0)
 
-// 				token = &jwt.Token{}
+			_, err := authDirective.AuthMiddleware()(ctx, nil, next)
 
-// 				id := uuid.NewV4()
+			if !tc.WantError {
+				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
+			} else {
+				assert.NotNil(t, err, "Predicted error lost.")
+			}
 
-// 				args := map[string]interface{}{
-// 					"id": id,
-// 				}
-
-// 				returnArgs = ReturnArgs{
-// 					{token, nil},
-// 					{domainentityfactory.NewAuth(args), nil},
-// 				}
-
-// 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
-
-// 				authDatastore := datastoremodelfactory.NewAuth(args)
-
-// 				rows := sqlmock.
-// 					NewRows([]string{"id", "user_id", "created_at"}).
-// 					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
-
-// 				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-// 					WithArgs(id).
-// 					WillReturnRows(rows)
-// 			},
-// 			WantError: true,
-// 		},
-// 	}
-
-// 	for _, tc := range ts.Cases {
-// 		ts.T().Run(tc.Context, func(t *testing.T) {
-// 			tc.SetUp(t)
-
-// 			authN := new(mockauthpkg.Auth)
-// 			authN.On("DecodeToken", tokenString).Return(returnArgs[0]...)
-// 			authN.On("FetchAuthFromToken", token).Return(returnArgs[1]...)
-
-// 			authDirective := authdirective.New(db, authN, 0)
-
-// 			_, err := authDirective.AuthMiddleware()(ctx, nil, next)
-
-// 			if !tc.WantError {
-// 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
-// 			} else {
-// 				assert.NotNil(t, err, "Predicted error lost.")
-// 			}
-
-// 			err = mock.ExpectationsWereMet()
-// 			assert.Nil(ts.T(), err, fmt.Sprintf("There were unfulfilled expectations: %v.", err))
-// 		})
-// 	}
-// }
+			err = mock.ExpectationsWereMet()
+			assert.Nil(ts.T(), err, fmt.Sprintf("There were unfulfilled expectations: %v.", err))
+		})
+	}
+}
