@@ -114,11 +114,11 @@ func (ec *executionContext) _InfoPayload(ctx context.Context, sel ast.SelectionS
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNInfoPayload2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx context.Context, sel ast.SelectionSet, v entity.InfoPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNInfoPayload2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx context.Context, sel ast.SelectionSet, v entity.InfoPayload) graphql.Marshaler {
 	return ec._InfoPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx context.Context, sel ast.SelectionSet, v *entity.InfoPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx context.Context, sel ast.SelectionSet, v *entity.InfoPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

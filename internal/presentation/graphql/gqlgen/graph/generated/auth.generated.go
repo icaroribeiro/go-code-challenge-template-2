@@ -129,7 +129,7 @@ func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*entity.AuthPayload)
 	fc.Result = res
-	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
+	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signUp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -208,7 +208,7 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*entity.AuthPayload)
 	fc.Result = res
-	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
+	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -287,7 +287,7 @@ func (ec *executionContext) _Mutation_refreshToken(ctx context.Context, field gr
 	}
 	res := resTmp.(*entity.AuthPayload)
 	fc.Result = res
-	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
+	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_refreshToken(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -355,7 +355,7 @@ func (ec *executionContext) _Mutation_changePassword(ctx context.Context, field 
 	}
 	res := resTmp.(*entity.InfoPayload)
 	fc.Result = res
-	return ec.marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx, field.Selections, res)
+	return ec.marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_changePassword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -434,7 +434,7 @@ func (ec *executionContext) _Mutation_signOut(ctx context.Context, field graphql
 	}
 	res := resTmp.(*entity.InfoPayload)
 	fc.Result = res
-	return ec.marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx, field.Selections, res)
+	return ec.marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signOut(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {

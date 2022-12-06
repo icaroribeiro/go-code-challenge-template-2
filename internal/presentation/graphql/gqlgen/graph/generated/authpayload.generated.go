@@ -114,11 +114,11 @@ func (ec *executionContext) _AuthPayload(ctx context.Context, sel ast.SelectionS
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAuthPayload2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx context.Context, sel ast.SelectionSet, v entity.AuthPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNAuthPayload2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx context.Context, sel ast.SelectionSet, v entity.AuthPayload) graphql.Marshaler {
 	return ec._AuthPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋtransportᚋpresentationᚋhandlerᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx context.Context, sel ast.SelectionSet, v *entity.AuthPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx context.Context, sel ast.SelectionSet, v *entity.AuthPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
