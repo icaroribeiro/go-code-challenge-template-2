@@ -81,7 +81,7 @@ func (ts *TestSuite) TestCreate() {
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(sqlQuery)).
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
 					WithArgs(user.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.Conflict.New("duplicate key value"))
 
