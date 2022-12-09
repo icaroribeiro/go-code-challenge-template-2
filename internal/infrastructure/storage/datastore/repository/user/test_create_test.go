@@ -24,7 +24,7 @@ func (ts *TestSuite) TestCreate() {
 
 	errorType := customerror.NoType
 
-	sqlQuery := `INSERT INTO "users" ("id","username","created_at","updated_at") VALUES ($1,$2,$3,$4)`
+	sqlQuery := `INSERT INTO "users" ("username","created_at","updated_at","id") VALUES ($1,$2,$3,$4) RETURNING "id"`
 
 	ts.Cases = Cases{
 		{
@@ -45,9 +45,9 @@ func (ts *TestSuite) TestCreate() {
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(sqlQuery)).
-					WithArgs(sqlmock.AnyArg(), user.Username, sqlmock.AnyArg(), sqlmock.AnyArg()).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(user.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(uuid.NewV4()))
 
 				mock.ExpectCommit()
 			},
@@ -64,8 +64,8 @@ func (ts *TestSuite) TestCreate() {
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(sqlQuery)).
-					WithArgs(sqlmock.AnyArg(), user.Username, sqlmock.AnyArg(), sqlmock.AnyArg()).
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(user.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.New("failed"))
 
 				mock.ExpectRollback()
@@ -82,7 +82,7 @@ func (ts *TestSuite) TestCreate() {
 				mock.ExpectBegin()
 
 				mock.ExpectExec(regexp.QuoteMeta(sqlQuery)).
-					WithArgs(sqlmock.AnyArg(), user.Username, sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WithArgs(user.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.Conflict.New("duplicate key value"))
 
 				mock.ExpectRollback()

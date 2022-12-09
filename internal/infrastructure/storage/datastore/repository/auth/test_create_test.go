@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
+	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
-	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	datastoreentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,15 +19,15 @@ func (ts *TestSuite) TestCreate() {
 	driver := "postgres"
 	db, mock := NewMockDB(driver)
 
-	auth := domainentity.Auth{}
+	auth := domainmodel.Auth{}
 
-	newAuth := domainentity.Auth{}
+	newAuth := domainmodel.Auth{}
 
 	errorType := customerror.NoType
 
-	firstStmt := `INSERT INTO "auths" ("id","user_id","created_at") VALUES ($1,$2,$3)`
+	firstSqlQuery := `INSERT INTO "auths" ("user_id","created_at","id") VALUES ($1,$2,$3) RETURNING "id"`
 
-	secondStmt := `SELECT * FROM "logins" WHERE user_id=$1`
+	secondSqlQuery := `SELECT * FROM "logins" WHERE user_id=$1`
 
 	ts.Cases = Cases{
 		{
@@ -40,20 +40,20 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainentityfactory.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				args = map[string]interface{}{
 					"id":     uuid.Nil,
 					"userID": auth.UserID,
 				}
 
-				newAuth = domainentityfactory.NewAuth(args)
+				newAuth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(firstStmt)).
-					WithArgs(sqlmock.AnyArg(), auth.UserID, sqlmock.AnyArg()).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectQuery(regexp.QuoteMeta(firstSqlQuery)).
+					WithArgs(auth.UserID, sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(uuid.NewV4()))
 
 				mock.ExpectCommit()
 			},
@@ -69,12 +69,12 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainentityfactory.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(firstStmt)).
-					WithArgs(sqlmock.AnyArg(), auth.UserID, sqlmock.AnyArg()).
+				mock.ExpectQuery(regexp.QuoteMeta(firstSqlQuery)).
+					WithArgs(auth.UserID, sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.New("failed"))
 
 				mock.ExpectRollback()
@@ -93,12 +93,12 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainentityfactory.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(firstStmt)).
-					WithArgs(sqlmock.AnyArg(), auth.UserID, sqlmock.AnyArg()).
+				mock.ExpectQuery(regexp.QuoteMeta(firstSqlQuery)).
+					WithArgs(auth.UserID, sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.Conflict.New("auths_user_id_key"))
 
 				mock.ExpectRollback()
@@ -107,13 +107,13 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				login := datastoremodelfactory.NewLogin(args)
+				login := datastoreentityfactory.NewLogin(args)
 
 				rows := sqlmock.
 					NewRows([]string{"id", "user_id", "username", "password", "created_at", "updated_at"}).
 					AddRow(login.ID, login.UserID, login.Username, login.Password, login.CreatedAt, login.UpdatedAt)
 
-				mock.ExpectQuery(regexp.QuoteMeta(secondStmt)).
+				mock.ExpectQuery(regexp.QuoteMeta(secondSqlQuery)).
 					WithArgs(auth.UserID).
 					WillReturnRows(rows)
 
@@ -131,17 +131,17 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainentityfactory.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(firstStmt)).
-					WithArgs(sqlmock.AnyArg(), auth.UserID, sqlmock.AnyArg()).
+				mock.ExpectQuery(regexp.QuoteMeta(firstSqlQuery)).
+					WithArgs(auth.UserID, sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.New("auths_user_id_key"))
 
 				mock.ExpectRollback()
 
-				mock.ExpectQuery(regexp.QuoteMeta(secondStmt)).
+				mock.ExpectQuery(regexp.QuoteMeta(secondSqlQuery)).
 					WithArgs(auth.UserID).
 					WillReturnRows(&sqlmock.Rows{})
 
@@ -159,17 +159,17 @@ func (ts *TestSuite) TestCreate() {
 					"userID": userID,
 				}
 
-				auth = domainentityfactory.NewAuth(args)
+				auth = domainmodelfactory.NewAuth(args)
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(firstStmt)).
-					WithArgs(sqlmock.AnyArg(), auth.UserID, sqlmock.AnyArg()).
+				mock.ExpectQuery(regexp.QuoteMeta(firstSqlQuery)).
+					WithArgs(auth.UserID, sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.New("auths_user_id_key"))
 
 				mock.ExpectRollback()
 
-				mock.ExpectQuery(regexp.QuoteMeta(secondStmt)).
+				mock.ExpectQuery(regexp.QuoteMeta(secondSqlQuery)).
 					WithArgs(auth.UserID).
 					WillReturnError(customerror.New("failed"))
 

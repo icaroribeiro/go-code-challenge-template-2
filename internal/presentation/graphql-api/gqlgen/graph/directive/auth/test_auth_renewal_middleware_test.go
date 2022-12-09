@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/graphql-api/gqlgen/graph/directive/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"

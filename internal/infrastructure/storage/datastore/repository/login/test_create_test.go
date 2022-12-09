@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
+	domainmodel "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
-	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	domainmodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,13 +19,13 @@ func (ts *TestSuite) TestCreate() {
 	driver := "postgres"
 	db, mock := NewMockDB(driver)
 
-	login := domainentity.Login{}
+	login := domainmodel.Login{}
 
-	newLogin := domainentity.Login{}
+	newLogin := domainmodel.Login{}
 
 	errorType := customerror.NoType
 
-	stmt := `INSERT INTO "logins" ("id","user_id","username","password","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6)`
+	sqlQuery := `INSERT INTO "logins" ("user_id","username","password","created_at","updated_at","id") VALUES ($1,$2,$3,$4,$5,$6) RETURNING "id"`
 
 	ts.Cases = Cases{
 		{
@@ -35,7 +35,7 @@ func (ts *TestSuite) TestCreate() {
 					"id": uuid.Nil,
 				}
 
-				login = domainentityfactory.NewLogin(args)
+				login = domainmodelfactory.NewLogin(args)
 
 				args = map[string]interface{}{
 					"userID":   login.UserID,
@@ -43,13 +43,13 @@ func (ts *TestSuite) TestCreate() {
 					"password": login.Password,
 				}
 
-				newLogin = domainentityfactory.NewLogin(args)
+				newLogin = domainmodelfactory.NewLogin(args)
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(stmt)).
-					WithArgs(sqlmock.AnyArg(), login.UserID, login.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(login.UserID, login.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(uuid.NewV4()))
 
 				mock.ExpectCommit()
 			},
@@ -62,12 +62,12 @@ func (ts *TestSuite) TestCreate() {
 					"id": uuid.Nil,
 				}
 
-				login = domainentityfactory.NewLogin(args)
+				login = domainmodelfactory.NewLogin(args)
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(stmt)).
-					WithArgs(sqlmock.AnyArg(), login.UserID, login.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(login.UserID, login.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.New("failed"))
 
 				mock.ExpectRollback()
@@ -83,12 +83,12 @@ func (ts *TestSuite) TestCreate() {
 					"id": uuid.Nil,
 				}
 
-				login = domainentityfactory.NewLogin(args)
+				login = domainmodelfactory.NewLogin(args)
 
 				mock.ExpectBegin()
 
-				mock.ExpectExec(regexp.QuoteMeta(stmt)).
-					WithArgs(sqlmock.AnyArg(), login.UserID, login.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(login.UserID, login.Username, sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(customerror.Conflict.New("logins_user_id_key"))
 
 				mock.ExpectRollback()
