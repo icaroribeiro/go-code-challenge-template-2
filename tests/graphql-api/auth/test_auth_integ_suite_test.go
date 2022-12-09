@@ -9,7 +9,7 @@ import (
 
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	datastorepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/datastore"
 	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"

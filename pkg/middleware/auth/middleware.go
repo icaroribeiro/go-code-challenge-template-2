@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"

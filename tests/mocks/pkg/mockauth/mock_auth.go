@@ -3,7 +3,7 @@
 package mockauth
 
 import (
-	jwt "github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt"
 	entity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
 
 	mock "github.com/stretchr/testify/mock"

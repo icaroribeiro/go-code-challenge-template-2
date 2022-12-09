@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/mux"
 	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
 	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"

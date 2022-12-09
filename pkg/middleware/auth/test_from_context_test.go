@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
 	"github.com/stretchr/testify/assert"
 )
