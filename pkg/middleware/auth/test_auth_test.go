@@ -19,7 +19,6 @@ import (
 	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	datastoreentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
 	mockauthpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
@@ -63,12 +62,12 @@ func (ts *TestSuite) TestAuth() {
 				payload = messagehttputilpkg.Message{Text: "ok"}
 
 				id := uuid.NewV4()
-				userID := uuid.NewV4()
+				// userID := uuid.NewV4()
 
-				args := map[string]interface{}{
-					"id":     id,
-					"userID": userID,
-				}
+				// args := map[string]interface{}{
+				// 	"id":     id,
+				// 	"userID": userID,
+				// }
 
 				returnArgs = ReturnArgs{
 					{tokenString, nil},
@@ -77,15 +76,16 @@ func (ts *TestSuite) TestAuth() {
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
 
-				authDatastore := datastoreentityfactory.NewAuth(args)
+				//authDatastore := datastoreentityfactory.NewAuth(args)
 
-				rows := sqlmock.
-					NewRows([]string{"id", "user_id", "created_at"}).
-					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
+				abc := []string{"id", "user_id", "created_at"}
+				// rows := sqlmock.
+				// 	NewRows(abc).
+				// 	AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
 
 				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
 					WithArgs(id).
-					WillReturnRows(rows)
+					WillReturnRows(sqlmock.NewRows(abc))
 			},
 			WantError: false,
 		},
