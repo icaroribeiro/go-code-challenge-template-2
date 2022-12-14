@@ -31,7 +31,7 @@ func (ts *TestSuite) TestAuth() {
 
 	bearerToken := []string{"", ""}
 
-	tokenString := fake.Word()
+	tokenString := ""
 
 	authHeaderString := ""
 
@@ -48,16 +48,18 @@ func (ts *TestSuite) TestAuth() {
 		{
 			Context: "ItShouldSucceedInWrappingAFunctionWithAuthenticationMiddleware",
 			SetUp: func(t *testing.T) {
+				tokenString = fake.Word()
 
 				bearerToken = []string{"Bearer", tokenString}
 
 				key := "Authorization"
 				value := strings.Join(bearerToken[:], " ")
+				authHeaderString = value
 				headers = map[string][]string{
 					key: {value},
 				}
 
-				authHeaderString = "Bearer " + tokenString
+				token = &jwt.Token{}
 
 				statusCode = http.StatusOK
 				payload = messagehttputilpkg.Message{Text: "ok"}
@@ -79,72 +81,86 @@ func (ts *TestSuite) TestAuth() {
 
 				authDatastore := datastoreentityfactory.NewAuth(args)
 
-				abc := []string{"id", "user_id", "created_at"}
 				rows := sqlmock.
-					NewRows(abc).
+					NewRows([]string{"id", "user_id", "created_at"}).
 					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
 
 				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
 					WithArgs(id).
 					WillReturnRows(rows)
-				// WillReturnRows(sqlmock.NewRows(abc))
 			},
 			WantError: false,
 		},
 		// {
 		// 	Context: "ItShouldFailIfTheAuthorizationHeaderIsNotSetInTheRequestHeader",
 		// 	SetUp: func(t *testing.T) {
+		// 		tokenString = ""
 
-		// 		bearerToken = []string{"", ""}
+		// 		bearerToken = []string{"", tokenString}
+
+		// 		authHeaderString = ""
 
 		// 		headers = map[string][]string{}
 
-		// 		statusCode = http.StatusBadRequest
+		// 		token = &jwt.Token{}
+
+		// 		statusCode = http.StatusOK
 
 		// 		returnArgs = ReturnArgs{
-		// 			{nil, nil},
+		// 			{tokenString, customerror.New("failed")},
+		// 			{token, nil},
 		// 			{domainmodel.Auth{}, nil},
 		// 		}
 		// 	},
-		// 	WantError: true,
+		// 	WantError: false,
 		// },
 		// {
 		// 	Context: "ItShouldFailIfTheAuthenticationTokenIsNotSetInAuthorizationHeader",
 		// 	SetUp: func(t *testing.T) {
+		// 		tokenString = ""
 
-		// 		bearerToken = []string{"Bearer", ""}
+		// 		bearerToken = []string{"Bearer", tokenString}
 
 		// 		key := "Authorization"
 		// 		value := bearerToken[0]
+		// 		authHeaderString = value
 		// 		headers = map[string][]string{
 		// 			key: {value},
 		// 		}
 
-		// 		statusCode = http.StatusBadRequest
+		// 		token = &jwt.Token{}
+
+		// 		statusCode = http.StatusOK
 
 		// 		returnArgs = ReturnArgs{
-		// 			{nil, nil},
+		// 			{tokenString, customerror.New("failed")},
+		// 			{token, nil},
 		// 			{domainmodel.Auth{}, nil},
 		// 		}
 		// 	},
-		// 	WantError: true,
+		// 	WantError: false,
 		// },
 		// {
 		// 	Context: "ItShouldFailIfTheTokenIsNotDecoded",
 		// 	SetUp: func(t *testing.T) {
+		// 		tokenString = fake.Word()
 
-		// 		bearerToken = []string{"Bearer", fake.Word()}
+		// 		bearerToken = []string{"Bearer", tokenString}
 
 		// 		key := "Authorization"
 		// 		value := strings.Join(bearerToken[:], " ")
+		// 		authHeaderString = value
 		// 		headers = map[string][]string{
 		// 			key: {value},
 		// 		}
 
+		// 		token = &jwt.Token{}
+
 		// 		statusCode = http.StatusUnauthorized
 
 		// 		returnArgs = ReturnArgs{
-		// 			{nil, customerror.New("failed")},
+		// 			{tokenString, nil},
+		// 			{token, customerror.New("failed")},
 		// 			{domainmodel.Auth{}, nil},
 		// 		}
 		// 	},
@@ -153,19 +169,23 @@ func (ts *TestSuite) TestAuth() {
 		// {
 		// 	Context: "ItShouldFailIfTheAuthIsNotFetchedFromTheToken",
 		// 	SetUp: func(t *testing.T) {
+		// 		tokenString = fake.Word()
 
-		// 		bearerToken = []string{"Bearer", fake.Word()}
+		// 		bearerToken = []string{"Bearer", tokenString}
 
 		// 		key := "Authorization"
 		// 		value := strings.Join(bearerToken[:], " ")
+		// 		authHeaderString = value
 		// 		headers = map[string][]string{
 		// 			key: {value},
 		// 		}
 
 		// 		token = &jwt.Token{}
+
 		// 		statusCode = http.StatusInternalServerError
 
 		// 		returnArgs = ReturnArgs{
+		// 			{tokenString, nil},
 		// 			{token, nil},
 		// 			{domainmodel.Auth{}, customerror.New("failed")},
 		// 		}
@@ -175,11 +195,13 @@ func (ts *TestSuite) TestAuth() {
 		// {
 		// 	Context: "ItShouldFailIfAnErrorOccursWhenTryingToFindTheAuthInTheDatabase",
 		// 	SetUp: func(t *testing.T) {
+		// 		tokenString = fake.Word()
 
-		// 		bearerToken = []string{"Bearer", fake.Word()}
+		// 		bearerToken = []string{"Bearer", tokenString}
 
 		// 		key := "Authorization"
 		// 		value := strings.Join(bearerToken[:], " ")
+		// 		authHeaderString = value
 		// 		headers = map[string][]string{
 		// 			key: {value},
 		// 		}
@@ -195,6 +217,7 @@ func (ts *TestSuite) TestAuth() {
 		// 		}
 
 		// 		returnArgs = ReturnArgs{
+		// 			{tokenString, nil},
 		// 			{token, nil},
 		// 			{domainmodelfactory.NewAuth(args), nil},
 		// 		}
@@ -210,11 +233,13 @@ func (ts *TestSuite) TestAuth() {
 		// {
 		// 	Context: "ItShouldFailIfTheAuthIsNotFoundInTheDatabase",
 		// 	SetUp: func(t *testing.T) {
+		// 		tokenString = fake.Word()
 
-		// 		bearerToken = []string{"Bearer", fake.Word()}
+		// 		bearerToken = []string{"Bearer", tokenString}
 
 		// 		key := "Authorization"
 		// 		value := strings.Join(bearerToken[:], " ")
+		// 		authHeaderString = value
 		// 		headers = map[string][]string{
 		// 			key: {value},
 		// 		}
@@ -230,6 +255,7 @@ func (ts *TestSuite) TestAuth() {
 		// 		}
 
 		// 		returnArgs = ReturnArgs{
+		// 			{tokenString, nil},
 		// 			{token, nil},
 		// 			{domainmodelfactory.NewAuth(args), nil},
 		// 		}
@@ -245,11 +271,13 @@ func (ts *TestSuite) TestAuth() {
 		// {
 		// 	Context: "ItShouldFailIfTheUserIDFromTokenDoesNotMatchWithTheUserIDFromAuthRecordFromTheDatabase",
 		// 	SetUp: func(t *testing.T) {
+		// 		tokenString = fake.Word()
 
-		// 		bearerToken = []string{"Bearer", fake.Word()}
+		// 		bearerToken = []string{"Bearer", tokenString}
 
 		// 		key := "Authorization"
 		// 		value := strings.Join(bearerToken[:], " ")
+		// 		authHeaderString = value
 		// 		headers = map[string][]string{
 		// 			key: {value},
 		// 		}
@@ -265,6 +293,7 @@ func (ts *TestSuite) TestAuth() {
 		// 		}
 
 		// 		returnArgs = ReturnArgs{
+		// 			{tokenString, nil},
 		// 			{token, nil},
 		// 			{domainmodelfactory.NewAuth(args), nil},
 		// 		}
