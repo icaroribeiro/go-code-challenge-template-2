@@ -43,7 +43,7 @@ func (ts *TestSuite) TestRefreshToken() {
 	value := ""
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"authMiddleware": authmiddlewarepkg.Auth(dbTrx, authN),
+		"authMiddleware": authmiddlewarepkg.Auth(authN),
 	}
 
 	opt := func(bd *client.Request) {}

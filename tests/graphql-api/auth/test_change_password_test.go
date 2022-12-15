@@ -43,7 +43,7 @@ func (ts *TestSuite) TestChangePassword() {
 	value := ""
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"authMiddleware": authmiddlewarepkg.Auth(dbTrx, authN),
+		"authMiddleware": authmiddlewarepkg.Auth(authN),
 	}
 
 	args := map[string]interface{}{

@@ -8,7 +8,6 @@ import (
 	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
-	"gorm.io/gorm"
 )
 
 var tokenCtxKey = &contextKey{"token"}
@@ -18,7 +17,7 @@ type contextKey struct {
 }
 
 // Auth is the function that wraps a http.Handler to evaluate the authentication of API based on a JWT token.
-func Auth(db *gorm.DB, authN authpkg.IAuth) func(http.HandlerFunc) http.HandlerFunc {
+func Auth(authN authpkg.IAuth) func(http.HandlerFunc) http.HandlerFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			authHeaderString := r.Header.Get("Authorization")

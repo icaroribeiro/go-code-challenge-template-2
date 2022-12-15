@@ -5,30 +5,24 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"regexp"
 	"strings"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/mux"
+	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
 	messagehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/message"
 	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request"
 	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
 	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
 	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	datastoreentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
 	mockauthpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
-	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func (ts *TestSuite) TestAuth() {
-	driver := "postgres"
-	db, mock := NewMockDB(driver)
-
 	bearerToken := []string{"", ""}
 
 	tokenString := ""
@@ -62,256 +56,188 @@ func (ts *TestSuite) TestAuth() {
 				token = &jwt.Token{}
 
 				statusCode = http.StatusOK
+
 				payload = messagehttputilpkg.Message{Text: "ok"}
-
-				id := uuid.NewV4()
-				userID := uuid.NewV4()
-
-				args := map[string]interface{}{
-					"id":     id,
-					"userID": userID,
-				}
 
 				returnArgs = ReturnArgs{
 					{tokenString, nil},
 					{token, nil},
 				}
-
-				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
-
-				authDatastore := datastoreentityfactory.NewAuth(args)
-
-				rows := sqlmock.
-					NewRows([]string{"id", "user_id", "created_at"}).
-					AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
-
-				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-					WithArgs(id).
-					WillReturnRows(rows)
 			},
 			WantError: false,
 		},
-		// {
-		// 	Context: "ItShouldFailIfTheAuthorizationHeaderIsNotSetInTheRequestHeader",
-		// 	SetUp: func(t *testing.T) {
-		// 		tokenString = ""
+		{
+			Context: "ItShouldFailIfTheAuthorizationHeaderIsNotSetInTheRequestHeader",
+			SetUp: func(t *testing.T) {
+				tokenString = ""
 
-		// 		bearerToken = []string{"", tokenString}
+				bearerToken = []string{"", tokenString}
 
-		// 		authHeaderString = ""
+				authHeaderString = ""
 
-		// 		headers = map[string][]string{}
+				headers = map[string][]string{}
 
-		// 		token = &jwt.Token{}
+				token = &jwt.Token{}
 
-		// 		statusCode = http.StatusOK
+				statusCode = http.StatusOK
 
-		// 		returnArgs = ReturnArgs{
-		// 			{tokenString, customerror.New("failed")},
-		// 			{token, nil},
-		// 			{domainmodel.Auth{}, nil},
-		// 		}
-		// 	},
-		// 	WantError: false,
-		// },
-		// {
-		// 	Context: "ItShouldFailIfTheAuthenticationTokenIsNotSetInAuthorizationHeader",
-		// 	SetUp: func(t *testing.T) {
-		// 		tokenString = ""
+				returnArgs = ReturnArgs{
+					{tokenString, customerror.New("failed")},
+					{token, nil},
+				}
+			},
+			WantError: false,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthenticationTokenIsNotSetInAuthorizationHeader",
+			SetUp: func(t *testing.T) {
+				tokenString = ""
 
-		// 		bearerToken = []string{"Bearer", tokenString}
+				bearerToken = []string{"Bearer", tokenString}
 
-		// 		key := "Authorization"
-		// 		value := bearerToken[0]
-		// 		authHeaderString = value
-		// 		headers = map[string][]string{
-		// 			key: {value},
-		// 		}
+				key := "Authorization"
+				value := bearerToken[0]
+				authHeaderString = value
+				headers = map[string][]string{
+					key: {value},
+				}
 
-		// 		token = &jwt.Token{}
+				token = &jwt.Token{}
 
-		// 		statusCode = http.StatusOK
+				statusCode = http.StatusOK
 
-		// 		returnArgs = ReturnArgs{
-		// 			{tokenString, customerror.New("failed")},
-		// 			{token, nil},
-		// 			{domainmodel.Auth{}, nil},
-		// 		}
-		// 	},
-		// 	WantError: false,
-		// },
-		// {
-		// 	Context: "ItShouldFailIfTheTokenIsNotDecoded",
-		// 	SetUp: func(t *testing.T) {
-		// 		tokenString = fake.Word()
+				returnArgs = ReturnArgs{
+					{tokenString, customerror.New("failed")},
+					{token, nil},
+				}
+			},
+			WantError: false,
+		},
+		{
+			Context: "ItShouldFailIfTheTokenIsNotDecoded",
+			SetUp: func(t *testing.T) {
+				tokenString = fake.Word()
 
-		// 		bearerToken = []string{"Bearer", tokenString}
+				bearerToken = []string{"Bearer", tokenString}
 
-		// 		key := "Authorization"
-		// 		value := strings.Join(bearerToken[:], " ")
-		// 		authHeaderString = value
-		// 		headers = map[string][]string{
-		// 			key: {value},
-		// 		}
+				key := "Authorization"
+				value := strings.Join(bearerToken[:], " ")
+				authHeaderString = value
+				headers = map[string][]string{
+					key: {value},
+				}
 
-		// 		token = &jwt.Token{}
+				token = &jwt.Token{}
 
-		// 		statusCode = http.StatusUnauthorized
+				statusCode = http.StatusUnauthorized
 
-		// 		returnArgs = ReturnArgs{
-		// 			{tokenString, nil},
-		// 			{token, customerror.New("failed")},
-		// 			{domainmodel.Auth{}, nil},
-		// 		}
-		// 	},
-		// 	WantError: true,
-		// },
-		// {
-		// 	Context: "ItShouldFailIfTheAuthIsNotFetchedFromTheToken",
-		// 	SetUp: func(t *testing.T) {
-		// 		tokenString = fake.Word()
+				returnArgs = ReturnArgs{
+					{tokenString, nil},
+					{token, customerror.New("failed")},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthIsNotFetchedFromTheToken",
+			SetUp: func(t *testing.T) {
+				tokenString = fake.Word()
 
-		// 		bearerToken = []string{"Bearer", tokenString}
+				bearerToken = []string{"Bearer", tokenString}
 
-		// 		key := "Authorization"
-		// 		value := strings.Join(bearerToken[:], " ")
-		// 		authHeaderString = value
-		// 		headers = map[string][]string{
-		// 			key: {value},
-		// 		}
+				key := "Authorization"
+				value := strings.Join(bearerToken[:], " ")
+				authHeaderString = value
+				headers = map[string][]string{
+					key: {value},
+				}
 
-		// 		token = &jwt.Token{}
+				token = &jwt.Token{}
 
-		// 		statusCode = http.StatusInternalServerError
+				statusCode = http.StatusInternalServerError
 
-		// 		returnArgs = ReturnArgs{
-		// 			{tokenString, nil},
-		// 			{token, nil},
-		// 			{domainmodel.Auth{}, customerror.New("failed")},
-		// 		}
-		// 	},
-		// 	WantError: true,
-		// },
-		// {
-		// 	Context: "ItShouldFailIfAnErrorOccursWhenTryingToFindTheAuthInTheDatabase",
-		// 	SetUp: func(t *testing.T) {
-		// 		tokenString = fake.Word()
+				returnArgs = ReturnArgs{
+					{tokenString, nil},
+					{token, nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfAnErrorOccursWhenTryingToFindTheAuthInTheDatabase",
+			SetUp: func(t *testing.T) {
+				tokenString = fake.Word()
 
-		// 		bearerToken = []string{"Bearer", tokenString}
+				bearerToken = []string{"Bearer", tokenString}
 
-		// 		key := "Authorization"
-		// 		value := strings.Join(bearerToken[:], " ")
-		// 		authHeaderString = value
-		// 		headers = map[string][]string{
-		// 			key: {value},
-		// 		}
+				key := "Authorization"
+				value := strings.Join(bearerToken[:], " ")
+				authHeaderString = value
+				headers = map[string][]string{
+					key: {value},
+				}
 
-		// 		token = &jwt.Token{}
+				token = &jwt.Token{}
 
-		// 		statusCode = http.StatusInternalServerError
+				statusCode = http.StatusInternalServerError
 
-		// 		id := uuid.NewV4()
+				returnArgs = ReturnArgs{
+					{tokenString, nil},
+					{token, nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheAuthIsNotFoundInTheDatabase",
+			SetUp: func(t *testing.T) {
+				tokenString = fake.Word()
 
-		// 		args := map[string]interface{}{
-		// 			"id": id,
-		// 		}
+				bearerToken = []string{"Bearer", tokenString}
 
-		// 		returnArgs = ReturnArgs{
-		// 			{tokenString, nil},
-		// 			{token, nil},
-		// 			{domainmodelfactory.NewAuth(args), nil},
-		// 		}
+				key := "Authorization"
+				value := strings.Join(bearerToken[:], " ")
+				authHeaderString = value
+				headers = map[string][]string{
+					key: {value},
+				}
 
-		// 		sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
+				token = &jwt.Token{}
 
-		// 		mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-		// 			WithArgs(id).
-		// 			WillReturnError(customerror.New("failed"))
-		// 	},
-		// 	WantError: true,
-		// },
-		// {
-		// 	Context: "ItShouldFailIfTheAuthIsNotFoundInTheDatabase",
-		// 	SetUp: func(t *testing.T) {
-		// 		tokenString = fake.Word()
+				statusCode = http.StatusBadRequest
 
-		// 		bearerToken = []string{"Bearer", tokenString}
+				returnArgs = ReturnArgs{
+					{tokenString, nil},
+					{token, nil},
+				}
+			},
+			WantError: true,
+		},
+		{
+			Context: "ItShouldFailIfTheUserIDFromTokenDoesNotMatchWithTheUserIDFromAuthRecordFromTheDatabase",
+			SetUp: func(t *testing.T) {
+				tokenString = fake.Word()
 
-		// 		key := "Authorization"
-		// 		value := strings.Join(bearerToken[:], " ")
-		// 		authHeaderString = value
-		// 		headers = map[string][]string{
-		// 			key: {value},
-		// 		}
+				bearerToken = []string{"Bearer", tokenString}
 
-		// 		token = &jwt.Token{}
+				key := "Authorization"
+				value := strings.Join(bearerToken[:], " ")
+				authHeaderString = value
+				headers = map[string][]string{
+					key: {value},
+				}
 
-		// 		statusCode = http.StatusBadRequest
+				token = &jwt.Token{}
 
-		// 		id := uuid.NewV4()
+				statusCode = http.StatusBadRequest
 
-		// 		args := map[string]interface{}{
-		// 			"id": id,
-		// 		}
-
-		// 		returnArgs = ReturnArgs{
-		// 			{tokenString, nil},
-		// 			{token, nil},
-		// 			{domainmodelfactory.NewAuth(args), nil},
-		// 		}
-
-		// 		sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
-
-		// 		mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-		// 			WithArgs(id).
-		// 			WillReturnRows(&sqlmock.Rows{})
-		// 	},
-		// 	WantError: true,
-		// },
-		// {
-		// 	Context: "ItShouldFailIfTheUserIDFromTokenDoesNotMatchWithTheUserIDFromAuthRecordFromTheDatabase",
-		// 	SetUp: func(t *testing.T) {
-		// 		tokenString = fake.Word()
-
-		// 		bearerToken = []string{"Bearer", tokenString}
-
-		// 		key := "Authorization"
-		// 		value := strings.Join(bearerToken[:], " ")
-		// 		authHeaderString = value
-		// 		headers = map[string][]string{
-		// 			key: {value},
-		// 		}
-
-		// 		token = &jwt.Token{}
-
-		// 		statusCode = http.StatusBadRequest
-
-		// 		id := uuid.NewV4()
-
-		// 		args := map[string]interface{}{
-		// 			"id": id,
-		// 		}
-
-		// 		returnArgs = ReturnArgs{
-		// 			{tokenString, nil},
-		// 			{token, nil},
-		// 			{domainmodelfactory.NewAuth(args), nil},
-		// 		}
-
-		// 		sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
-
-		// 		authDatastore := datastoreentityfactory.NewAuth(args)
-
-		// 		rows := sqlmock.
-		// 			NewRows([]string{"id", "user_id", "created_at"}).
-		// 			AddRow(authDatastore.ID, authDatastore.UserID, authDatastore.CreatedAt)
-
-		// 		mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
-		// 			WithArgs(id).
-		// 			WillReturnRows(rows)
-		// 	},
-		// 	WantError: true,
-		// },
+				returnArgs = ReturnArgs{
+					{tokenString, nil},
+					{token, nil},
+				}
+			},
+			WantError: true,
+		},
 	}
 
 	for _, tc := range ts.Cases {
@@ -322,7 +248,7 @@ func (ts *TestSuite) TestAuth() {
 			authN.On("ExtractTokenString", authHeaderString).Return(returnArgs[0]...)
 			authN.On("DecodeToken", bearerToken[1]).Return(returnArgs[1]...)
 
-			authMiddleware := authmiddlewarepkg.Auth(db, authN)
+			authMiddleware := authmiddlewarepkg.Auth(authN)
 
 			handlerFunc := func(w http.ResponseWriter, r *http.Request) {
 				responsehttputilpkg.RespondWithJson(w, http.StatusOK, messagehttputilpkg.Message{Text: "ok"})
@@ -367,9 +293,6 @@ func (ts *TestSuite) TestAuth() {
 			} else {
 				assert.Equal(t, statusCode, resprec.Result().StatusCode)
 			}
-
-			err := mock.ExpectationsWereMet()
-			assert.Nil(ts.T(), err, fmt.Sprintf("There were unfulfilled expectations: %v.", err))
 		})
 	}
 }

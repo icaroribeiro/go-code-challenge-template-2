@@ -21,8 +21,6 @@ import (
 )
 
 func (ts *TestSuite) TestConfigureRoutes() {
-	driver := "postgres"
-	db, _ := NewMockDB(driver)
 	authN := new(mockauthpkg.Auth)
 
 	routes := routehttputilpkg.Routes{}
@@ -41,7 +39,7 @@ func (ts *TestSuite) TestConfigureRoutes() {
 	graphqlHandler := graphqlhandler.New(healthCheckService, authService, userService, dbTrxDirective, authDirective)
 
 	adapters := map[string]adapterhttputilpkg.Adapter{
-		"authMiddleware": authmiddlewarepkg.Auth(db, authN),
+		"authMiddleware": authmiddlewarepkg.Auth(authN),
 	}
 
 	ts.Cases = Cases{
