@@ -17,7 +17,7 @@ format-api:
 # if anything is missing or inconsistent related to dependency management in GoLang.
 #
 generate-gql:
-	go run -mod=mod github.com/99designs/gqlgen generate --config internal/presentation/graphql-api/gqlgen/gqlgen.yml
+	go run -mod=mod github.com/99designs/gqlgen generate --config internal/presentation/api/gqlgen/gqlgen.yml
 
 run-api:
 	. ./scripts/setup_env_vars.sh; \
@@ -32,8 +32,8 @@ build-mocks:
 
 test-api:
 	. ./scripts/setup_env_vars.test.sh; \
-	go test ./internal/... -v -coverprofile=./docs/graphql-api/tests/unit/coverage.out && go tool cover -func=./docs/graphql-api/tests/unit/coverage.out > ./docs/graphql-api/tests/unit/coverage_report.out; \
-	go test ./tests/graphql-api/... -v -coverprofile=./docs/graphql-api/tests/integration/coverage.out && go tool cover -func=./docs/graphql-api/tests/integration/coverage.out > ./docs/graphql-api/tests/integration/coverage_report.out
+	go test ./internal/... -v -coverprofile=./docs/api/tests/unit/coverage.out && go tool cover -func=./docs/api/tests/unit/coverage.out > ./docs/api/tests/unit/coverage_report.out; \
+	go test ./tests/api/... -v -coverprofile=./docs/api/tests/integration/coverage.out && go tool cover -func=./docs/api/tests/integration/coverage.out > ./docs/api/tests/integration/coverage_report.out
 
 #
 # APP test container

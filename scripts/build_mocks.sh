@@ -34,13 +34,13 @@ MOCK_USER_SERVICE_PATH="internal/core/ports/application/mockservice/user"
 mockery --dir "$USER_SERVICE_PATH" --name IService --outpkg user --structname Service --output "$MOCK_USER_SERVICE_PATH" --filename mock_service.go
 
 # Generate a mock object related to dbtrx directive.
-DBTRX_DIRECTIVE_PATH="internal/presentation/graphql-api/gqlgen/graph/directive/dbtrx"
-MOCK_DBTRX_DIRECTIVE_PATH="internal/presentation/graphql-api/gqlgen/graph/mockdirective/dbtrx"
+DBTRX_DIRECTIVE_PATH="internal/presentation/api/gqlgen/graph/directive/dbtrx"
+MOCK_DBTRX_DIRECTIVE_PATH="internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
 mockery --dir "$DBTRX_DIRECTIVE_PATH" --name IDirective --outpkg dbtrx --structname Directive --output "$MOCK_DBTRX_DIRECTIVE_PATH" --filename mock_directive.go
 
 # Generate a mock object related to auth directive.
-AUTH_DIRECTIVE_PATH="internal/presentation/graphql-api/gqlgen/graph/directive/auth"
-MOCK_AUTH_DIRECTIVE_PATH="internal/presentation/graphql-api/gqlgen/graph/mockdirective/auth"
+AUTH_DIRECTIVE_PATH="internal/presentation/api/gqlgen/graph/directive/auth"
+MOCK_AUTH_DIRECTIVE_PATH="internal/presentation/api/gqlgen/graph/mockdirective/auth"
 mockery --dir "$AUTH_DIRECTIVE_PATH" --name IDirective --outpkg auth --structname Directive --output "$MOCK_AUTH_DIRECTIVE_PATH" --filename mock_directive.go
 
 #

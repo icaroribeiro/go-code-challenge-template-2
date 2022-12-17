@@ -1,4 +1,4 @@
-package healthcheck_test
+package graphql_test
 
 import (
 	"fmt"
@@ -6,45 +6,31 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
-	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/healthcheck"
 	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
+	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
 	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
 	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/auth"
 	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
 	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/handler"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 )
 
-func (ts *TestSuite) TestGetStatus() {
-	db := &gorm.DB{}
-
+func (ts *TestSuite) TestGraphQL() {
 	status := ""
 
-	var connPool gorm.ConnPool
+	returnArgs := ReturnArgs{}
 
 	ts.Cases = Cases{
 		{
-			Context: "ItShouldSucceedInGettingTheStatus",
+			Context: "ItShouldSucceedInStartingGraphQLServer",
 			SetUp: func(t *testing.T) {
-				db = ts.DB
-
 				status = "everything is up and running"
+
+				returnArgs = ReturnArgs{
+					{nil},
+				}
 			},
 			WantError: false,
-			TearDown:  func(t *testing.T) {},
-		},
-		{
-			Context: "ItShouldFailIfTheDatabaseConnectionPoolIsInvalid",
-			SetUp: func(t *testing.T) {
-				connPool = ts.DB.ConnPool
-				ts.DB.ConnPool = nil
-				db = ts.DB
-			},
-			WantError: true,
-			TearDown: func(t *testing.T) {
-				ts.DB.ConnPool = connPool
-			},
 		},
 	}
 
@@ -52,7 +38,8 @@ func (ts *TestSuite) TestGetStatus() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			healthCheckService := healthcheckservice.New(db)
+			healthCheckService := new(healthcheckmockservice.Service)
+			healthCheckService.On("GetStatus").Return(returnArgs[0]...)
 			authService := new(authmockservice.Service)
 			userService := new(usermockservice.Service)
 
@@ -76,11 +63,7 @@ func (ts *TestSuite) TestGetStatus() {
 			if !tc.WantError {
 				assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v.", err))
 				assert.Equal(t, resp.GetHealthCheck.Status, status)
-			} else {
-				assert.NotNil(t, err, "Predicted error lost.")
 			}
-
-			tc.TearDown(t)
 		})
 	}
 }
