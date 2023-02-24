@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	errorhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/error"
 	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +16,7 @@ func (ts *TestSuite) TestRespondErrorAndJson() {
 	res := &httptest.ResponseRecorder{}
 	statusCode := 0
 	var err error
-	payload := errorhttputilpkg.Error{}
+	payload := responsehttputilpkg.Error{}
 
 	ts.Cases = Cases{
 		{
@@ -27,7 +26,7 @@ func (ts *TestSuite) TestRespondErrorAndJson() {
 				statusCode = http.StatusInternalServerError
 				text := "failed"
 				err = customerror.New(text)
-				payload = errorhttputilpkg.Error{Text: text}
+				payload = responsehttputilpkg.Error{Text: text}
 			},
 		},
 		{
@@ -37,7 +36,7 @@ func (ts *TestSuite) TestRespondErrorAndJson() {
 				statusCode = http.StatusBadRequest
 				text := "failed"
 				err = customerror.BadRequest.New(text)
-				payload = errorhttputilpkg.Error{Text: text}
+				payload = responsehttputilpkg.Error{Text: text}
 			},
 		},
 		{
@@ -47,7 +46,7 @@ func (ts *TestSuite) TestRespondErrorAndJson() {
 				statusCode = http.StatusUnauthorized
 				text := "failed"
 				err = customerror.Unauthorized.New(text)
-				payload = errorhttputilpkg.Error{Text: text}
+				payload = responsehttputilpkg.Error{Text: text}
 			},
 		},
 		{
@@ -57,7 +56,7 @@ func (ts *TestSuite) TestRespondErrorAndJson() {
 				statusCode = http.StatusNotFound
 				text := "failed"
 				err = customerror.NotFound.New(text)
-				payload = errorhttputilpkg.Error{Text: text}
+				payload = responsehttputilpkg.Error{Text: text}
 			},
 		},
 		{
@@ -67,7 +66,7 @@ func (ts *TestSuite) TestRespondErrorAndJson() {
 				statusCode = http.StatusConflict
 				text := "failed"
 				err = customerror.Conflict.New(text)
-				payload = errorhttputilpkg.Error{Text: text}
+				payload = responsehttputilpkg.Error{Text: text}
 			},
 		},
 		{
@@ -77,7 +76,7 @@ func (ts *TestSuite) TestRespondErrorAndJson() {
 				statusCode = http.StatusUnprocessableEntity
 				text := "failed"
 				err = customerror.UnprocessableEntity.New(text)
-				payload = errorhttputilpkg.Error{Text: text}
+				payload = responsehttputilpkg.Error{Text: text}
 			},
 		},
 	}
@@ -86,11 +85,11 @@ func (ts *TestSuite) TestRespondErrorAndJson() {
 		ts.T().Run(tc.Context, func(t *testing.T) {
 			tc.SetUp(t)
 
-			responsehttputilpkg.RespondErrorWithJson(res, err)
+			responsehttputilpkg.RespondErrorWithJSON(res, err)
 
 			assert.Equal(t, res.Result().Header.Get("Content-Type"), "application/json")
 			assert.Equal(t, statusCode, res.Result().StatusCode)
-			errMessage := errorhttputilpkg.Error{}
+			errMessage := responsehttputilpkg.Error{}
 			err := json.NewDecoder(res.Body).Decode(&errMessage)
 			assert.Nil(t, err, fmt.Sprintf("Unexpected error: %v", err))
 			assert.Equal(t, payload, errMessage)

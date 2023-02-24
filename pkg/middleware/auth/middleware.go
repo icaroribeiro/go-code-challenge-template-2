@@ -24,14 +24,14 @@ func Auth(authN authpkg.IAuth) func(http.HandlerFunc) http.HandlerFunc {
 
 			tokenString, _ := authN.ExtractTokenString(authHeaderString)
 			// if err != nil {
-			// 	responsehttputilpkg.RespondErrorWithJson(w, err)
+			// 	responsehttputilpkg.RespondErrorWithJSON(w, err)
 			// 	return
 			// }
 
 			if tokenString != "" {
 				token, err := authN.DecodeToken(tokenString)
 				if err != nil {
-					responsehttputilpkg.RespondErrorWithJson(w, customerror.Unauthorized.New(err.Error()))
+					responsehttputilpkg.RespondErrorWithJSON(w, customerror.Unauthorized.New(err.Error()))
 					return
 				}
 

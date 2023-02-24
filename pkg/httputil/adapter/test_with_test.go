@@ -57,7 +57,7 @@ func (ts *TestSuite) TestWith() {
 
 				count, ok := i.(int)
 				if !ok {
-					responsehttputilpkg.RespondErrorWithJson(w, customerror.New("failed"))
+					responsehttputilpkg.RespondErrorWithJSON(w, customerror.New("failed"))
 					return
 				}
 

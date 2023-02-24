@@ -6,11 +6,10 @@ import (
 	"net/http"
 
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	errorhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/error"
 )
 
-// RespondWithJson is the function that generates a JSON response along with the suitable header and given status code.
-func RespondWithJson(w http.ResponseWriter, statusCode int, payload interface{}) {
+// RespondWithJSON is the function that generates a JSON response along with the suitable header and given status code.
+func RespondWithJSON(w http.ResponseWriter, statusCode int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
@@ -24,8 +23,8 @@ func RespondWithJson(w http.ResponseWriter, statusCode int, payload interface{})
 	w.Write(response)
 }
 
-// RespondErrorWithJson is the function that generates a JSON error response.
-func RespondErrorWithJson(w http.ResponseWriter, err error) {
+// RespondErrorWithJSON is the function that generates a JSON error response.
+func RespondErrorWithJSON(w http.ResponseWriter, err error) {
 	statusCode := 0
 
 	errorType := customerror.GetType(err)
@@ -45,5 +44,5 @@ func RespondErrorWithJson(w http.ResponseWriter, err error) {
 		statusCode = http.StatusInternalServerError
 	}
 
-	RespondWithJson(w, statusCode, errorhttputilpkg.Error{Text: err.Error()})
+	RespondWithJSON(w, statusCode, Error{Text: err.Error()})
 }

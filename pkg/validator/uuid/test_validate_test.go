@@ -19,12 +19,6 @@ func (ts *TestSuite) TestValidate() {
 			WantError: false,
 		},
 		{
-			Context:   "ItShouldSucceedInNotValidatingUUIDIfTheStringIsEmpty",
-			Inf:       "",
-			Param:     "",
-			WantError: false,
-		},
-		{
 			Context:   "ItShouldFailIfANewValueIsNotInitializedToTheConcreteValue",
 			Inf:       nil,
 			Param:     "",

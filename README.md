@@ -1,6 +1,6 @@
 # Hi there! 👋
 
-Be very welcome to my solution to X's code challenge. (Not finished yet!)
+Be very welcome to my solution to X's code challenge.
 
 - [Introduction](#introduction)
 - [Architecture](#architecture)

@@ -52,7 +52,7 @@ func addOneToCountHandlerFunc() func(http.HandlerFunc) http.HandlerFunc {
 			} else {
 				count, ok = i.(int)
 				if !ok {
-					responsehttputilpkg.RespondErrorWithJson(w, customerror.New("failed"))
+					responsehttputilpkg.RespondErrorWithJSON(w, customerror.New("failed"))
 					return
 				}
 				count += 1

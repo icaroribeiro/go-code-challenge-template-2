@@ -2,7 +2,6 @@ package uuid
 
 import (
 	"reflect"
-	"strings"
 
 	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
 	_uuid "github.com/satori/go.uuid"
@@ -16,15 +15,8 @@ func Validate(i interface{}, param string) error {
 		return validatorv2.ErrUnsupported
 	}
 
-	if strings.Compare(value.String(), "") == 0 {
-		return nil
-	}
-
-	id := value.String()
-
-	_, err := _uuid.FromString(id)
-	if err != nil {
-		return customerror.New("The id must contain an identifier following the UUID standard")
+	if id, _ := _uuid.FromString(value.String()); id == _uuid.Nil {
+		return customerror.New("The id must contain an identifier following the UUID standard not empty")
 	}
 
 	return nil
