@@ -17,7 +17,7 @@ This project consists of the development of a **GraphQL API** using **Go** progr
 
 ## Architecture
 
-The architecture of the project was designed according to my understanding and my code structuring decisions based on my research of the concepts of **Domain Driven Design** and **Hexagonal Architecture**.
+The architecture of the project was designed according to my **understanding** and my **code structuring decisions** based on researches of the concepts of **Domain Driven Design** and **Hexagonal Architecture**.
 
 ### Domain Driven Design
 
@@ -27,7 +27,7 @@ To do it, the implementation is basically divided up into the following essentia
 
 #### Application
 
-This layer is responsible for serving the application purposes. It contains services (or use cases) that are used to implement the business logic acting as intermediaries for communication between the repositories and handlers.
+This layer is responsible for serving the application purposes. It contains services (or use cases) that are used to implement the business logic acting as intermediaries for communication between the repositories and handlers (or controllers).
 
 In this way, the services represent the implementation of business logic, regardless of the type of database used, or how the service will be exposed externally (http or grpc, for example).
 
@@ -47,11 +47,11 @@ It contains the procedures to establish connection to the database and the imple
 
 This layer is responsible for the interaction with user by accepting API requests, calling out the relevant services and then delivering the response.
 
-It contains the handling of requests by exposing the routes associated with each API endpoints, applying authentication actions when needed that mediate the access to them, as well as the elaboration of API responses.
+It contains the handling of requests by exposing the routes associated with each API endpoints as well as the elaboration of API responses.
 
 ### Hexagonal Architecture
 
-This approach (also known as Ports and Adapters pattern) allows creating an application where the business logic is in a core (*core*) and there is no dependence on external systems, thus facilitating the development of regression tests.
+This approach (also known as Ports and Adapters pattern) allows creating an application where the business logic is in a core and there is no dependence on external systems, thus facilitating the development of regression tests.
 
 It was designed in such a way that adapters (*adapters*) can be "plugged" (*dependency injection*) into the system from ports (*ports*), not affecting the business logic that was defined in the system's core.
 
@@ -61,13 +61,13 @@ In this context, it was enabled the use of Ports represented as interfaces that 
 
 Essentially, the interfaces are implemented by services and repositories placed in application and infrastructure layers, respectively, that belong to the nucleus and define how the communication between the nucleus and actors that want to interact with it are carried out; and adapters that were responsible for translating the information between the core and these actors.
 
-Adapters are implemented in the infrastructure (known as repositories) and interface layers (known as handlers) and are responsible for http communication and database communication, respectively.
+Adapters are implemented in the infrastructure (known as repositories) and presentation layers (known as handlers) and are responsible for http communication and database communication, respectively.
 
 Such structuring of the code makes it possible to focus on the implementation of business logic, since it can be developed completely independently from the rest of the system, as well as on the separation of dependencies, the ease of changing the infrastructure (such as a change of a database), and even allows tests in isolation to be carried out in a simple way.
 
 ## Database
 
-Two Postgres dabases need to be configured to use the project. One of them is intended to common (or usual) use and the other is directed to test execution. However, both of them contain the same tables named auths, logins and users defined in the **database/scripts/1-create_tables.sql** file.
+To use the project is needed to configure two Postgres databases. One of them is intended to common use (or "in production environment") and the other is directed to test execution. However, both of them contain the same tables and data that will be recorded using the SQL script added in the  **database/postgres/scripts** directory.
 
 ### Tables
 
@@ -137,19 +137,9 @@ make shutdown-app
 
 ## API documentation
 
-### API endpoints
-
-The API *endpoints* were documented using the Github repository called [swaggo/swag](https://github.com/swaggo/swag) which converts code annotations in **Go** into **Swagger 2.0** documentation based on **Swagger** files located in the **docs/api/swagger** directory.
-
-After running the project, access the following URL through your web browser to view an HTML page that illustrates the information of the API *endpoints*:
-
-```
-http://{host}:8080/swagger/index.html
-```
-
 ### Postman Collection
 
-To support the use of the API, it was created the file **new-go-code-challenge-template.postman_collection.json** in the directory **docs/api/postman_collection** which contains a group of requests that can be imported into the **Postman** tool (an API client used to facilitate the creation, sharing, testing and documentation of APIs by developers.).
+To support the use of the API, it was created the file **new-go-code-challenge-template-2.postman_collection.json** in the directory **docs/api/postman_collection** which contains a group of requests that can be imported into the **Postman** tool (an API client used to facilitate the creation, sharing, testing and documentation of APIs by developers.).
 
 ## Test cases
 
@@ -161,17 +151,17 @@ The unit tests are located inside the **internal** and **pkg** directories at th
 
 They are evaluated using the **Black-Box** testing strategy, where the test code is not in the same package as the code under evaluation.
 
-For this, files were created with the suffix **_test** added to their names and also to the names of their test packages. For example, the code from the package (*pkg*) called **validator** is tested by a file called **validator_test.go**, which is defined in another package, called **validator_test**.
+For this, files were created with the preffix **test_** and the suffix **_test** added to their names. The suffix **_test** was also addeded to the names of their test packages. For example, the code from the package called **validator** from repository layer is tested by files which are defined in another package, called **validator_test**.
 
 The separation of codes into distinct packages aims to ensure that only the identifiers exported from the packages under evaluation are tested. By doing this, the test code is compiled as a separate package and then linked and run with the main test binary.
 
 #### Mocks
 
-Some of the tests were written using mock objects in order to simulate dependencies so that the layers could interact with each other through **interfaces** rather than concrete implementations, made possible by the *design pattern* of **Dependency Injection**.
+Some of the tests were written using mock objects in order to simulate dependencies so that the layers could interact with each other through **interfaces** rather than concrete implementations. This became possible by the *design pattern* of **Dependency Injection**.
 
 Basically, the purpose of mocking is to isolate and focus on the code being tested and not on the behavior or state of external dependencies. In simulation, dependencies are replaced with well-controlled replacement objects that simulate the behavior of real ones. Thus, each layer is tested independently, without relying on other layers. Also, you don't have to worry about the accuracy of the dependencies (the other layers).
 
-For the mocking purpose, the Github repositories called [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock) e [vektra/mockery](https://github.com/vektra/mockery) were used for mocking the SQL driver behavior without needing to actually connect to a database and for generating the mock objects from interface, respectively.
+For the mocking purpose, the Github repositories called [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock) e [vektra/mockery](https://github.com/vektra/mockery) were used for mocking the SQL driver behavior without needing to actually connect to a database and for generating the mock objects from interfaces, respectively.
 
 ### Integration Tests
 
@@ -181,7 +171,9 @@ They were written by combining and testing the project layers together to simula
 
 Note:
 
-- The unit and integration tests check a large and relevant part of the different components of the solution, but not all of them. In addition, not all tests written have **100%** coverage of the tested code.
+- In addition, I dedicated myself to writing tests for the most important methods, trying to guarantee the highest possible percentage coverage of the tested code. Therefore, the unit and integration tests check a large and relevant part of the different components of the solution, but not all of them.
+
+It is possible to run the tests of the applicatinon locally or even with Docker containers.
 
 ## How to run the tests?
 
@@ -189,7 +181,7 @@ It is possible to run the tests of the applicatinon locally or even with Docker 
 
 ### Local Machine
 
-If you are intended to execute them locally, it is firstly necessary to install postgreSQL database and set up the tables informed in the file **database/postgres/scripts/1-create_tables.sql**.
+If you are intended to execute them locally, it is firstly necessary to install PostgreSQL database and set up the tables informed in the SQL scripts in the **database/postgres/scripts** directory, executing each file in sequence according to the numbering informed in the file names. It is required to execute the integration tests properly.
 
 After that, it is needed to configure the enviroment variables of the file **scripts/setup_env_vars.test.sh** related to the postgreSQL database. The other variables related to RSA keys and authentication settings do not need to be adjusted.
 
@@ -201,11 +193,13 @@ make test-api
 
 After running any of the tests, it is feasible to check the percentage of code coverage that is met by each test case displayed in the test execution output.
 
-The statistics collected from the run of **unit** tests are saved in the **docs/api/tests/unit/coverage.out** file and the related report is **docs/api/tests/unit/coverage_report.out**. In case of the **integration** tests, the data are saved in the **docs/api/tests/integration/coverage.out** and the associated report is **docs/api/tests/unit/coverage_report.out**.
+The statistics collected from the run of **unit** tests are saved in the **docs/api/tests/unit/coverage.out** file and the related report is **docs/api/tests/unit/coverage_report.out**.
 
 Notes:
 
-- The **coverage.out** file contains only **unit** test execution statistics. (There are no statistics on the execution of the **integration** tests.)
+- The **coverage.out** file contains only **unit** test execution statistics. (There are no statistics on the execution of the **integration** tests to be saved using this process.)
+
+- If case of the PostgreSQL database is not installed and the SQL scripts are not executed to configure the database tables as explained before, but it is wanted the tests to be executed anyway, it is expected that only the integration tests will fail and the unit tests will work accordingly.
 
 ### Docker Containers
 
@@ -215,7 +209,7 @@ Before executing the application tests, it is needed to start up the Docker cont
 make start-deps
 ```
 
-After all these dependencies are successfully started, initialize the application by starting up the Docker container named **apitest_container** :
+After all these dependencies are successfully started, initialize the application by starting up the Docker container named **apitest_container**:
 
 ```
 make init-app
