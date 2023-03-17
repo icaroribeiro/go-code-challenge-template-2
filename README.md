@@ -1,6 +1,6 @@
 # Hi there! 👋
 
-Be very welcome to my solution to X's code challenge.
+Be very welcome to my solution to X's code challenge. (Not finished yet!)
 
 - [Introduction](#introduction)
 - [Architecture](#architecture)
@@ -13,7 +13,7 @@ Be very welcome to my solution to X's code challenge.
 
 ## Introduction
 
-This project consists of the development of a **GraphQL API** using **Go** programming language, **Json Web Token** and **Postgres** database for managing authentication operations and accessing users data.
+This project consists of the development of a **GraphQL API** using **Golang** and **gqlgen** package authenticated with **Json Web Token**, **PostgreSQL** database and **Docker** container for managing authentication operations and accessing users data.
 
 ## Architecture
 
@@ -29,7 +29,7 @@ To do it, the implementation is basically divided up into the following essentia
 
 This layer is responsible for serving the application purposes. It contains services (or use cases) that are used to implement the business logic acting as intermediaries for communication between the repositories and handlers (or controllers).
 
-In this way, the services represent the implementation of business logic, regardless of the type of database used, or how the service will be exposed externally (http or grpc, for example).
+In this way, the services represent the implementation of business logic, regardless of the type of database used or how the service will be exposed externally (http or grpc, for example).
 
 Also, they include the validation of the input parameter values from the API requests payloads.
 
@@ -41,7 +41,7 @@ This layer is resposible for holding the schema of entities and ports used for t
 
 This layer is responsible for serving as a supporting layer for other layers.
 
-It contains the procedures to establish connection to the database and the implementation of repositories that interact with the database by retrieving and/or modifing records.
+It contains the procedures to establish connection to the database and the implementation of repositories that interact with the database by retrieving and/or modifying records.
 
 #### Presentation
 
@@ -63,7 +63,7 @@ Essentially, the interfaces are implemented by services and repositories placed 
 
 Adapters are implemented in the infrastructure (known as repositories) and presentation layers (known as handlers) and are responsible for http communication and database communication, respectively.
 
-Such structuring of the code makes it possible to focus on the implementation of business logic, since it can be developed completely independently from the rest of the system, as well as on the separation of dependencies, the ease of changing the infrastructure (such as a change of a database), and even allows tests in isolation to be carried out in a simple way.
+Such structuring of the code makes it possible to focus on the implementation of business logic, since it can be developed completely independently of the rest of the system, as well as on the separation of dependencies, the ease of changing the infrastructure (such as a change of a database), and even allows tests in isolation to be carried out in a simple way.
 
 ## Database
 
@@ -117,7 +117,7 @@ The project can be run either **locally** or using a [**Docker**](https://www.do
 
 A **Makefile** file was created as a single entry point containing a set of instructions to run the project in these two different ways via commands in the terminal.
 
-Furthermore, this file also contains a series of routines used throughout the development of the project, such as reformatting the **.go** file and printing style errors, generating API documentation, creating *mocks* used in tests of the solution, among others.
+Furthermore, this file also contains a series of routines used throughout the development of the project, such as reformatting the **.go** files and printing style errors, generating API documentation, creating *mocks* used in tests of the solution, among others.
 
 To run the project with a Docker container, run the command:
 
@@ -127,7 +127,7 @@ make startup-app
 
 Note:
 
-- The **.env** file contains the environment variables used by the Docker container. However, it is not necessary to make changes to this file before running the project, so the variables can be kept as they are defined.
+- The **.env.prod** file contains the environment variables used by the Docker container. However, it is not necessary to make changes to this file before running the project, so the variables can be kept as they are defined.
 
 To close the application, run the command:
 
@@ -137,27 +137,39 @@ make shutdown-app
 
 ## API documentation
 
+### API endpoint
+
+There is only one API endpoint that will receive all GraphQL queries and mutations requests:
+
+```
+http://{host}:8080/graphql
+```
+
+**Note**:
+
+- During the development of the solution, I executed API requests and acessed the API documentation by replacing the **{host}** informed in this documentation by **127.0.0.1**.
+
 ### Postman Collection
 
-To support the use of the API, it was created the file **new-go-code-challenge-template-2.postman_collection.json** in the directory **docs/api/postman_collection** which contains a group of requests that can be imported into the **Postman** tool (an API client used to facilitate the creation, sharing, testing and documentation of APIs by developers.).
+To support the use of the API, it was created the file **go-code-challenge-template-2.postman_collection.json** in the directory **docs/api/postman_collection** which contains a group of requests that can be imported into the **Postman** tool (an API client used to facilitate the creation, sharing, testing and documentation of APIs by developers.).
 
 ## Test cases
 
 The test cases were designed as [**Table Driven Tests**](https://dave.cheney.net/2019/05/07/prefer-table-driven-tests) so that each test case was built by declaring a structure that contains actions that can be performed before and after executing them, as well as expected inputs and outputs, following the **unit** and **integration** tests approaches.
 
+All related files were created with the preffix **test_** and the suffix **_test** added to their names. The suffix **_test** was also added to the names of their test packages. For example, the code from the package called **validator** from repository layer is tested by files which are defined in another package, called **validator_test**.
+
 ### Unit Tests
 
 The unit tests are located inside the **internal** and **pkg** directories at the project root.
 
-They are evaluated using the **Black-Box** testing strategy, where the test code is not in the same package as the code under evaluation.
-
-For this, files were created with the preffix **test_** and the suffix **_test** added to their names. The suffix **_test** was also addeded to the names of their test packages. For example, the code from the package called **validator** from repository layer is tested by files which are defined in another package, called **validator_test**.
-
 The separation of codes into distinct packages aims to ensure that only the identifiers exported from the packages under evaluation are tested. By doing this, the test code is compiled as a separate package and then linked and run with the main test binary.
+
+Based on it, the tests are evaluated using the **Black-Box** testing strategy, where the test code is not in the same package as the code under evaluation.
 
 #### Mocks
 
-Some of the tests were written using mock objects in order to simulate dependencies so that the layers could interact with each other through **interfaces** rather than concrete implementations. This became possible by the *design pattern* of **Dependency Injection**.
+Some tests were written using mock objects in order to simulate dependencies so that the layers could interact with each other through **interfaces** rather than concrete implementations. This became possible by the *design pattern* of **Dependency Injection**.
 
 Basically, the purpose of mocking is to isolate and focus on the code being tested and not on the behavior or state of external dependencies. In simulation, dependencies are replaced with well-controlled replacement objects that simulate the behavior of real ones. Thus, each layer is tested independently, without relying on other layers. Also, you don't have to worry about the accuracy of the dependencies (the other layers).
 
@@ -171,9 +183,7 @@ They were written by combining and testing the project layers together to simula
 
 Note:
 
-- In addition, I dedicated myself to writing tests for the most important methods, trying to guarantee the highest possible percentage coverage of the tested code. Therefore, the unit and integration tests check a large and relevant part of the different components of the solution, but not all of them.
-
-It is possible to run the tests of the applicatinon locally or even with Docker containers.
+- The tests were developed for the most important methods, trying to guarantee the highest possible percentage coverage of the tested code. Therefore, the unit and integration tests check a large and relevant part of the different components of the solution, but not all of them.
 
 ## How to run the tests?
 
@@ -183,7 +193,7 @@ It is possible to run the tests of the applicatinon locally or even with Docker 
 
 If you are intended to execute them locally, it is firstly necessary to install PostgreSQL database and set up the tables informed in the SQL scripts in the **database/postgres/scripts** directory, executing each file in sequence according to the numbering informed in the file names. It is required to execute the integration tests properly.
 
-After that, it is needed to configure the enviroment variables of the file **scripts/setup_env_vars.test.sh** related to the postgreSQL database. The other variables related to RSA keys and authentication settings do not need to be adjusted.
+After that, it is needed to configure the environment variables of the file **scripts/setup_env_vars.test.sh** related to the PostgreSQL database. The other variables related to RSA keys and authentication settings do not need to be adjusted.
 
 Then, execute all the tests:
 
@@ -193,7 +203,7 @@ make test-api
 
 After running any of the tests, it is feasible to check the percentage of code coverage that is met by each test case displayed in the test execution output.
 
-The statistics collected from the run of **unit** tests are saved in the **docs/api/tests/unit/coverage.out** file and the related report is **docs/api/tests/unit/coverage_report.out**.
+The statistics collected from the run of **unit** tests are saved in the **docs/api/tests/unit/coverage.out** file and the related report is the **docs/api/tests/unit/coverage_report.out** file.
 
 Notes:
 
