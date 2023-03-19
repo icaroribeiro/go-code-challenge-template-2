@@ -5,17 +5,17 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-	authdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/auth"
-	logindatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/login"
-	userdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/user"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
-	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
-	mockauth "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
-	mocksecurity "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mocksecurity"
-	mockvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockvalidator"
+	authservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/application/service/auth"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
+	authdatastoremockrepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/mockrepository/auth"
+	logindatastoremockrepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/mockrepository/login"
+	userdatastoremockrepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/mockrepository/user"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
+	securitypkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
+	mockauth "github.com/icaroribeiro/go-code-challenge-template-2/tests/mocks/pkg/mockauth"
+	mocksecurity "github.com/icaroribeiro/go-code-challenge-template-2/tests/mocks/pkg/mocksecurity"
+	mockvalidator "github.com/icaroribeiro/go-code-challenge-template-2/tests/mocks/pkg/mockvalidator"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -40,7 +40,7 @@ func (ts *TestSuite) TestModifyPassword() {
 			Context: "ItShouldSucceedInModifyingThePassword",
 			SetUp: func(t *testing.T) {
 				id = uuid.NewV4().String()
-				passwords = securitypkgfactory.NewPasswords(nil)
+				passwords = securitypkg.PasswordsFactory(nil)
 
 				loginID := uuid.NewV4()
 				userID := uuid.NewV4()
@@ -56,14 +56,14 @@ func (ts *TestSuite) TestModifyPassword() {
 				updatedLogin = login
 				updatedLogin.Password = passwords.NewPassword
 
-				newLogin := updatedLogin
+				LoginFactory := updatedLogin
 
 				returnArgs = ReturnArgs{
 					{nil},
 					{nil},
 					{login, nil},
 					{nil},
-					{newLogin, nil},
+					{LoginFactory, nil},
 				}
 			},
 			WantError: false,

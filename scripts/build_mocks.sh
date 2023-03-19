@@ -4,18 +4,18 @@
 # Internal
 #
 # Generate a mock object related to auth's datastore repository.
-AUTH_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/storage/datastore/repository/auth"
-MOCK_AUTH_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/storage/datastore/mockrepository/auth"
+AUTH_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/datastore/repository/auth"
+MOCK_AUTH_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/datastore/mockrepository/auth"
 mockery --dir "$AUTH_DATASTORE_REPOSITORY_PATH" --name IRepository --outpkg auth --structname Repository --output "$MOCK_AUTH_DATASTORE_REPOSITORY_PATH" --filename mock_repository.go
 
 # Generate a mock object related to login's datastore repository.
-LOGIN_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/storage/datastore/repository/login"
-MOCK_LOGIN_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/storage/datastore/mockrepository/login"
+LOGIN_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/datastore/repository/login"
+MOCK_LOGIN_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/datastore/mockrepository/login"
 mockery --dir "$LOGIN_DATASTORE_REPOSITORY_PATH" --name IRepository --outpkg login --structname Repository --output "$MOCK_LOGIN_DATASTORE_REPOSITORY_PATH" --filename mock_repository.go
 
 # Generate a mock object related to user's datastore repository.
-USER_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/storage/datastore/repository/user"
-MOCK_USER_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/storage/datastore/mockrepository/user"
+USER_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/datastore/repository/user"
+MOCK_USER_DATASTORE_REPOSITORY_PATH="internal/core/ports/infrastructure/datastore/mockrepository/user"
 mockery --dir "$USER_DATASTORE_REPOSITORY_PATH" --name IRepository --outpkg user --structname Repository --output "$MOCK_USER_DATASTORE_REPOSITORY_PATH" --filename mock_repository.go
 
 # Generate a mock object related to auth's service.

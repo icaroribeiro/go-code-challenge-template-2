@@ -6,7 +6,7 @@ import (
 	"context"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
 	"github.com/satori/go.uuid"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -42,12 +42,12 @@ import (
 // region    ***************************** type.gotpl *****************************
 
 func (ec *executionContext) unmarshalNUUID2githubᚗcomᚋsatoriᚋgoᚗuuidᚐUUID(ctx context.Context, v interface{}) (uuid.UUID, error) {
-	res, err := entity.UnmarshalUUID(v)
+	res, err := presentity.UnmarshalUUID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNUUID2githubᚗcomᚋsatoriᚋgoᚗuuidᚐUUID(ctx context.Context, sel ast.SelectionSet, v uuid.UUID) graphql.Marshaler {
-	res := entity.MarshalUUID(v)
+	res := presentity.MarshalUUID(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

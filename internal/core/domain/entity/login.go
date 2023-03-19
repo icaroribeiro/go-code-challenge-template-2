@@ -12,7 +12,7 @@ type Login struct {
 	Password string `create:"nonzero, password" update:"password"`
 }
 
-// IsEmpty is the function that checks if login's database model is empty.
+// IsEmpty is the function that checks if login's database entity is empty.
 func (l Login) IsEmpty() bool {
 	return l == Login{}
 }

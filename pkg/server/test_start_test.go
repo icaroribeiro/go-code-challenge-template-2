@@ -9,7 +9,7 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/gorilla/mux"
-	serverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/server"
+	serverpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/server"
 	"github.com/stretchr/testify/assert"
 )
 

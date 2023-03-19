@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
+	validatorpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/validator"
 	"github.com/stretchr/testify/assert"
 )
 

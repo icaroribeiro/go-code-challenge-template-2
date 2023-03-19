@@ -1,7 +1,7 @@
 package datastore
 
 import (
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
 	"gorm.io/gorm"
 )
 

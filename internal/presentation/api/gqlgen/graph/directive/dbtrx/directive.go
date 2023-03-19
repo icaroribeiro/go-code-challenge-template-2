@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
 	"gorm.io/gorm"
 )
 

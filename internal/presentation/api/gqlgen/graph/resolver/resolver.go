@@ -1,9 +1,9 @@
 package resolver
 
 import (
-	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
-	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
-	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/user"
+	authservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/auth"
+	healthcheckservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
+	userservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/user"
 )
 
 type Resolver struct {

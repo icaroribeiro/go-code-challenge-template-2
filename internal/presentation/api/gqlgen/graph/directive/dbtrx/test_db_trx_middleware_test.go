@@ -8,17 +8,17 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/DATA-DOG/go-sqlmock"
-	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
-	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/dbtrx"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
+	persistententity "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/perentity"
+	dbtrxdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/dbtrx"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
 
 func (ts *TestSuite) TestDBTrxMiddleware() {
-	user := domainentityfactory.NewUser(nil)
+	user := domainentity.UserFactory(nil)
 
 	driver := "postgres"
 	db, mock := NewMockDB(driver)
@@ -39,7 +39,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				next = func(ctx context.Context) (interface{}, error) {
 					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
-					userDatastore := datastoreentity.User{
+					userDatastore := persistententity.User{
 						Username: user.Username,
 					}
 
@@ -82,7 +82,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				next = func(ctx context.Context) (interface{}, error) {
 					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
-					userDatastore := datastoreentity.User{
+					userDatastore := persistententity.User{
 						Username: user.Username,
 					}
 
@@ -112,7 +112,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				next = func(ctx context.Context) (interface{}, error) {
 					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
-					userDatastore := datastoreentity.User{
+					userDatastore := persistententity.User{
 						Username: user.Username,
 					}
 
@@ -142,7 +142,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				next = func(ctx context.Context) (interface{}, error) {
 					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
-					userDatastore := datastoreentity.User{
+					userDatastore := persistententity.User{
 						Username: user.Username,
 					}
 
@@ -172,7 +172,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				next = func(ctx context.Context) (interface{}, error) {
 					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
-					userDatastore := datastoreentity.User{
+					userDatastore := persistententity.User{
 						Username: user.Username,
 					}
 
@@ -200,7 +200,7 @@ func (ts *TestSuite) TestDBTrxMiddleware() {
 				next = func(ctx context.Context) (interface{}, error) {
 					dbAux, _ := dbtrxdirective.FromContext(ctx)
 
-					userDatastore := datastoreentity.User{
+					userDatastore := persistententity.User{
 						Username: user.Username,
 					}
 

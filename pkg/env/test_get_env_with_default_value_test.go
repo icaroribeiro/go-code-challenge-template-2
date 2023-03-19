@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	envpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
+	envpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/env"
 	"github.com/stretchr/testify/assert"
 )
 

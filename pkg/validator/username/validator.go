@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"regexp"
 
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
 	validatorv2 "gopkg.in/validator.v2"
 )
 

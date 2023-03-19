@@ -1,13 +1,13 @@
 package security
 
 import (
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Security struct{}
 
-// New is the factory function that encapsulates the implementation related to security.
+// New is the factory function that encapsulates the implementation related to securitypkg.
 func New() ISecurity {
 	return &Security{}
 }

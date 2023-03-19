@@ -18,7 +18,7 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: internal/presentation/api/gqlgen/graph/entity/entitys_gen.go
+  filename: internal/presentation/api/gqlgen/graph/presentity/entitys_gen.go
   package: model
 
 # Where should the resolver implementations go?
@@ -40,7 +40,7 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity"
+  - "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -50,19 +50,19 @@ autobind:
 models:
   HealthCheck:
     model: 
-      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.HealthCheck"
+      - "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.HealthCheck"
   UUID:
     model: 
-      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.UUID"
+      - "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.UUID"
   User:
     model: 
-      - "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.User"
+      - "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.User"
   Credentials:
     model:
-      - "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security.Credentials"
+      - "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security.Credentials"
   Passwords:
     model:
-      - "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security.Passwords"
+      - "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security.Passwords"
   # ID:
   #   model:
   #     - github.com/99designs/gqlgen/graphql.ID

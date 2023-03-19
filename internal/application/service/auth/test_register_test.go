@@ -5,18 +5,17 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-	authdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/auth"
-	logindatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/login"
-	userdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/user"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
-	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
-	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
-	mockauth "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
-	mocksecurity "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mocksecurity"
-	mockvalidator "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockvalidator"
+	authservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/application/service/auth"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
+	authdatastoremockrepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/mockrepository/auth"
+	logindatastoremockrepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/mockrepository/login"
+	userdatastoremockrepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/mockrepository/user"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
+	securitypkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
+	mockauth "github.com/icaroribeiro/go-code-challenge-template-2/tests/mocks/pkg/mockauth"
+	mocksecurity "github.com/icaroribeiro/go-code-challenge-template-2/tests/mocks/pkg/mocksecurity"
+	mockvalidator "github.com/icaroribeiro/go-code-challenge-template-2/tests/mocks/pkg/mockvalidator"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -30,7 +29,7 @@ func (ts *TestSuite) TestRegister() {
 
 	auth := domainentity.Auth{}
 
-	newAuth := domainentity.Auth{}
+	AuthFactory := domainentity.Auth{}
 
 	tokenExpTimeInSec := fake.Number(2, 10)
 
@@ -44,14 +43,14 @@ func (ts *TestSuite) TestRegister() {
 		{
 			Context: "ItShouldSucceedInRegisteringAUser",
 			SetUp: func(t *testing.T) {
-				credentials = securitypkgfactory.NewCredentials(nil)
+				credentials = securitypkg.CredentialsFactory(nil)
 
 				args := map[string]interface{}{
 					"id":       uuid.Nil,
 					"username": credentials.Username,
 				}
 
-				user = domainentityfactory.NewUser(args)
+				user = domainentity.UserFactory(args)
 
 				id := uuid.NewV4()
 
@@ -60,41 +59,41 @@ func (ts *TestSuite) TestRegister() {
 					"username": credentials.Username,
 				}
 
-				newUser := domainentityfactory.NewUser(args)
+				UserFactory := domainentity.UserFactory(args)
 
 				args = map[string]interface{}{
 					"id":       uuid.Nil,
-					"userID":   newUser.ID,
+					"userID":   UserFactory.ID,
 					"username": credentials.Username,
 					"password": credentials.Password,
 				}
 
-				login = domainentityfactory.NewLogin(args)
+				login = domainentity.LoginFactory(args)
 
 				args = map[string]interface{}{
 					"id":     uuid.Nil,
-					"userID": newUser.ID,
+					"userID": UserFactory.ID,
 				}
 
-				auth = domainentityfactory.NewAuth(args)
+				auth = domainentity.AuthFactory(args)
 
 				id = uuid.NewV4()
 
 				args = map[string]interface{}{
 					"id":     id,
-					"userID": newUser.ID,
+					"userID": UserFactory.ID,
 				}
 
-				newAuth = domainentityfactory.NewAuth(args)
+				AuthFactory = domainentity.AuthFactory(args)
 
 				token = fake.Word()
 
 				returnArgs = ReturnArgs{
 					{nil},
 					{domainentity.Login{}, nil},
-					{newUser, nil},
+					{UserFactory, nil},
 					{domainentity.Login{}, nil},
-					{newAuth, nil},
+					{AuthFactory, nil},
 					{token, nil},
 				}
 			},
@@ -104,7 +103,7 @@ func (ts *TestSuite) TestRegister() {
 		{
 			Context: "ItShouldFailIfTheCredentialsAreNotValid",
 			SetUp: func(t *testing.T) {
-				credentials = securitypkgfactory.NewCredentials(nil)
+				credentials = securitypkg.CredentialsFactory(nil)
 
 				returnArgs = ReturnArgs{
 					{customerror.New("failed")},
@@ -148,7 +147,7 @@ func (ts *TestSuite) TestRegister() {
 		{
 			Context: "ItShouldFailIfTheUsernameIsAlreadyRegistered",
 			SetUp: func(t *testing.T) {
-				credentials = securitypkgfactory.NewCredentials(nil)
+				credentials = securitypkg.CredentialsFactory(nil)
 
 				id := uuid.NewV4()
 				userID := uuid.NewV4()
@@ -177,7 +176,7 @@ func (ts *TestSuite) TestRegister() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenCreatingAUser",
 			SetUp: func(t *testing.T) {
-				credentials = securitypkgfactory.NewCredentials(nil)
+				credentials = securitypkg.CredentialsFactory(nil)
 
 				user = domainentity.User{
 					Username: credentials.Username,
@@ -200,7 +199,7 @@ func (ts *TestSuite) TestRegister() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenCreatingALogin",
 			SetUp: func(t *testing.T) {
-				credentials = securitypkgfactory.NewCredentials(nil)
+				credentials = securitypkg.CredentialsFactory(nil)
 
 				user = domainentity.User{
 					Username: credentials.Username,
@@ -208,13 +207,13 @@ func (ts *TestSuite) TestRegister() {
 
 				id := uuid.NewV4()
 
-				newUser := domainentity.User{
+				UserFactory := domainentity.User{
 					ID:       id,
 					Username: credentials.Username,
 				}
 
 				login = domainentity.Login{
-					UserID:   newUser.ID,
+					UserID:   UserFactory.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
@@ -222,7 +221,7 @@ func (ts *TestSuite) TestRegister() {
 				returnArgs = ReturnArgs{
 					{nil},
 					{domainentity.Login{}, nil},
-					{newUser, nil},
+					{UserFactory, nil},
 					{domainentity.Login{}, customerror.New("failed")},
 					{domainentity.Auth{}, nil},
 					{"", nil},
@@ -236,7 +235,7 @@ func (ts *TestSuite) TestRegister() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenCreatingAnAuth",
 			SetUp: func(t *testing.T) {
-				credentials = securitypkgfactory.NewCredentials(nil)
+				credentials = securitypkg.CredentialsFactory(nil)
 
 				user = domainentity.User{
 					Username: credentials.Username,
@@ -244,35 +243,35 @@ func (ts *TestSuite) TestRegister() {
 
 				id := uuid.NewV4()
 
-				newUser := domainentity.User{
+				UserFactory := domainentity.User{
 					ID:       id,
 					Username: credentials.Username,
 				}
 
 				login = domainentity.Login{
-					UserID:   newUser.ID,
+					UserID:   UserFactory.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
 				id = uuid.NewV4()
 
-				newLogin := domainentity.Login{
+				LoginFactory := domainentity.Login{
 					ID:       id,
-					UserID:   newUser.ID,
+					UserID:   UserFactory.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
 				auth = domainentity.Auth{
-					UserID: newUser.ID,
+					UserID: UserFactory.ID,
 				}
 
 				returnArgs = ReturnArgs{
 					{nil},
 					{domainentity.Login{}, nil},
-					{newUser, nil},
-					{newLogin, nil},
+					{UserFactory, nil},
+					{LoginFactory, nil},
 					{domainentity.Auth{}, customerror.New("failed")},
 					{"", nil},
 				}
@@ -285,7 +284,7 @@ func (ts *TestSuite) TestRegister() {
 		{
 			Context: "ItShouldFailIfAnErrorOccursWhenCreatingAToken",
 			SetUp: func(t *testing.T) {
-				credentials = securitypkgfactory.NewCredentials(nil)
+				credentials = securitypkg.CredentialsFactory(nil)
 
 				user = domainentity.User{
 					Username: credentials.Username,
@@ -293,43 +292,43 @@ func (ts *TestSuite) TestRegister() {
 
 				id := uuid.NewV4()
 
-				newUser := domainentity.User{
+				UserFactory := domainentity.User{
 					ID:       id,
 					Username: credentials.Username,
 				}
 
 				login = domainentity.Login{
-					UserID:   newUser.ID,
+					UserID:   UserFactory.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
 				id = uuid.NewV4()
 
-				newLogin := domainentity.Login{
+				LoginFactory := domainentity.Login{
 					ID:       id,
-					UserID:   newUser.ID,
+					UserID:   UserFactory.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
 				}
 
 				auth = domainentity.Auth{
-					UserID: newUser.ID,
+					UserID: UserFactory.ID,
 				}
 
 				id = uuid.NewV4()
 
-				newAuth = domainentity.Auth{
+				AuthFactory = domainentity.Auth{
 					ID:     id,
-					UserID: newUser.ID,
+					UserID: UserFactory.ID,
 				}
 
 				returnArgs = ReturnArgs{
 					{nil},
 					{domainentity.Login{}, nil},
-					{newUser, nil},
-					{newLogin, nil},
-					{newAuth, nil},
+					{UserFactory, nil},
+					{LoginFactory, nil},
+					{AuthFactory, nil},
 					{"", customerror.New("failed")},
 				}
 
@@ -359,7 +358,7 @@ func (ts *TestSuite) TestRegister() {
 			authDatastoreRepository.On("Create", auth).Return(returnArgs[4]...)
 
 			authN := new(mockauth.Auth)
-			authN.On("CreateToken", newAuth, tokenExpTimeInSec).Return(returnArgs[5]...)
+			authN.On("CreateToken", AuthFactory, tokenExpTimeInSec).Return(returnArgs[5]...)
 
 			security := new(mocksecurity.Security)
 

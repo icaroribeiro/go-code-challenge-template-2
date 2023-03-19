@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/dbtrx"
+	dbtrxdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/dbtrx"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )

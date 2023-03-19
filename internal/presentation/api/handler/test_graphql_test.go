@@ -6,12 +6,12 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
-	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
-	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
-	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
-	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/auth"
-	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
-	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/handler"
+	authmockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
+	healthcheckmockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	usermockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
+	authmockdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/auth"
+	dbtrxmockdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
+	graphqlhandler "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/handler"
 	"github.com/stretchr/testify/assert"
 )
 

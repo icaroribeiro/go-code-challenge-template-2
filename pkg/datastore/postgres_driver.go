@@ -3,7 +3,7 @@ package datastore
 import (
 	"fmt"
 
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

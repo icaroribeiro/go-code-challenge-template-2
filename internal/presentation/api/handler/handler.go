@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
-	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
-	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/user"
-	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
-	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/dbtrx"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/generated"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/resolver"
+	authservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/auth"
+	healthcheckservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
+	userservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/user"
+	authdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
+	dbtrxdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/dbtrx"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/generated"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/resolver"
 )
 
 type Handler struct {

@@ -4,9 +4,8 @@ import (
 	"context"
 	"testing"
 
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
-	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
+	authdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +18,7 @@ func (ts *TestSuite) TestNewContext() {
 		{
 			Context: "ItShouldSucceedInCreatingACopyOfAContextWithAnAssociatedValue",
 			SetUp: func(t *testing.T) {
-				authDetailsCtxValue = domainentityfactory.NewAuth(nil)
+				authDetailsCtxValue = domainentity.AuthFactory(nil)
 			},
 			WantError: false,
 		},

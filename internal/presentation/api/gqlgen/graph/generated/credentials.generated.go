@@ -6,7 +6,7 @@ import (
 	"context"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
 )
 
 // region    ************************** generated!.gotpl **************************
@@ -34,7 +34,12 @@ func (ec *executionContext) unmarshalInputCredentials(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"username", "password"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "username":
 			var err error
@@ -70,7 +75,7 @@ func (ec *executionContext) unmarshalInputCredentials(ctx context.Context, obj i
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNCredentials2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐCredentials(ctx context.Context, v interface{}) (security.Credentials, error) {
+func (ec *executionContext) unmarshalNCredentials2githubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐCredentials(ctx context.Context, v interface{}) (security.Credentials, error) {
 	res, err := ec.unmarshalInputCredentials(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }

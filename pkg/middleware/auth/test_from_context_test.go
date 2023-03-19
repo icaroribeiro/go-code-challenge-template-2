@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang-jwt/jwt"
-	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
+	authmiddlewarepkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/middleware/auth"
 	"github.com/stretchr/testify/assert"
 )
 

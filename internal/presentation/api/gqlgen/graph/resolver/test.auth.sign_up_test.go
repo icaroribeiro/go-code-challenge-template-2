@@ -8,14 +8,14 @@ import (
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql/handler"
 	fake "github.com/brianvoe/gofakeit/v5"
-	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
-	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
-	usermockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/generated"
-	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
-	resolverpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/resolver"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
+	authmockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
+	healthcheckmockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	usermockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/user"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/generated"
+	dbtrxmockdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
+	resolverpkg "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/resolver"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
+	securitypkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -26,7 +26,7 @@ func (ts *TestSuite) TestSignUp() {
 
 	dbTrx := &gorm.DB{}
 
-	credentials := securitypkgfactory.NewCredentials(nil)
+	credentials := securitypkg.CredentialsFactory(nil)
 
 	opts := []client.Option{}
 

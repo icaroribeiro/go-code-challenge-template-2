@@ -1,15 +1,15 @@
 package auth
 
 import (
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/auth"
-	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/auth"
-	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/login"
-	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/user"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	securitypkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
-	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
+	authservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/auth"
+	authdatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/repository/auth"
+	logindatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/repository/login"
+	userdatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/repository/user"
+	authpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/auth"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
+	securitypkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
+	validatorpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/validator"
 	"gorm.io/gorm"
 )
 
@@ -62,13 +62,13 @@ func (a *Service) Register(credentials securitypkg.Credentials) (string, error) 
 		Username: credentials.Username,
 	}
 
-	newUser, err := a.UserDatastoreRepository.Create(user)
+	UserFactory, err := a.UserDatastoreRepository.Create(user)
 	if err != nil {
 		return "", err
 	}
 
 	login = domainentity.Login{
-		UserID:   newUser.ID,
+		UserID:   UserFactory.ID,
 		Username: credentials.Username,
 		Password: credentials.Password,
 	}
@@ -79,15 +79,15 @@ func (a *Service) Register(credentials securitypkg.Credentials) (string, error) 
 	}
 
 	auth := domainentity.Auth{
-		UserID: newUser.ID,
+		UserID: UserFactory.ID,
 	}
 
-	newAuth, err := a.AuthDatastoreRepository.Create(auth)
+	AuthFactory, err := a.AuthDatastoreRepository.Create(auth)
 	if err != nil {
 		return "", err
 	}
 
-	token, err := a.AuthN.CreateToken(newAuth, a.TokenExpTimeInSec)
+	token, err := a.AuthN.CreateToken(AuthFactory, a.TokenExpTimeInSec)
 	if err != nil {
 		return "", err
 	}
@@ -127,12 +127,12 @@ func (a *Service) LogIn(credentials securitypkg.Credentials) (string, error) {
 		UserID: login.UserID,
 	}
 
-	newAuth, err := a.AuthDatastoreRepository.Create(auth)
+	AuthFactory, err := a.AuthDatastoreRepository.Create(auth)
 	if err != nil {
 		return "", err
 	}
 
-	auth = newAuth
+	auth = AuthFactory
 
 	token, err := a.AuthN.CreateToken(auth, a.TokenExpTimeInSec)
 	if err != nil {

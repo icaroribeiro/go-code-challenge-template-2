@@ -1,4 +1,4 @@
-module github.com/icaroribeiro/new-go-code-challenge-template-2
+module github.com/icaroribeiro/go-code-challenge-template-2
 
 go 1.19
 

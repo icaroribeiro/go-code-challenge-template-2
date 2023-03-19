@@ -3,9 +3,9 @@ package user_test
 import (
 	"testing"
 
-	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
-	userdatastoremockrepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/mockrepository/user"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockvalidator"
+	userservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/application/service/user"
+	userdatastoremockrepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/mockrepository/user"
+	"github.com/icaroribeiro/go-code-challenge-template-2/tests/mocks/pkg/mockvalidator"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )

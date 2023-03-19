@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
-	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request"
-	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
-	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
+	adapterhttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/adapter"
+	requesthttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/request"
+	responsehttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/response"
+	routehttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/route"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/env"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/env"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

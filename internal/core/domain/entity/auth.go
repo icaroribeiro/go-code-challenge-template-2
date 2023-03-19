@@ -10,7 +10,7 @@ type Auth struct {
 	UserID uuid.UUID
 }
 
-// IsEmpty is the function that checks if auth's domain model is empty.
+// IsEmpty is the function that checks if auth's domain entity is empty.
 func (a Auth) IsEmpty() bool {
 	return a == Auth{}
 }

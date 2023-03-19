@@ -1,7 +1,7 @@
 package user
 
 import (
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
 	"gorm.io/gorm"
 )
 

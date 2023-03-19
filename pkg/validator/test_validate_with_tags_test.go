@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
-	uuidvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
+	validatorpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/validator"
+	uuidvalidatorpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/validator/uuid"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	validatorv2 "gopkg.in/validator.v2"

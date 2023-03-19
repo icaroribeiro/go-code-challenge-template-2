@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -26,7 +26,7 @@ import (
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _InfoPayload_message(ctx context.Context, field graphql.CollectedField, obj *entity.InfoPayload) (ret graphql.Marshaler) {
+func (ec *executionContext) _InfoPayload_message(ctx context.Context, field graphql.CollectedField, obj *presentity.InfoPayload) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_InfoPayload_message(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -84,7 +84,7 @@ func (ec *executionContext) fieldContext_InfoPayload_message(ctx context.Context
 
 var infoPayloadImplementors = []string{"InfoPayload"}
 
-func (ec *executionContext) _InfoPayload(ctx context.Context, sel ast.SelectionSet, obj *entity.InfoPayload) graphql.Marshaler {
+func (ec *executionContext) _InfoPayload(ctx context.Context, sel ast.SelectionSet, obj *presentity.InfoPayload) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, infoPayloadImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -114,11 +114,11 @@ func (ec *executionContext) _InfoPayload(ctx context.Context, sel ast.SelectionS
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNInfoPayload2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx context.Context, sel ast.SelectionSet, v entity.InfoPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNInfoPayload2githubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐInfoPayload(ctx context.Context, sel ast.SelectionSet, v presentity.InfoPayload) graphql.Marshaler {
 	return ec._InfoPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx context.Context, sel ast.SelectionSet, v *entity.InfoPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐInfoPayload(ctx context.Context, sel ast.SelectionSet, v *presentity.InfoPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

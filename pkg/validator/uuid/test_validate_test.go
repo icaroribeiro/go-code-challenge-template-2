@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	uuidvalidatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator/uuid"
+	uuidvalidatorpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/validator/uuid"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )

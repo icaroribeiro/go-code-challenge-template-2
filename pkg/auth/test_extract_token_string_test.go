@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
+	authpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/auth"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
 	"github.com/stretchr/testify/assert"
 )
 

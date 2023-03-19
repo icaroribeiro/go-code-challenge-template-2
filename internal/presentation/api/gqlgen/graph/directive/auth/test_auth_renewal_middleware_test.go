@@ -8,13 +8,12 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang-jwt/jwt"
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	domainentityfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/core/domain/entity"
-	datastoremodelfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/infrastructure/storage/datastore/entity"
-	mockauthpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/mocks/pkg/mockauth"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
+	datastoremodelfactory "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/perentity"
+	authdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
+	authmiddlewarepkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/middleware/auth"
+	mockauthpkg "github.com/icaroribeiro/go-code-challenge-template-2/tests/mocks/pkg/mockauth"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -49,12 +48,12 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainentityfactory.NewAuth(args), nil},
+					{domainentity.AuthFactory(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
 
-				authDatastore := datastoremodelfactory.NewAuth(args)
+				authDatastore := datastoremodelfactory.AuthFactory(args)
 
 				rows := sqlmock.
 					NewRows([]string{"id", "user_id", "created_at"}).
@@ -118,7 +117,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainentityfactory.NewAuth(args), nil},
+					{domainentity.AuthFactory(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -145,7 +144,7 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainentityfactory.NewAuth(args), nil},
+					{domainentity.AuthFactory(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
@@ -172,12 +171,12 @@ func (ts *TestSuite) TestAuthRenewalMiddleware() {
 
 				returnArgs = ReturnArgs{
 					{token, nil},
-					{domainentityfactory.NewAuth(args), nil},
+					{domainentity.AuthFactory(args), nil},
 				}
 
 				sqlQuery := `SELECT * FROM "auths" WHERE id=$1`
 
-				authDatastore := datastoremodelfactory.NewAuth(args)
+				authDatastore := datastoremodelfactory.AuthFactory(args)
 
 				rows := sqlmock.
 					NewRows([]string{"id", "user_id", "created_at"}).

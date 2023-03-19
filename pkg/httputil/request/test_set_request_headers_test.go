@@ -6,8 +6,8 @@ import (
 	"sort"
 	"testing"
 
-	requesthttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/request"
-	routehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/route"
+	requesthttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/request"
+	routehttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/route"
 	"github.com/stretchr/testify/assert"
 )
 

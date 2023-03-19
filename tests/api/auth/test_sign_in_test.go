@@ -6,18 +6,18 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
-	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
-	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
-	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
-	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
-	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
-	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
-	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
-	dbtrxdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/dbtrx"
-	authmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/auth"
-	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/handler"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
+	authservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/application/service/auth"
+	userservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/application/service/user"
+	healthcheckmockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	persistententity "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/perentity"
+	authdatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/repository/auth"
+	logindatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/repository/login"
+	userdatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/repository/user"
+	dbtrxdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/dbtrx"
+	authmockdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/auth"
+	graphqlhandler "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/handler"
+	authpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/auth"
+	securitypkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -27,10 +27,10 @@ func (ts *TestSuite) TestSignIn() {
 
 	authN := authpkg.New(ts.RSAKeys)
 
-	credentials := securitypkgfactory.NewCredentials(nil)
+	credentials := securitypkg.CredentialsFactory(nil)
 
-	userDatastore := datastoreentity.User{}
-	loginDatastore := datastoreentity.Login{}
+	userDatastore := persistententity.User{}
+	loginDatastore := persistententity.Login{}
 
 	opt := func(bd *client.Request) {}
 
@@ -40,14 +40,14 @@ func (ts *TestSuite) TestSignIn() {
 			SetUp: func(t *testing.T) {
 				db = ts.DB
 
-				userDatastore = datastoreentity.User{
+				userDatastore = persistententity.User{
 					Username: credentials.Username,
 				}
 
 				result := db.Create(&userDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				loginDatastore = datastoreentity.Login{
+				loginDatastore = persistententity.Login{
 					UserID:   userDatastore.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -60,11 +60,11 @@ func (ts *TestSuite) TestSignIn() {
 			},
 			WantError: false,
 			TearDown: func(t *testing.T) {
-				result := db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.Auth{})
+				result := db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&persistententity.Auth{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.Login{})
+				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&persistententity.Login{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
-				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&datastoreentity.User{})
+				result = db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&persistententity.User{})
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 			},
 		},

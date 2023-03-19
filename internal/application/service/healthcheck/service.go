@@ -1,7 +1,7 @@
 package healthcheck
 
 import (
-	healthcheckservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
+	healthcheckservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/healthcheck"
 	"gorm.io/gorm"
 )
 

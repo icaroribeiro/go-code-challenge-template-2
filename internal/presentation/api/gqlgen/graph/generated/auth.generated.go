@@ -9,19 +9,19 @@ import (
 	"strconv"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
 // region    ************************** generated!.gotpl **************************
 
 type MutationResolver interface {
-	SignUp(ctx context.Context, input security.Credentials) (*entity.AuthPayload, error)
-	SignIn(ctx context.Context, input security.Credentials) (*entity.AuthPayload, error)
-	RefreshToken(ctx context.Context) (*entity.AuthPayload, error)
-	ChangePassword(ctx context.Context, input security.Passwords) (*entity.InfoPayload, error)
-	SignOut(ctx context.Context) (*entity.InfoPayload, error)
+	SignUp(ctx context.Context, input security.Credentials) (*presentity.AuthPayload, error)
+	SignIn(ctx context.Context, input security.Credentials) (*presentity.AuthPayload, error)
+	RefreshToken(ctx context.Context) (*presentity.AuthPayload, error)
+	ChangePassword(ctx context.Context, input security.Passwords) (*presentity.InfoPayload, error)
+	SignOut(ctx context.Context) (*presentity.InfoPayload, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -34,7 +34,7 @@ func (ec *executionContext) field_Mutation_changePassword_args(ctx context.Conte
 	var arg0 security.Passwords
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNPasswords2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐPasswords(ctx, tmp)
+		arg0, err = ec.unmarshalNPasswords2githubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐPasswords(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +49,7 @@ func (ec *executionContext) field_Mutation_signIn_args(ctx context.Context, rawA
 	var arg0 security.Credentials
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCredentials2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐCredentials(ctx, tmp)
+		arg0, err = ec.unmarshalNCredentials2githubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐCredentials(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -64,7 +64,7 @@ func (ec *executionContext) field_Mutation_signUp_args(ctx context.Context, rawA
 	var arg0 security.Credentials
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCredentials2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐCredentials(ctx, tmp)
+		arg0, err = ec.unmarshalNCredentials2githubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋpkgᚋsecurityᚐCredentials(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -112,10 +112,10 @@ func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*entity.AuthPayload); ok {
+		if data, ok := tmp.(*presentity.AuthPayload); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.AuthPayload`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.AuthPayload`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -127,9 +127,9 @@ func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*entity.AuthPayload)
+	res := resTmp.(*presentity.AuthPayload)
 	fc.Result = res
-	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
+	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐAuthPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signUp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -191,10 +191,10 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*entity.AuthPayload); ok {
+		if data, ok := tmp.(*presentity.AuthPayload); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.AuthPayload`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.AuthPayload`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -206,9 +206,9 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*entity.AuthPayload)
+	res := resTmp.(*presentity.AuthPayload)
 	fc.Result = res
-	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
+	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐAuthPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -270,10 +270,10 @@ func (ec *executionContext) _Mutation_refreshToken(ctx context.Context, field gr
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*entity.AuthPayload); ok {
+		if data, ok := tmp.(*presentity.AuthPayload); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.AuthPayload`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.AuthPayload`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -285,9 +285,9 @@ func (ec *executionContext) _Mutation_refreshToken(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*entity.AuthPayload)
+	res := resTmp.(*presentity.AuthPayload)
 	fc.Result = res
-	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐAuthPayload(ctx, field.Selections, res)
+	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐAuthPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_refreshToken(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -338,10 +338,10 @@ func (ec *executionContext) _Mutation_changePassword(ctx context.Context, field 
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*entity.InfoPayload); ok {
+		if data, ok := tmp.(*presentity.InfoPayload); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.InfoPayload`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.InfoPayload`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -353,9 +353,9 @@ func (ec *executionContext) _Mutation_changePassword(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*entity.InfoPayload)
+	res := resTmp.(*presentity.InfoPayload)
 	fc.Result = res
-	return ec.marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx, field.Selections, res)
+	return ec.marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐInfoPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_changePassword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -417,10 +417,10 @@ func (ec *executionContext) _Mutation_signOut(ctx context.Context, field graphql
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*entity.InfoPayload); ok {
+		if data, ok := tmp.(*presentity.InfoPayload); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.InfoPayload`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.InfoPayload`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -432,9 +432,9 @@ func (ec *executionContext) _Mutation_signOut(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*entity.InfoPayload)
+	res := resTmp.(*presentity.InfoPayload)
 	fc.Result = res
-	return ec.marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐInfoPayload(ctx, field.Selections, res)
+	return ec.marshalNInfoPayload2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐInfoPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signOut(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {

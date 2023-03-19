@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	responsehttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/response"
+	authpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/auth"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
+	responsehttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/response"
 )
 
 var tokenCtxKey = &contextKey{"token"}

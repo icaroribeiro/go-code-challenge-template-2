@@ -5,10 +5,10 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/golang-jwt/jwt"
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/customerror"
-	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
+	authpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/auth"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/customerror"
+	authmiddlewarepkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/middleware/auth"
 	"gorm.io/gorm"
 )
 

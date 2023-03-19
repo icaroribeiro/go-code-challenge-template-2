@@ -7,19 +7,19 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
-	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
-	authmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
-	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
-	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
-	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
-	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
-	graphentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity"
-	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
-	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/handler"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
-	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
+	userservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/application/service/user"
+	authmockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/auth"
+	healthcheckmockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	persistententity "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/perentity"
+	userdatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/repository/user"
+	authdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
+	dbtrxmockdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
+	graphentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
+	graphqlhandler "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/handler"
+	authpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/auth"
+	adapterhttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/adapter"
+	authmiddlewarepkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/middleware/auth"
+	securitypkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -29,14 +29,14 @@ func (ts *TestSuite) TestGetAll() {
 
 	authN := authpkg.New(ts.RSAKeys)
 
-	credentials := securitypkgfactory.NewCredentials(nil)
+	credentials := securitypkg.CredentialsFactory(nil)
 
 	timeBeforeTokenExpTimeInSec := 30
 
-	userDatastore := datastoreentity.User{}
+	userDatastore := persistententity.User{}
 	user := graphentity.User{}
-	loginDatastore := datastoreentity.Login{}
-	authDatastore := datastoreentity.Auth{}
+	loginDatastore := persistententity.Login{}
+	authDatastore := persistententity.Auth{}
 
 	key := ""
 	bearerToken := []string{"", ""}
@@ -55,7 +55,7 @@ func (ts *TestSuite) TestGetAll() {
 				dbTrx = ts.DB.Begin()
 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
 
-				userDatastore = datastoreentity.User{
+				userDatastore = persistententity.User{
 					Username: credentials.Username,
 				}
 
@@ -65,7 +65,7 @@ func (ts *TestSuite) TestGetAll() {
 				domainUser := userDatastore.ToDomain()
 				user.FromDomain(domainUser)
 
-				loginDatastore = datastoreentity.Login{
+				loginDatastore = persistententity.Login{
 					UserID:   userDatastore.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -74,7 +74,7 @@ func (ts *TestSuite) TestGetAll() {
 				result = dbTrx.Create(&loginDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				authDatastore = datastoreentity.Auth{
+				authDatastore = persistententity.Auth{
 					UserID: userDatastore.ID,
 				}
 

@@ -9,7 +9,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/security"
+	"github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -256,41 +256,41 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "internal/presentation/api/gqlgen/graph/schema/auth.graphql", Input: `extend type Mutation {
+	{Name: "../schema/auth.graphql", Input: `extend type Mutation {
     signUp(input: Credentials!): AuthPayload! @useDBTrxMiddleware
     signIn(input: Credentials!): AuthPayload! @useDBTrxMiddleware
     refreshToken: AuthPayload! @useAuthRenewalMiddleware
     changePassword(input: Passwords!): InfoPayload! @useAuthMiddleware
     signOut: InfoPayload! @useAuthMiddleware
 }`, BuiltIn: false},
-	{Name: "internal/presentation/api/gqlgen/graph/schema/authpayload.graphql", Input: `type AuthPayload {
+	{Name: "../schema/authpayload.graphql", Input: `type AuthPayload {
   token: String!
 }`, BuiltIn: false},
-	{Name: "internal/presentation/api/gqlgen/graph/schema/credentials.graphql", Input: `input Credentials {
+	{Name: "../schema/credentials.graphql", Input: `input Credentials {
     username: String!
     password: String!
 }`, BuiltIn: false},
-	{Name: "internal/presentation/api/gqlgen/graph/schema/directives.graphql", Input: `directive @useDBTrxMiddleware on FIELD_DEFINITION
+	{Name: "../schema/directives.graphql", Input: `directive @useDBTrxMiddleware on FIELD_DEFINITION
 
 directive @useAuthMiddleware on FIELD_DEFINITION
 directive @useAuthRenewalMiddleware on FIELD_DEFINITION`, BuiltIn: false},
-	{Name: "internal/presentation/api/gqlgen/graph/schema/healthcheck.graphql", Input: `type HealthCheck {
+	{Name: "../schema/healthcheck.graphql", Input: `type HealthCheck {
     status: String!
 }
 
 extend type Query {
     getHealthCheck: HealthCheck!
 }`, BuiltIn: false},
-	{Name: "internal/presentation/api/gqlgen/graph/schema/infopayload.graphql", Input: `type InfoPayload {
+	{Name: "../schema/infopayload.graphql", Input: `type InfoPayload {
   message: String!
 }`, BuiltIn: false},
-	{Name: "internal/presentation/api/gqlgen/graph/schema/passwords.graphql", Input: `input Passwords {
+	{Name: "../schema/passwords.graphql", Input: `input Passwords {
 	currentPassword: String!
 	newPassword: String!
 }
 `, BuiltIn: false},
-	{Name: "internal/presentation/api/gqlgen/graph/schema/scalars.graphql", Input: `scalar UUID`, BuiltIn: false},
-	{Name: "internal/presentation/api/gqlgen/graph/schema/user.graphql", Input: `type User {
+	{Name: "../schema/scalars.graphql", Input: `scalar UUID`, BuiltIn: false},
+	{Name: "../schema/user.graphql", Input: `type User {
     id: UUID!
     username: String!
 }

@@ -7,20 +7,20 @@ import (
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
-	authservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/auth"
-	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/application/service/user"
-	healthcheckmockservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
-	datastoreentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/entity"
-	authdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/auth"
-	logindatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/login"
-	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/infrastructure/storage/datastore/repository/user"
-	authdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
-	dbtrxmockdirective "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
-	graphqlhandler "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/handler"
-	authpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/auth"
-	adapterhttputilpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/httputil/adapter"
-	authmiddlewarepkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/middleware/auth"
-	securitypkgfactory "github.com/icaroribeiro/new-go-code-challenge-template-2/tests/factory/pkg/security"
+	authservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/application/service/auth"
+	userservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/application/service/user"
+	healthcheckmockservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/mockservice/healthcheck"
+	persistententity "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/perentity"
+	authdatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/repository/auth"
+	logindatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/repository/login"
+	userdatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/infrastructure/datastore/repository/user"
+	authdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/directive/auth"
+	dbtrxmockdirective "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/mockdirective/dbtrx"
+	graphqlhandler "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/handler"
+	authpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/auth"
+	adapterhttputilpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/httputil/adapter"
+	authmiddlewarepkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/middleware/auth"
+	securitypkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/security"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -30,13 +30,13 @@ func (ts *TestSuite) TestChangePassword() {
 
 	authN := authpkg.New(ts.RSAKeys)
 
-	credentials := securitypkgfactory.NewCredentials(nil)
+	credentials := securitypkg.CredentialsFactory(nil)
 
 	timeBeforeTokenExpTimeInSec := 120
 
-	userDatastore := datastoreentity.User{}
-	loginDatastore := datastoreentity.Login{}
-	authDatastore := datastoreentity.Auth{}
+	userDatastore := persistententity.User{}
+	loginDatastore := persistententity.Login{}
+	authDatastore := persistententity.Auth{}
 
 	key := ""
 	bearerToken := []string{"", ""}
@@ -50,7 +50,7 @@ func (ts *TestSuite) TestChangePassword() {
 		"currentPassword": credentials.Password,
 	}
 
-	passwords := securitypkgfactory.NewPasswords(args)
+	passwords := securitypkg.PasswordsFactory(args)
 
 	opts := []client.Option{}
 
@@ -63,14 +63,14 @@ func (ts *TestSuite) TestChangePassword() {
 				dbTrx = ts.DB.Begin()
 				assert.Nil(t, dbTrx.Error, fmt.Sprintf("Unexpected error: %v.", dbTrx.Error))
 
-				userDatastore = datastoreentity.User{
+				userDatastore = persistententity.User{
 					Username: credentials.Username,
 				}
 
 				result := dbTrx.Create(&userDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				loginDatastore = datastoreentity.Login{
+				loginDatastore = persistententity.Login{
 					UserID:   userDatastore.ID,
 					Username: credentials.Username,
 					Password: credentials.Password,
@@ -79,7 +79,7 @@ func (ts *TestSuite) TestChangePassword() {
 				result = dbTrx.Create(&loginDatastore)
 				assert.Nil(t, result.Error, fmt.Sprintf("Unexpected error: %v.", result.Error))
 
-				authDatastore = datastoreentity.Auth{
+				authDatastore = persistententity.Auth{
 					UserID: userDatastore.ID,
 				}
 

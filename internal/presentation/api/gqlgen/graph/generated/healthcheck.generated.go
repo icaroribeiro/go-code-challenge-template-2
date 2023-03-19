@@ -11,15 +11,15 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
 // region    ************************** generated!.gotpl **************************
 
 type QueryResolver interface {
-	GetHealthCheck(ctx context.Context) (*entity.HealthCheck, error)
-	GetAllUsers(ctx context.Context) ([]*entity.User, error)
+	GetHealthCheck(ctx context.Context) (*presentity.HealthCheck, error)
+	GetAllUsers(ctx context.Context) ([]*presentity.User, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -49,7 +49,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _HealthCheck_status(ctx context.Context, field graphql.CollectedField, obj *entity.HealthCheck) (ret graphql.Marshaler) {
+func (ec *executionContext) _HealthCheck_status(ctx context.Context, field graphql.CollectedField, obj *presentity.HealthCheck) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_HealthCheck_status(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -119,9 +119,9 @@ func (ec *executionContext) _Query_getHealthCheck(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*entity.HealthCheck)
+	res := resTmp.(*presentity.HealthCheck)
 	fc.Result = res
-	return ec.marshalNHealthCheck2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐHealthCheck(ctx, field.Selections, res)
+	return ec.marshalNHealthCheck2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐHealthCheck(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getHealthCheck(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -172,10 +172,10 @@ func (ec *executionContext) _Query_getAllUsers(ctx context.Context, field graphq
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*entity.User); ok {
+		if data, ok := tmp.([]*presentity.User); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity.User`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity.User`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -187,9 +187,9 @@ func (ec *executionContext) _Query_getAllUsers(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*entity.User)
+	res := resTmp.([]*presentity.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐUserᚄ(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐUserᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getAllUsers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -354,7 +354,7 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 
 var healthCheckImplementors = []string{"HealthCheck"}
 
-func (ec *executionContext) _HealthCheck(ctx context.Context, sel ast.SelectionSet, obj *entity.HealthCheck) graphql.Marshaler {
+func (ec *executionContext) _HealthCheck(ctx context.Context, sel ast.SelectionSet, obj *presentity.HealthCheck) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, healthCheckImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -472,11 +472,11 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNHealthCheck2githubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐHealthCheck(ctx context.Context, sel ast.SelectionSet, v entity.HealthCheck) graphql.Marshaler {
+func (ec *executionContext) marshalNHealthCheck2githubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐHealthCheck(ctx context.Context, sel ast.SelectionSet, v presentity.HealthCheck) graphql.Marshaler {
 	return ec._HealthCheck(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNHealthCheck2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐHealthCheck(ctx context.Context, sel ast.SelectionSet, v *entity.HealthCheck) graphql.Marshaler {
+func (ec *executionContext) marshalNHealthCheck2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐHealthCheck(ctx context.Context, sel ast.SelectionSet, v *presentity.HealthCheck) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

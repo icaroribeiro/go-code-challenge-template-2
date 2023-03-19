@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/icaroribeiro/new-go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/entity"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
 	"github.com/satori/go.uuid"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -28,7 +28,7 @@ import (
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *entity.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *presentity.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -72,7 +72,7 @@ func (ec *executionContext) fieldContext_User_id(ctx context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _User_username(ctx context.Context, field graphql.CollectedField, obj *entity.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_username(ctx context.Context, field graphql.CollectedField, obj *presentity.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_username(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -130,7 +130,7 @@ func (ec *executionContext) fieldContext_User_username(ctx context.Context, fiel
 
 var userImplementors = []string{"User"}
 
-func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *entity.User) graphql.Marshaler {
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *presentity.User) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, userImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -167,7 +167,7 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*entity.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*presentity.User) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -191,7 +191,7 @@ func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋicaroribeiroᚋnew
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNUser2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐUser(ctx, sel, v[i])
+			ret[i] = ec.marshalNUser2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐUser(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -211,7 +211,7 @@ func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋicaroribeiroᚋnew
 	return ret
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋicaroribeiroᚋnewᚑgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋgraphqlᚋgqlgenᚋgraphᚋentityᚐUser(ctx context.Context, sel ast.SelectionSet, v *entity.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋicaroribeiroᚋgoᚑcodeᚑchallengeᚑtemplateᚑ2ᚋinternalᚋpresentationᚋapiᚋgqlgenᚋgraphᚋpresentityᚐUser(ctx context.Context, sel ast.SelectionSet, v *presentity.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

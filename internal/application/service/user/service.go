@@ -1,10 +1,10 @@
 package user
 
 import (
-	domainentity "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/domain/entity"
-	userservice "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/application/service/user"
-	userdatastorerepository "github.com/icaroribeiro/new-go-code-challenge-template-2/internal/core/ports/infrastructure/storage/datastore/repository/user"
-	validatorpkg "github.com/icaroribeiro/new-go-code-challenge-template-2/pkg/validator"
+	domainentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/domain/entity"
+	userservice "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/application/service/user"
+	userdatastorerepository "github.com/icaroribeiro/go-code-challenge-template-2/internal/core/ports/infrastructure/datastore/repository/user"
+	validatorpkg "github.com/icaroribeiro/go-code-challenge-template-2/pkg/validator"
 	"gorm.io/gorm"
 )
 
