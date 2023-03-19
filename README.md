@@ -27,7 +27,7 @@ To do it, the implementation is basically divided up into the following essentia
 
 #### Application
 
-This layer is responsible for serving the application purposes. It contains services (or use cases) that are used to implement the business logic acting as intermediaries for communication between the repositories and handlers (or controllers).
+This layer is responsible for serving the application purposes. It contains services (or use cases) that are used to implement the business logic acting as intermediaries for communication between the repositories and handlers.
 
 In this way, the services represent the implementation of business logic, regardless of the type of database used or how the service will be exposed externally (http or grpc, for example).
 
