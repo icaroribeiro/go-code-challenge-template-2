@@ -1,6 +1,6 @@
 # Hi there! 👋
 
-Be very welcome to my solution to X's code challenge. (Not finished yet!)
+Be very welcome to my solution to X's code challenge.
 
 - [Introduction](#introduction)
 - [Architecture](#architecture)
@@ -35,7 +35,7 @@ Also, they include the validation of the input parameter values from the API req
 
 #### Core/Domain
 
-This layer is resposible for holding the schema of entities and ports used for the communication between the handlers and services, as well as between the services and repositories.
+This layer is responsible for holding the schema of entities and ports used for the communication between the handlers and services, as well as between the services and repositories.
 
 #### Infrastructure
 

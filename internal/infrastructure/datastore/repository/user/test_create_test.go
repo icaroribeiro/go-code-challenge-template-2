@@ -109,8 +109,8 @@ func (ts *TestSuite) TestCreate() {
 				assert.Empty(t, returnedUser)
 			}
 
-			// err = mock.ExpectationsWereMet()
-			// assert.Nil(ts.T(), err, fmt.Sprintf("There were unfulfilled expectations: %v.", err))
+			err = mock.ExpectationsWereMet()
+			assert.Nil(ts.T(), err, fmt.Sprintf("There were unfulfilled expectations: %v.", err))
 		})
 	}
 }

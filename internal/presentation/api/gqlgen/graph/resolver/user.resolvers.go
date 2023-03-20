@@ -7,20 +7,20 @@ package resolver
 import (
 	"context"
 
-	presentableentity "github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
+	"github.com/icaroribeiro/go-code-challenge-template-2/internal/presentation/api/gqlgen/graph/presentity"
 )
 
 // GetAllUsers is the resolver for the getAllUsers field.
-func (r *queryResolver) GetAllUsers(ctx context.Context) ([]*presentableentity.User, error) {
+func (r *queryResolver) GetAllUsers(ctx context.Context) ([]*presentity.User, error) {
 	domainUsers, err := r.UserService.WithDBTrx(nil).GetAll()
 	if err != nil {
 		return nil, err
 	}
 
-	users := presentableentity.Users{}
+	users := presentity.Users{}
 	users.FromDomain(domainUsers)
 
-	allUsers := []*presentableentity.User{}
+	allUsers := []*presentity.User{}
 	for i := range users {
 		allUsers = append(allUsers, &users[i])
 	}

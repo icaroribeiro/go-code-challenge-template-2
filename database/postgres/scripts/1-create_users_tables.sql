@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS auths;
+DROP TABLE IF EXISTS logins;
 DROP TABLE IF EXISTS users;
 
 -- Table users
