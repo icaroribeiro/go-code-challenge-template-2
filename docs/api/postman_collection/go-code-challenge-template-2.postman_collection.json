@@ -1,0 +1,263 @@
+{
+	"info": {
+		"_postman_id": "0e551f05-9761-46a2-9354-a007de0726f6",
+		"name": "go-code-challenge-template-2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetStatus",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\r\n  getHealthCheck {\r\n    status\r\n  }\r\n}",
+						"variables": ""
+					},
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/graphql",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SignUp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\r\n  signUp(input: {username: \"icaroribeiro\", password: \"secret123!\"}) {\r\n    token\r\n  }\r\n}",
+						"variables": ""
+					},
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/graphql",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SignIn",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\r\n  signIn(input: {username: \"icaroribeiro\", password: \"secret456!\"}) {\r\n    token\r\n  }\r\n}",
+						"variables": ""
+					},
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/graphql",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SignOut",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiNTY0ZGVjNWUtZGFkYi00MDZkLWI3YWUtZWM2NGY0M2NjMWFiIiwiYXV0aG9yaXplZCI6dHJ1ZSwiZXhwIjoxNjUzOTMxMjI5LCJpYXQiOjE2NTM5MzExMDksInVzZXJfaWQiOiIxYjgxMmJhNy1jNGE4LTQ5OGItYTAwZi0yYTcxZWZlMjAzYWQifQ.Bb3bJ7mEVHwYubrH-3BwUUN5x5GBPJ07QQu3Mm7Vzx5y-rKvWAZOnxnZj70MwOIUDNCytcOv81Aj6Xe1aCgFVdlqMv6TLl3-mnYdp4zewJIjb1iiE-J0dqkcSNU26pemgqH43I33ed2byONbYtfRjde-dALcp0fzn1_Pk5wjH5s",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\r\n  signOut {\r\n    message\r\n  }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/graphql",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RefreshToken",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMGMzZmI4N2MtZWE4Yy00NjdmLTljMjYtNTFkZGUxMGVkYTQ0IiwiYXV0aG9yaXplZCI6dHJ1ZSwiZXhwIjoxNjUzOTMxMjg2LCJpYXQiOjE2NTM5MzExNjYsInVzZXJfaWQiOiIxYjgxMmJhNy1jNGE4LTQ5OGItYTAwZi0yYTcxZWZlMjAzYWQifQ.E6Jk_7DdIGp6pkYz3I0ekCnCu_Gc3ZHQ7-2IZz9YsQ-a96umRW15yoOhLE-K4AqCpZlfr4UJrDeg9curjeoNUd20QNt9O-Bk9F8StTwARvBHQHd5elJ42598Xim4A1CB54ToQDdJzHK1C1SmNFwvteFbnnaoK27bHFxUnxnv9ek",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\r\n  refreshToken {\r\n    token\r\n  }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/graphql",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ChangePassword",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiNTY0ZGVjNWUtZGFkYi00MDZkLWI3YWUtZWM2NGY0M2NjMWFiIiwiYXV0aG9yaXplZCI6dHJ1ZSwiZXhwIjoxNjUzOTMxMjI5LCJpYXQiOjE2NTM5MzExMDksInVzZXJfaWQiOiIxYjgxMmJhNy1jNGE4LTQ5OGItYTAwZi0yYTcxZWZlMjAzYWQifQ.Bb3bJ7mEVHwYubrH-3BwUUN5x5GBPJ07QQu3Mm7Vzx5y-rKvWAZOnxnZj70MwOIUDNCytcOv81Aj6Xe1aCgFVdlqMv6TLl3-mnYdp4zewJIjb1iiE-J0dqkcSNU26pemgqH43I33ed2byONbYtfRjde-dALcp0fzn1_Pk5wjH5s",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\r\n  changePassword(input: {currentPassword: \"secret123!\", newPassword: \"secret456!\"}) {\r\n    message\r\n  }\r\n}",
+						"variables": ""
+					},
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/graphql",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllUsers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMGMzZmI4N2MtZWE4Yy00NjdmLTljMjYtNTFkZGUxMGVkYTQ0IiwiYXV0aG9yaXplZCI6dHJ1ZSwiZXhwIjoxNjUzOTMxMjg2LCJpYXQiOjE2NTM5MzExNjYsInVzZXJfaWQiOiIxYjgxMmJhNy1jNGE4LTQ5OGItYTAwZi0yYTcxZWZlMjAzYWQifQ.E6Jk_7DdIGp6pkYz3I0ekCnCu_Gc3ZHQ7-2IZz9YsQ-a96umRW15yoOhLE-K4AqCpZlfr4UJrDeg9curjeoNUd20QNt9O-Bk9F8StTwARvBHQHd5elJ42598Xim4A1CB54ToQDdJzHK1C1SmNFwvteFbnnaoK27bHFxUnxnv9ek",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\r\n  getAllUsers {\r\n    id\r\n    username\r\n  }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/graphql",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

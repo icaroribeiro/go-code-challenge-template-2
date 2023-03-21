@@ -44,7 +44,7 @@ var (
 	dbUser     = envpkg.GetEnvWithDefaultValue("DB_USER", "postgres")
 	dbPassword = envpkg.GetEnvWithDefaultValue("DB_PASSWORD", "postgres")
 	dbHost     = envpkg.GetEnvWithDefaultValue("DB_HOST", "localhost")
-	dbPort     = envpkg.GetEnvWithDefaultValue("DB_PORT", "5432")
+	dbPort     = envpkg.GetEnvWithDefaultValue("DB_PORT", "5434")
 	dbName     = envpkg.GetEnvWithDefaultValue("DB_NAME", "testdb")
 )
 

@@ -39,13 +39,14 @@ test-api:
 #
 start-deps:
 	docker network create testapp_network; \
-	docker build -t postgrestestdb --no-cache -f ./database/postgres/Dockerfile .; \
-	docker run --name postgrestestdb_container --env-file ./database/postgres/.env.test -d -p 5434:5432 -v postgrestestdb-data:/var/lib/postgresql/data --restart on-failure postgrestestdb; \
+	cd ./database/postgres; \
+	docker build -t postgrestestdb --no-cache -f Dockerfile .; \
+	docker run --name postgrestestdb_container --env-file .env.test -d -p 5434:5432 -v postgrestestdb-data:/var/lib/postgresql/data --restart on-failure postgrestestdb; \
 	docker network connect testapp_network postgrestestdb_container
 
 init-app:
 	docker build -t apitest -f Dockerfile.test .; \
-	docker run --name apitest_container --env-file ./.env.test -d -p 8080:8080 --restart on-failure apitest; \
+	docker run --name apitest_container --env-file ./.env.test -d -p 8081:8081 --restart on-failure apitest; \
 	docker network connect testapp_network apitest_container
 
 test-app:
